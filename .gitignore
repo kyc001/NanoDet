@@ -1,0 +1,53 @@
+# Python 缓存
+__pycache__/
+*.pyc
+
+# Jittor 缓存
+*_jt_precompile/
+.jit/
+
+# 操作系统生成的文件
+.DS_Store
+Thumbs.db
+
+# IDE 和编辑器配置
+.idea/
+.vscode/
+*.swp
+
+# 数据集 - 千万不要上传数据集！
+data/
+
+# 保存的模型权重
+*.pkl
+*.pth
+*.bin
+
+# 日志和输出文件
+*.log
+loss_curve.npy
+
+# 虚拟环境文件夹
+venv/
+env/
+
+checkpoints/
+
+*.pdparams
+
+pretrained/
+
+*.jt
+labels/voc2012_subset
+*.npz
+
+nk-yolo-main/
+
+*.jpg
+
+
+*.ckpt
+*.yml
+
+
+nanodet-pytorch/workspace/
