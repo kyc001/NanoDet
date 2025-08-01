@@ -54,12 +54,10 @@ class GhostBlocks(nn.Module):
                 activation=activation,
             )
         blocks = []
-        for i in range(num_blocks):
-            # 第一个block的输入通道数是in_channels，后续block的输入通道数是out_channels
-            input_channels = in_channels if i == 0 else out_channels
+        for _ in range(num_blocks):
             blocks.append(
                 GhostBottleneck(
-                    input_channels,
+                    in_channels,
                     int(out_channels * expand),
                     out_channels,
                     dw_kernel_size=kernel_size,
@@ -121,6 +119,7 @@ class GhostPAN(nn.Module):
         conv = DepthwiseConvModule if use_depthwise else ConvModule
 
         # build top-down blocks
+        self.upsample = jt.nn.Upsample(**upsample_cfg)
         self.reduce_layers = nn.ModuleList()
         for idx in range(len(in_channels)):
             self.reduce_layers.append(
@@ -224,11 +223,7 @@ class GhostPAN(nn.Module):
             inner_outs[0] = feat_high
 
             # upsample
-            upsample_feat = jt.nn.interpolate(
-                feat_high, 
-                scale_factor=self.upsample_cfg['scale_factor'], 
-                mode=self.upsample_cfg['mode']
-            )
+            upsample_feat = self.upsample(feat_high)
 
             inner_out = self.top_down_blocks[len(self.in_channels) - 1 - idx](
                 jt.concat([upsample_feat, feat_low], dim=1)

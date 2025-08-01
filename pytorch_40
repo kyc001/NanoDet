@@ -1,0 +1,38 @@
+Loading and preparing results...
+DONE (t=0.57s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=2.68s).
+Accumulating evaluation results...
+DONE (t=0.84s).
+[NanoDet][08-01 23:59:31]INFO:
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.355
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.570
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.368
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.024
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.152
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.472
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.350
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.505
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.535
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.084
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.377
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.657
+
+[NanoDet][08-01 23:59:31]INFO:
+| class       | AP50   | mAP   | class       | AP50   | mAP   |
+|:------------|:-------|:------|:------------|:-------|:------|
+| aeroplane   | 65.1   | 42.9  | bicycle     | 73.5   | 47.4  |
+| bird        | 55.8   | 32.0  | boat        | 36.8   | 18.2  |
+| bottle      | 20.3   | 10.9  | bus         | 52.7   | 39.2  |
+| car         | 63.9   | 43.6  | cat         | 75.0   | 49.9  |
+| chair       | 37.1   | 18.8  | cow         | 50.1   | 30.6  |
+| diningtable | 65.5   | 44.3  | dog         | 69.8   | 44.2  |
+| horse       | 70.2   | 43.9  | motorbike   | 72.0   | 46.8  |
+| person      | 67.7   | 37.0  | pottedplant | 41.2   | 18.7  |
+| sheep       | 34.4   | 20.3  | sofa        | 59.4   | 37.0  |
+| train       | 74.9   | 50.8  | tvmonitor   | 54.2   | 34.0  |
+[NanoDet][08-01 23:59:31]INFO:Saving model to workspace/nanodet-plus-m_320_voc_bs64_50epochs/model_best/nanodet_model_best.pth
+[NanoDet][08-01 23:59:31]INFO:Val_metrics: {'mAP': 0.3551402541260943, 'AP_50': 0.5697570257302259, 'AP_75': 0.36787211096787886, 'AP_small': 0.02373436215514261, 'AP_m': 0.15241982778076704, 'AP_l': 0.4724757137219925}

@@ -114,7 +114,7 @@ class GhostModule(nn.Module):
         x1 = self.primary_conv(x)
         x2 = self.cheap_operation(x1)
         out = jt.concat([x1, x2], dim=1)
-        return out[:, :self.oup, :, :]  # 确保输出通道数正确
+        return out
 
 
 class GhostBottleneck(nn.Module):

@@ -37,9 +37,14 @@ class Integral(nn.Module):
     def __init__(self, reg_max=16):
         super(Integral, self).__init__()
         self.reg_max = reg_max
-        # Register as parameter in Jittor (equivalent to register_buffer in PyTorch)
-        self.project = jt.linspace(0, self.reg_max, self.reg_max + 1)
-        self.project.requires_grad = False  # This should not require gradients
+        # Create project tensor as a constant (not a parameter)
+        # This mimics PyTorch's register_buffer behavior
+        self._project_data = jt.linspace(0, self.reg_max, self.reg_max + 1).data
+
+    @property
+    def project(self):
+        """Get project tensor as a non-parameter tensor"""
+        return jt.array(self._project_data)
 
     def execute(self, x):
         """Forward feature from the regression head to get integral result of

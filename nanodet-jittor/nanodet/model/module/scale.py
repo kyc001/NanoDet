@@ -28,7 +28,8 @@ class Scale(nn.Module):
 
     def __init__(self, scale=1.0):
         super(Scale, self).__init__()
-        self.scale = jt.array([scale])
+        # 创建标量参数，与PyTorch版本保持一致
+        self.scale = jt.array(scale)
 
     def execute(self, x):
         return x * self.scale

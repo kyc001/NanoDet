@@ -69,18 +69,44 @@ _loggers = {}
 
 def get_logger(name="NanoDet", save_dir=None):
     """获取logger实例
-    
+
     Args:
         name (str): Logger名称
         save_dir (str): 日志保存目录
-        
+
     Returns:
         NanoDetLogger: Logger实例
     """
     global _loggers
-    
+
     key = f"{name}_{save_dir}"
     if key not in _loggers:
         _loggers[key] = NanoDetLogger(name, save_dir)
-    
+
     return _loggers[key]
+
+
+def setup_logger(name="NanoDet", save_dir=None, level='INFO'):
+    """设置logger（与get_logger功能相同，为了兼容性）
+
+    Args:
+        name (str): Logger名称
+        save_dir (str): 日志保存目录
+        level (str): 日志级别
+
+    Returns:
+        NanoDetLogger: Logger实例
+    """
+    logger = get_logger(name, save_dir)
+
+    # 设置日志级别
+    if level.upper() == 'DEBUG':
+        logger.logger.setLevel(logging.DEBUG)
+    elif level.upper() == 'INFO':
+        logger.logger.setLevel(logging.INFO)
+    elif level.upper() == 'WARNING':
+        logger.logger.setLevel(logging.WARNING)
+    elif level.upper() == 'ERROR':
+        logger.logger.setLevel(logging.ERROR)
+
+    return logger

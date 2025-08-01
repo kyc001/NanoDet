@@ -12,7 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .logger import get_logger
+from .logger import get_logger, setup_logger
+from .config import Config, load_config, save_config, merge_configs, DEFAULT_CONFIG
+from .checkpoint import save_checkpoint, load_checkpoint, load_pytorch_checkpoint, get_latest_checkpoint
+from .metrics import calculate_map, COCOEvaluator, SimpleEvaluator, calculate_iou, calculate_ap
+
+__all__ = [
+    'get_logger', 'setup_logger',
+    'Config', 'load_config', 'save_config', 'merge_configs', 'DEFAULT_CONFIG',
+    'save_checkpoint', 'load_checkpoint', 'load_pytorch_checkpoint', 'get_latest_checkpoint',
+    'calculate_map', 'COCOEvaluator', 'SimpleEvaluator', 'calculate_iou', 'calculate_ap'
+]
+
+# 版本信息
+__version__ = '1.0.0'
+__author__ = 'NanoDet Jittor Team'
+__description__ = 'NanoDet implementation in Jittor framework'
 
 __all__ = [
     "get_logger",

@@ -283,30 +283,37 @@ class ShuffleNetV2(nn.Module):
                 if 'num_batches_tracked' not in key:  # Skip tracking parameters
                     jittor_state_dict[key] = jt.array(value.numpy())
 
-            # Load weights into model (Jittor doesn't support strict parameter)
+            # Load weights into model - 模拟PyTorch的strict=False行为
+            model_dict = self.state_dict()
+            compatible_dict = {}
             missing_keys = []
             unexpected_keys = []
-            try:
-                self.load_state_dict(jittor_state_dict)
-            except Exception as e:
-                print(f"⚠ Partial weight loading: {e}")
-                # Try to load compatible weights manually
-                model_dict = self.state_dict()
-                compatible_dict = {}
-                for k, v in jittor_state_dict.items():
-                    if k in model_dict and model_dict[k].shape == v.shape:
+
+            # 只加载形状匹配的权重，忽略不匹配的（模拟strict=False）
+            for k, v in jittor_state_dict.items():
+                if k in model_dict:
+                    if model_dict[k].shape == v.shape:
                         compatible_dict[k] = v
                     else:
-                        missing_keys.append(k)
+                        missing_keys.append(f"{k} (shape mismatch: {model_dict[k].shape} vs {v.shape})")
+                else:
+                    unexpected_keys.append(k)
 
-                if compatible_dict:
-                    self.load_state_dict(compatible_dict)
-                    print(f"✓ Loaded {len(compatible_dict)} compatible weights")
+            # 检查模型中有哪些参数没有被加载
+            for k in model_dict.keys():
+                if k not in compatible_dict:
+                    missing_keys.append(f"{k} (not in pretrained)")
 
-            if missing_keys:
-                print(f"Missing keys: {missing_keys[:5]}...")  # Show first 5
-            if unexpected_keys:
-                print(f"Unexpected keys: {unexpected_keys[:5]}...")  # Show first 5
+            # 加载兼容的权重
+            if compatible_dict:
+                # 手动赋值，避免load_state_dict的严格检查
+                for name, param in self.named_parameters():
+                    if name in compatible_dict:
+                        param.assign(compatible_dict[name])
+
+                print(f"✓ Loaded {len(compatible_dict)} compatible weights, {len(missing_keys)} missing")
+            else:
+                print("❌ No compatible weights found")
 
             print("✓ Pretrained weights loaded successfully")
 
