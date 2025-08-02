@@ -51,5 +51,7 @@ nk-yolo-main/
 
 
 nanodet-pytorch/workspace/
+nanodet-jittor/workspace/
+
 
 *.npy
