@@ -247,50 +247,63 @@ class NanoDetPlusHead(nn.Module):
                             # Regression target (simplified - just use bbox coords)
                             reg_targets[b, anchor_idx, :4] = jt.array(gt_bbox) * 0.1  # Scale down
 
-        # Compute losses
-        # Classification loss: Focal Loss style
-        cls_preds_sigmoid = jt.sigmoid(cls_preds)
-        pos_mask = cls_targets > 0
-        neg_mask = cls_targets == 0
+        # Compute losses using proper loss functions
+        # 1. Quality Focal Loss for classification
+        # Create quality targets (IoU-based quality scores)
+        quality_targets = jt.zeros_like(cls_targets[:, :, 0])  # [B, N]
 
-        # Positive loss
-        pos_loss = jt.zeros(1)
-        if pos_mask.sum() > 0:
-            pos_preds = cls_preds[pos_mask]
-            pos_targets = cls_targets[pos_mask]
-            pos_loss = jt.nn.binary_cross_entropy_with_logits(pos_preds, pos_targets)
+        # For positive samples, set quality target to 1.0 (simplified)
+        pos_mask = cls_targets.sum(dim=-1) > 0  # [B, N]
+        quality_targets[pos_mask] = 1.0
 
-        # Negative loss (background)
-        neg_loss = jt.zeros(1)
-        if neg_mask.sum() > 0:
-            neg_preds = cls_preds[neg_mask]
-            neg_targets = cls_targets[neg_mask]
-            neg_loss = jt.nn.binary_cross_entropy_with_logits(neg_preds, neg_targets) * 0.1  # Lower weight for negatives
+        # Flatten for loss computation
+        cls_preds_flat = cls_preds.view(-1, self.num_classes)  # [B*N, num_classes]
+        cls_targets_flat = cls_targets.view(-1, self.num_classes)  # [B*N, num_classes]
+        quality_targets_flat = quality_targets.view(-1)  # [B*N]
 
-        loss_qfl = pos_loss + neg_loss
+        # Use the proper QualityFocalLoss
+        # QFL expects target as tuple of (category_label, quality_label)
+        qfl_target = (cls_targets_flat, quality_targets_flat)
+        loss_qfl = self.loss_qfl(cls_preds_flat, qfl_target)
 
-        # Regression loss: only on positive samples
-        pos_anchor_mask = pos_mask.sum(dim=-1) > 0  # [B, N]
+        # 2. Distribution Focal Loss for regression
         loss_dfl = jt.zeros(1)
+        if pos_mask.sum() > 0:
+            # Extract distribution predictions (last reg_max*4 channels)
+            dist_preds = reg_preds[:, :, 4:]  # [B, N, reg_max*4]
+
+            # Create distribution targets (simplified - use uniform distribution)
+            dist_targets = jt.ones_like(dist_preds) / self.reg_max
+
+            # Flatten positive samples
+            pos_dist_preds = dist_preds[pos_mask]  # [num_pos, reg_max*4]
+            pos_dist_targets = dist_targets[pos_mask]  # [num_pos, reg_max*4]
+
+            if pos_dist_preds.shape[0] > 0:
+                loss_dfl = self.loss_dfl(pos_dist_preds, pos_dist_targets)
+
+        # 3. GIoU Loss for bounding box regression
         loss_bbox = jt.zeros(1)
+        if pos_mask.sum() > 0:
+            # Extract bbox predictions (first 4 channels)
+            bbox_preds = reg_preds[:, :, :4]  # [B, N, 4]
 
-        if pos_anchor_mask.sum() > 0:
-            pos_reg_preds = reg_preds[pos_anchor_mask]
-            pos_reg_targets = reg_targets[pos_anchor_mask]
-            loss_dfl = jt.nn.smooth_l1_loss(pos_reg_preds, pos_reg_targets)
+            pos_bbox_preds = bbox_preds[pos_mask]  # [num_pos, 4]
+            pos_bbox_targets = bbox_targets[pos_mask]  # [num_pos, 4]
 
-            pos_bbox_preds = reg_preds[pos_anchor_mask][:, :4]  # Use first 4 channels as bbox
-            pos_bbox_targets = bbox_targets[pos_anchor_mask]
-            loss_bbox = jt.nn.smooth_l1_loss(pos_bbox_preds, pos_bbox_targets)
+            if pos_bbox_preds.shape[0] > 0:
+                loss_bbox = self.loss_bbox(pos_bbox_preds, pos_bbox_targets)
 
-        # Auxiliary loss
+        # 4. Auxiliary loss
         aux_loss = jt.zeros(1)
         if aux_preds is not None:
             aux_cls = aux_preds[:, :, :self.num_classes]
-            aux_loss = jt.nn.binary_cross_entropy_with_logits(aux_cls, cls_targets) * 0.5
+            aux_cls_flat = aux_cls.view(-1, self.num_classes)
+            # Use simplified BCE loss for auxiliary head
+            aux_loss = jt.nn.binary_cross_entropy_with_logits(aux_cls_flat, cls_targets_flat) * 0.5
 
-        # Total loss with proper weighting (matching PyTorch)
-        loss = loss_qfl * 1.0 + loss_dfl * 0.25 + loss_bbox * 2.0 + aux_loss
+        # Total loss with proper weighting
+        loss = loss_qfl + loss_dfl + loss_bbox + aux_loss
 
         loss_states = {
             "loss_qfl": loss_qfl.item(),

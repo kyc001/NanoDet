@@ -51,15 +51,23 @@ class Config:
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
         return self._config.copy()
-    
+
+    def copy(self) -> 'Config':
+        """复制配置对象"""
+        return Config(self._config.copy())
+
+    def pop(self, key: str, default=None) -> Any:
+        """弹出并返回指定键的值"""
+        return self._config.pop(key, default)
+
     def keys(self):
         """获取所有键"""
         return self._config.keys()
-    
+
     def items(self):
         """获取所有键值对"""
         return self._config.items()
-    
+
     def __repr__(self) -> str:
         return f"Config({self._config})"
 

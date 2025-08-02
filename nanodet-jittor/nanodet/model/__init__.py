@@ -27,12 +27,31 @@ def build_model(cfg):
         nn.Module: Built model.
     """
     model_cfg = cfg.copy()
-    arch_name = model_cfg.pop("name")
 
-    if arch_name == "NanoDetPlus":
-        return NanoDetPlus(**model_cfg)
+    # 检查是否有arch字段（PyTorch版本的结构）
+    if hasattr(model_cfg, 'arch') and model_cfg.arch is not None:
+        arch_cfg = model_cfg.arch.copy()
+        arch_name = arch_cfg.pop("name")
+
+        # 过滤掉不需要的字段
+        filtered_cfg = {}
+        valid_keys = ['backbone', 'fpn', 'head', 'aux_head', 'detach_epoch']
+        for key in valid_keys:
+            if hasattr(arch_cfg, key):
+                filtered_cfg[key] = getattr(arch_cfg, key)
+
+        if arch_name == "NanoDetPlus":
+            return NanoDetPlus(**filtered_cfg)
+        else:
+            raise NotImplementedError(f"Model {arch_name} not implemented")
     else:
-        raise NotImplementedError(f"Model {arch_name} not implemented")
+        # 直接从model_cfg中获取name（简化版本）
+        arch_name = model_cfg.pop("name", None)
+
+        if arch_name == "NanoDetPlus":
+            return NanoDetPlus(**model_cfg)
+        else:
+            raise NotImplementedError(f"Model {arch_name} not implemented")
 
 __all__ = [
     "build_backbone",

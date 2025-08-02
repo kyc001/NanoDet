@@ -262,3 +262,18 @@ ImageNet预训练权重没有意义，可以忽略了，直接用jittor加载pyt
 加载的权重错了吧init weights...
 => loading pretrained model https://download.pytorch.org/models/shufflenetv2_x1-5666bf0f80.pth
 应该是/home/kyc/project/nanodet/nanodet-pytorch/workspace/nanodet-plus-m_320_voc_bs64/model_best/model_best.ckpt
+
+
+
+
+
+
+
+
+你用的是虚拟数据，mAP也是粗糙的，你必须用真实数据评估啊！！修复配置文件导入问题！！！
+
+我选择了nanodet模型进行jittor框架迁移。使用的是pascal VOC 2007 数据集， 转化为COCO格式了
+已经完成的任务：pytorch加载Imagenet预训练权重在voc数据集上进行50轮微调训练，mAP显著上升。
+尚未完成任务：jittor版本模型架构尚未完全实现，我用的agent coding总会偷偷简化一部分，有时候是使用虚拟数据，有时候是简化损失函数，且甚至不确定能否正确加载权重，正确对应参数。
+希望：使用一样的训练参数完成jittor的50轮微调训练，实现权重转换脚本，最后完成实验对比。
+我该怎么做？

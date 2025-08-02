@@ -53,14 +53,18 @@ class NanoDetLogger:
     def info(self, message):
         """输出INFO级别日志"""
         self.logger.info(message)
-    
+
     def warning(self, message):
         """输出WARNING级别日志"""
         self.logger.warning(message)
-    
+
     def error(self, message):
         """输出ERROR级别日志"""
         self.logger.error(message)
+
+    def debug(self, message):
+        """输出DEBUG级别日志"""
+        self.logger.debug(message)
 
 
 # 全局logger实例
