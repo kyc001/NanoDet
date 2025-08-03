@@ -1,65 +1,60 @@
+# JITTOR MIGRATION: 导入所需的标准库
 import os
 import platform
 import warnings
 
-import torch.multiprocessing as mp
+# JITTOR MIGRATION: 将 torch.multiprocessing 替换为 Python 内置的 multiprocessing
+import multiprocessing as mp
 
 
 def set_multi_processing(
     mp_start_method: str = "fork", opencv_num_threads: int = 0, distributed: bool = True
 ) -> None:
-    """Set multi-processing related environment.
-
-    This function is refered from https://github.com/open-mmlab/mmengine/blob/main/mmengine/utils/dl_utils/setup_env.py
+    """设置多进程相关的环境。
+    
+    此函数从 PyTorch 环境迁移而来，适用于 Jittor，因为它依赖于
+    Python 标准的多进程和环境变量设置。
 
     Args:
-        mp_start_method (str): Set the method which should be used to start
-            child processes. Defaults to 'fork'.
-        opencv_num_threads (int): Number of threads for opencv.
-            Defaults to 0.
-        distributed (bool): True if distributed environment.
-            Defaults to False.
-    """  # noqa
-    # set multi-process start method as `fork` to speed up the training
+        mp_start_method (str): 设置启动子进程的方法。默认为 'fork'。
+        opencv_num_threads (int): OpenCV 的线程数。默认为 0。
+        distributed (bool): 是否为分布式环境。默认为 True。
+    """
+    # 设置多进程启动方法为 `fork` 以加速训练
     if platform.system() != "Windows":
         current_method = mp.get_start_method(allow_none=True)
         if current_method is not None and current_method != mp_start_method:
             warnings.warn(
-                f"Multi-processing start method `{mp_start_method}` is "
-                f"different from the previous setting `{current_method}`."
-                f"It will be force set to `{mp_start_method}`. You can "
-                "change this behavior by changing `mp_start_method` in "
-                "your config."
+                f"多进程启动方法 `{mp_start_method}` 与之前的设置 "
+                f"`{current_method}` 不同。将强制设置为 `{mp_start_method}`。 "
+                "您可以通过修改配置中的 `mp_start_method` 来更改此行为。"
             )
         mp.set_start_method(mp_start_method, force=True)
 
     try:
         import cv2
 
-        # disable opencv multithreading to avoid system being overloaded
+        # 禁用 OpenCV 多线程以避免系统过载
         cv2.setNumThreads(opencv_num_threads)
     except ImportError:
         pass
 
-    # setup OMP threads
-    # This code is referred from https://github.com/pytorch/pytorch/blob/master/torch/distributed/run.py  # noqa
+    # 设置 OMP 线程数
     if "OMP_NUM_THREADS" not in os.environ and distributed:
         omp_num_threads = 1
         warnings.warn(
-            "Setting OMP_NUM_THREADS environment variable for each process"
-            f" to be {omp_num_threads} in default, to avoid your system "
-            "being overloaded, please further tune the variable for "
-            "optimal performance in your application as needed."
+            "默认将每个进程的 OMP_NUM_THREADS 环境变量设置为 "
+            f"{omp_num_threads}，以避免系统过载。请根据需要进一步调整该变量 "
+            "以获得最佳性能。"
         )
         os.environ["OMP_NUM_THREADS"] = str(omp_num_threads)
 
-    # setup MKL threads
+    # 设置 MKL 线程数
     if "MKL_NUM_THREADS" not in os.environ and distributed:
         mkl_num_threads = 1
         warnings.warn(
-            "Setting MKL_NUM_THREADS environment variable for each process"
-            f" to be {mkl_num_threads} in default, to avoid your system "
-            "being overloaded, please further tune the variable for "
-            "optimal performance in your application as needed."
+            "默认将每个进程的 MKL_NUM_THREADS 环境变量设置为 "
+            f"{mkl_num_threads}，以避免系统过载。请根据需要进一步调整该变量 "
+            "以获得最佳性能。"
         )
         os.environ["MKL_NUM_THREADS"] = str(mkl_num_threads)

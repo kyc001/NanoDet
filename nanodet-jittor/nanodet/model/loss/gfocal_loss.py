@@ -14,20 +14,25 @@ def quality_focal_loss(pred, target, beta=2.0):
     # [遷移] .new_zeros -> jt.zeros_like
     zerolabel = jt.zeros_like(pred)
     # [遷移] F.binary_cross_entropy_with_logits -> jt.nn.binary_cross_entropy_with_logits
+    # Jittor 中此函數不接受 reduction 參數，預設行為就是 'none'
     loss = jt.nn.binary_cross_entropy_with_logits(
-        pred, zerolabel, reduction="none"
+        pred, zerolabel
     ) * scale_factor.pow(beta)
 
     # [遷移] .size(1) -> .shape[1]
     bg_class_ind = pred.shape[1]
-    # [遷移] torch.nonzero(...) -> jt.nonzero(...)[0]
-    pos = jt.nonzero((label >= 0) & (label < bg_class_ind))[0]
+    # [遷移] torch.nonzero(...) -> jt.nonzero(...), 並處理返回形狀
+    pos_search = ((label >= 0) & (label < bg_class_ind)).nonzero()
+    if pos_search.numel() == 0:
+        return loss.sum(dim=1, keepdims=False)
+    
+    pos = pos_search[:, 0]
     # [遷移] .long() -> .int64()
     pos_label = label[pos].int64()
     
     scale_factor = score[pos] - pred_sigmoid[pos, pos_label]
     loss[pos, pos_label] = jt.nn.binary_cross_entropy_with_logits(
-        pred[pos, pos_label], score[pos], reduction="none"
+        pred[pos, pos_label], score[pos]
     ) * scale_factor.abs().pow(beta)
 
     loss = loss.sum(dim=1, keepdims=False)

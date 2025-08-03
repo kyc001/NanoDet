@@ -47,7 +47,13 @@ class DynamicSoftLabelAssigner(BaseAssigner):
         deltas = jt.concat([lt_, rb_], dim=-1)
         # .min(...).values -> .min(...)[0]
         is_in_gts = deltas.min(dim=-1)[0] > 0
-        valid_mask = is_in_gts.sum(dim=1) > 0
+        # Jittor Fix: 处理 is_in_gts 可能为一维向量的情况
+        if is_in_gts.ndim > 1:
+            # 如果是二维或更高维，正常在 dim=1 上求和
+            valid_mask = is_in_gts.sum(dim=1) > 0
+        else:
+            # 如果是一维（表示只有一个真实标注框），直接比较
+            valid_mask = is_in_gts > 0
 
         valid_decoded_bbox = decoded_bboxes[valid_mask]
         valid_pred_scores = pred_scores[valid_mask]

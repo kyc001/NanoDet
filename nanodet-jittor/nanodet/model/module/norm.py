@@ -3,7 +3,7 @@ from jittor import nn
 norm_cfg = {
     # format: layer_type: (abbreviation, module)
     "BN": ("bn", nn.BatchNorm2d),
-    "SyncBN": ("bn", nn.SyncBatchNorm),
+"SyncBN": ("bn", nn.BatchNorm),
     "GN": ("gn", nn.GroupNorm),
     # and potentially 'SN'
 }

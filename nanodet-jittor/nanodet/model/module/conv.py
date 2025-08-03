@@ -1,3 +1,4 @@
+# JITTOR MIGRATION & FIX by Google LLC.
 import warnings
 
 import numpy as np
@@ -42,16 +43,6 @@ class ConvModule(nn.Module):
             in_channels, out_channels, kernel_size, stride=stride,
             padding=padding, dilation=dilation, groups=groups, bias=bias)
         
-        self.in_channels = self.conv.in_channels
-        self.out_channels = self.conv.out_channels
-        self.kernel_size = self.conv.kernel_size
-        self.stride = self.conv.stride
-        self.padding = self.conv.padding
-        self.dilation = self.conv.dilation
-        self.transposed = self.conv.transposed
-        self.output_padding = self.conv.output_padding
-        self.groups = self.conv.groups
-
         # build normalization layers
         if self.with_norm:
             if order.index("norm") > order.index("conv"):
@@ -118,15 +109,6 @@ class DepthwiseConvModule(nn.Module):
             padding=padding, dilation=dilation, groups=in_channels, bias=bias)
         self.pointwise = nn.Conv(
             in_channels, out_channels, kernel_size=1, stride=1, padding=0, bias=bias)
-
-        self.in_channels = self.depthwise.in_channels
-        self.out_channels = self.pointwise.out_channels
-        self.kernel_size = self.depthwise.kernel_size
-        self.stride = self.depthwise.stride
-        self.padding = self.depthwise.padding
-        self.dilation = self.depthwise.dilation
-        self.transposed = self.depthwise.transposed
-        self.output_padding = self.depthwise.output_padding
 
         if self.with_norm:
             _, self.dwnorm = build_norm_layer(norm_cfg, in_channels)
@@ -209,8 +191,8 @@ class RepVGGConvModule(nn.Module):
         if kernel1x1 is None:
             return 0
         else:
-            # PyTorch pad [1,1,1,1] -> Jittor pad [0,0, 0,0, 1,1, 1,1] for NCHW
-            return jt.nn.pad(kernel1x1, [0,0, 0,0, 1,1, 1,1])
+            # Jittor's pad for 4D NCHW format is (left, right, top, bottom) for the last two dims
+            return nn.pad(kernel1x1, (1, 1, 1, 1))
 
     def _fuse_bn_tensor(self, branch):
         if branch is None: return 0, 0

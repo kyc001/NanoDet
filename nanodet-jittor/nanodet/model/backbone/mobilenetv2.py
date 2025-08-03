@@ -1,6 +1,6 @@
+from __future__ import absolute_import, division, print_function
 import jittor as jt
 from jittor import init
-from __future__ import absolute_import, division, print_function
 import warnings
 from jittor import nn
 from ..module.activation import act_layers

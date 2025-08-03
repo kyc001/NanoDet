@@ -164,8 +164,18 @@ class NanoDetPlusHead(nn.Module):
             cls_preds, (labels, label_scores),
             weight=label_weights, avg_factor=num_total_samples)
 
-        # [遷移] torch.nonzero(...) -> jt.nonzero(...)[0]
-        pos_inds = jt.nonzero((labels >= 0) & (labels < self.num_classes))[0]
+        # ---------- FIX START ----------
+        # [修復] 處理沒有正樣本時的情況，避免索引錯誤。
+        # 原始碼: pos_inds = jt.nonzero((labels >= 0) & (labels < self.num_classes))[0]
+        # 當沒有正樣本時，nonzero 返回空張量，[0] 會導致 slice overflow 錯誤。
+        pos_inds_search = jt.nonzero((labels >= 0) & (labels < self.num_classes))
+        if pos_inds_search.numel() > 0:
+            # Jittor 的 nonzero 對於一維輸入返回 (N, 1) 的張量，因此需要切片 [:, 0] 來獲取所有索引。
+            pos_inds = pos_inds_search[:, 0]
+        else:
+            # 如果沒有正樣本，創建一個空的索引張量。
+            pos_inds = jt.empty((0,), dtype='int64')
+        # ---------- FIX END ----------
 
         if len(pos_inds) > 0:
             weight_targets = cls_preds[pos_inds].detach().sigmoid().max(dim=1)[0]
@@ -228,17 +238,40 @@ class NanoDetPlusHead(nn.Module):
                 dist_targets, num_pos_per_img)
 
     def sample(self, assign_result, gt_bboxes):
-        pos_inds = jt.nonzero(assign_result.gt_inds > 0)[0].unique()
-        neg_inds = jt.nonzero(assign_result.gt_inds == 0)[0].unique()
-        pos_assigned_gt_inds = assign_result.gt_inds[pos_inds] - 1
+        """
+        對分配結果進行取樣，區分正負樣本。
+        此版本修正了處理無正樣本圖片時的執行階段錯誤。
+        """
+        num_bboxes = assign_result.gt_inds.shape[0]
+        
+        # 尋找被分配到真實標註框的錨點索引
+        pos_inds_search = jt.nonzero(assign_result.gt_inds > 0)
 
-        if gt_bboxes.numel() == 0:
-            assert pos_assigned_gt_inds.numel() == 0
-            pos_gt_bboxes = jt.empty_like(gt_bboxes).reshape(-1, 4)
+        if pos_inds_search.numel() == 0:
+            # 如果沒有找到任何正樣本
+            pos_inds = jt.empty((0,), dtype=jt.int64)
+            neg_inds = jt.arange(num_bboxes)
+            pos_gt_bboxes = jt.empty((0, 4), dtype=jt.float32)
+            pos_assigned_gt_inds = jt.empty((0,), dtype=jt.int64)
         else:
-            if len(gt_bboxes.shape) < 2:
-                gt_bboxes = gt_bboxes.reshape(-1, 4)
-            pos_gt_bboxes = gt_bboxes[pos_assigned_gt_inds, :]
+            # 如果有正樣本，則正常處理
+            # Jittor 的 nonzero 返回 (n, ndim) 形狀的張量，所以我們需要切片 [:, 0]
+            pos_inds = pos_inds_search[:, 0].unique()
+            
+            # 尋找未被分配的錨點索引（負樣本）
+            neg_inds_search = jt.nonzero(assign_result.gt_inds == 0)
+            if neg_inds_search.numel() == 0:
+                neg_inds = jt.empty((0,), dtype=jt.int64)
+            else:
+                neg_inds = neg_inds_search[:, 0].unique()
+
+            # 獲取與正樣本錨點對應的真實標註框
+            pos_assigned_gt_inds = assign_result.gt_inds[pos_inds] - 1
+            if gt_bboxes.numel() == 0:
+                pos_gt_bboxes = jt.empty((0, 4), dtype=jt.float32)
+            else:
+                pos_gt_bboxes = gt_bboxes[pos_assigned_gt_inds.int64()]
+                
         return pos_inds, neg_inds, pos_gt_bboxes, pos_assigned_gt_inds
 
     def post_process(self, preds, meta):

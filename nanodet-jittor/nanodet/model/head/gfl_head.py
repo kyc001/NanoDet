@@ -1,5 +1,4 @@
 # GFLHead and its dependencies migrated from PyTorch to Jittor
-# Author: Gemini
 
 import math
 import cv2
@@ -36,14 +35,25 @@ class Integral(nn.Module):
     def __init__(self, reg_max=16):
         super(Integral, self).__init__()
         self.reg_max = reg_max
-        self.project = jt.linspace(0, self.reg_max, self.reg_max + 1)
+        # Jittor Fix: 使用 stop_grad() 將其定義為一個不可訓練的 buffer
+        self.project = jt.linspace(0, self.reg_max, self.reg_max + 1).stop_grad()
 
     def execute(self, x):
         """Forward feature from the regression head to get integral result."""
         shape = x.shape
+        # x 的形狀類似 (N, C, H, W, 4 * (reg_max + 1))
+        # 將最後一維拆分為 (4, reg_max + 1)
         reshaped_x = x.reshape(shape[:-1] + (4, self.reg_max + 1))
         softmax_x = jt.nn.softmax(reshaped_x, dim=-1)
-        projected_x = jt.nn.linear(softmax_x, self.project.cast(x.dtype))
+        
+        # Jittor Fix: 將 self.project 從 (reg_max+1,) 重塑為 (1, reg_max+1)
+        # 以滿足 jt.nn.linear 對權重必須是二維矩陣的要求。
+        weight = self.project.reshape(1, -1)
+        
+        # 使用重塑後的權重進行線性變換
+        projected_x = jt.nn.linear(softmax_x, weight.cast(x.dtype))
+        
+        # 將結果的形狀還原為 (..., 4)
         return projected_x.reshape(shape[:-1] + (4,))
 
 

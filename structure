@@ -86,14 +86,22 @@ import os
 
 
 
-cd /home/kyc/project/nanodet/nanodet-jittor
-
-# 单GPU训练
-python tools/train.py config/nanodet-plus-m_320_voc_bs64_50epochs.yml
-
-
 
 cd /home/kyc/project/nanodet/nanodet-jittor
 
 # 单GPU训练
+
+
+
+
 python tools/train.py config/nanodet-plus-m_320_voc_bs64_50epochs.yml
+
+
+
+
+
+
+/home/kyc/project/nanodet/nanodet-jittor/nanodet/model/module/conv.py
+/home/kyc/project/nanodet/nanodet-jittor/nanodet/model/weight_averager/__init__.py
+/home/kyc/project/nanodet/nanodet-jittor/nanodet/optim/builder.py, line 29, in build_optimizer
+/home/kyc/project/nanodet/nanodet-jittor/nanodet/model/head/gfl_head.py
