@@ -277,3 +277,23 @@ ImageNet预训练权重没有意义，可以忽略了，直接用jittor加载pyt
 尚未完成任务：jittor版本模型架构尚未完全实现，我用的agent coding总会偷偷简化一部分，有时候是使用虚拟数据，有时候是简化损失函数，且甚至不确定能否正确加载权重，正确对应参数。
 希望：使用一样的训练参数完成jittor的50轮微调训练，实现权重转换脚本，最后完成实验对比。
 我该怎么做？
+
+
+
+
+
+
+
+conda activate nano
+
+
+
+
+cd /home/kyc/project/nanodet/nanodet-jittor
+python tools/train.py config/nanodet-plus-m_320_voc_bs64_50epochs.yml
+
+
+
+
+cd /home/kyc/project/nanodet/nanodet-pytorch
+python tools/train.py config/nanodet-plus-m_320_voc_bs64_50epochs.yml

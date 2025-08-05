@@ -43,3 +43,7 @@ def constant_init(module, val, bias=0):
         nn.init.constant_(module.weight, val)
     if hasattr(module, "bias") and module.bias is not None:
         nn.init.constant_(module.bias, bias)
+
+def bias_init_with_prob(prior_prob):
+    """Initialize bias with prior probability."""
+    return -jt.log((1 - prior_prob) / prior_prob)

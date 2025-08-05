@@ -19,7 +19,7 @@ class NanoDetPlus(OneStageDetector):
         fpn_feat = self.fpn(feat)
         if (self.epoch >= self.detach_epoch):
             aux_fpn_feat = self.aux_fpn([f.detach() for f in feat])
-            dual_fpn_feat = (jt.contrib.concat([f.detach(), aux_f], dim=1) for (f, aux_f) in zip(fpn_feat, aux_fpn_feat))
+            dual_fpn_feat = [jt.contrib.concat([f.detach(), aux_f], dim=1) for (f, aux_f) in zip(fpn_feat, aux_fpn_feat)]
         else:
             aux_fpn_feat = self.aux_fpn(feat)
             dual_fpn_feat = (jt.contrib.concat([f, aux_f], dim=1) for (f, aux_f) in zip(fpn_feat, aux_fpn_feat))

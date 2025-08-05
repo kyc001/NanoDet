@@ -1,8 +1,8 @@
 # JITTOR MIGRATION: 导入 jittor 库
 import jittor as jt
 
-
 def distance2bbox(points, distance, max_shape=None):
+    return 
     """将距离预测解码为边界框。
 
     Args:

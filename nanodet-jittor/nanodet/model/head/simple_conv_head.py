@@ -1,5 +1,6 @@
-import jittor as jt
+import jittor
 import jittor.nn as nn
+import jtorch as torch
 
 from ..module.conv import ConvModule
 from ..module.init_weights import normal_init
@@ -7,7 +8,6 @@ from ..module.scale import Scale
 
 
 class SimpleConvHead(nn.Module):
-    """SimpleConvHead (Jittor Version)"""
     def __init__(
         self,
         num_classes,
@@ -28,6 +28,7 @@ class SimpleConvHead(nn.Module):
         self.stacked_convs = stacked_convs
         self.strides = strides
         self.reg_max = reg_max
+
         self.conv_cfg = conv_cfg
         self.norm_cfg = norm_cfg
         self.activation = activation
@@ -37,8 +38,7 @@ class SimpleConvHead(nn.Module):
         self.init_weights()
 
     def _init_layers(self):
-        # [遷移] inplace=True 在 Jittor 中由編譯器自動優化，無需設置
-        self.relu = nn.ReLU()
+        self.relu = nn.ReLU(inplace=True)
         self.cls_convs = nn.ModuleList()
         self.reg_convs = nn.ModuleList()
         for i in range(self.stacked_convs):
@@ -67,11 +67,10 @@ class SimpleConvHead(nn.Module):
                     activation=self.activation,
                 )
             )
-        # [遷移] nn.Conv2d -> nn.Conv
-        self.gfl_cls = nn.Conv(
+        self.gfl_cls = nn.Conv2d(
             self.feat_channels, self.cls_out_channels, 3, padding=1
         )
-        self.gfl_reg = nn.Conv(
+        self.gfl_reg = nn.Conv2d(
             self.feat_channels, 4 * (self.reg_max + 1), 3, padding=1
         )
         self.scales = nn.ModuleList([Scale(1.0) for _ in self.strides])
@@ -85,7 +84,6 @@ class SimpleConvHead(nn.Module):
         normal_init(self.gfl_cls, std=0.01, bias=bias_cls)
         normal_init(self.gfl_reg, std=0.01)
 
-    # [遷移] forward -> execute
     def execute(self, feats):
         outputs = []
         for x, scale in zip(feats, self.scales):
@@ -96,11 +94,8 @@ class SimpleConvHead(nn.Module):
             for reg_conv in self.reg_convs:
                 reg_feat = reg_conv(reg_feat)
             cls_score = self.gfl_cls(cls_feat)
-            # [遷移] .float() -> .float32()
-            bbox_pred = scale(self.gfl_reg(reg_feat)).float32()
-            # [遷移] torch.cat -> jt.concat
-            output = jt.concat([cls_score, bbox_pred], dim=1)
-            # [遷移] .flatten(start_dim=2) -> .flatten(2)
+            bbox_pred = scale(self.gfl_reg(reg_feat)).float()
+            output = torch.cat([cls_score, bbox_pred], dim=1)
             outputs.append(output.flatten(start_dim=2))
-        outputs = jt.concat(outputs, dim=2).permute(0, 2, 1)
+        outputs = torch.cat(outputs, dim=2).permute(0, 2, 1)
         return outputs
