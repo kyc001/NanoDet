@@ -297,3 +297,8 @@ python tools/train.py config/nanodet-plus-m_320_voc_bs64_50epochs.yml
 
 cd /home/kyc/project/nanodet/nanodet-pytorch
 python tools/train.py config/nanodet-plus-m_320_voc_bs64_50epochs.yml
+
+
+
+python -m jittor.test.test_example
+

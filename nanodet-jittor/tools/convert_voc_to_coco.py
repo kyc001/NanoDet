@@ -20,8 +20,8 @@ VOC_CLASSES = [
     'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor'
 ]
 
-# 创建类别ID映射
-CLASS_TO_ID = {cls_name: i + 1 for i, cls_name in enumerate(VOC_CLASSES)}
+# 创建类别ID映射 - 修复：使用 0-19 而不是 1-20
+CLASS_TO_ID = {cls_name: i for i, cls_name in enumerate(VOC_CLASSES)}
 
 
 def parse_voc_annotation(xml_path):

@@ -201,8 +201,8 @@ class GFLHead(nn.Module):
             num_total_neg,
         ) = cls_reg_targets
 
-        num_total_samples = reduce_mean(torch.tensor(num_total_pos).to(device)).item()
-        num_total_samples = max(num_total_samples, 1.0)
+        # 修复：避免使用 .item() 破坏计算图
+        num_total_samples = jt.clamp(reduce_mean(jt.array(num_total_pos)), min_v=1.0)
 
         losses_qfl, losses_bbox, losses_dfl, avg_factor = multi_apply(
             self.loss_single,
@@ -217,7 +217,8 @@ class GFLHead(nn.Module):
         )
 
         avg_factor = sum(avg_factor)
-        avg_factor = reduce_mean(avg_factor).item()
+        # 修复：避免使用 .item() 破坏计算图
+        avg_factor = reduce_mean(avg_factor)
         if avg_factor <= 0:
             loss_qfl = torch.tensor(0, dtype=torch.float32, requires_grad=True).to(
                 device

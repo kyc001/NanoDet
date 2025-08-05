@@ -81,7 +81,7 @@ class ConvModule(nn.Module):
         return x
 
 class DepthwiseConvModule(nn.Module):
-    """DepthwiseConvModule (Jittor Version)."""
+    """DepthwiseConvModule (Jittor Version) - 使用 jittordet ConvModule 实现."""
     def __init__(
         self, in_channels, out_channels, kernel_size, stride=1,
         padding=0, dilation=1, bias="auto", norm_cfg=dict(type="BN"),
@@ -104,37 +104,122 @@ class DepthwiseConvModule(nn.Module):
         if self.with_norm and self.with_bias:
             warnings.warn("ConvModule has norm and bias at the same time")
 
-        self.depthwise = nn.Conv(
-            in_channels, in_channels, kernel_size, stride=stride,
-            padding=padding, dilation=dilation, groups=in_channels, bias=bias)
-        self.pointwise = nn.Conv(
-            in_channels, out_channels, kernel_size=1, stride=1, padding=0, bias=bias)
+        # 🔧 正确方案：创建真正的 depthwise 卷积参数
+        print("🚀 使用正确的 Depthwise Separable 卷积实现")
 
+        # 创建 depthwise 卷积的权重和偏置
+        # 每个输入通道对应一个独立的卷积核
+        self.depthwise_weight = nn.Parameter(
+            jt.randn(in_channels, 1, kernel_size, kernel_size)
+        )
+
+        if bias:
+            self.depthwise_bias = nn.Parameter(jt.zeros(in_channels))
+        else:
+            self.depthwise_bias = None
+
+        # 存储卷积参数
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+        self.dilation = dilation
+
+        # Pointwise 卷积：1x1 卷积调整通道数
+        self.pointwise = nn.Conv2d(
+            in_channels, out_channels, kernel_size=1,
+            stride=1, padding=0, bias=bias
+        )
+
+        self._use_custom_depthwise = True
+
+        # 批归一化层 - 精确复现 PyTorch 版本
         if self.with_norm:
-            _, self.dwnorm = build_norm_layer(norm_cfg, in_channels)
-            _, self.pwnorm = build_norm_layer(norm_cfg, out_channels)
+            _, self.dwnorm = build_norm_layer(norm_cfg, in_channels)   # depthwise 后的 norm
+            _, self.pwnorm = build_norm_layer(norm_cfg, out_channels)  # pointwise 后的 norm
 
+        # 激活函数 - 精确复现 PyTorch 版本
         if self.activation:
             self.act = act_layers(self.activation)
+
+        # 导出属性 - 精确复现 PyTorch 版本
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+        self.dilation = dilation
 
         self.init_weights()
 
     def init_weights(self):
         nonlinearity = "leaky_relu" if self.activation == "LeakyReLU" else "relu"
-        kaiming_init(self.depthwise, nonlinearity=nonlinearity)
+
+        # 正确的 depthwise 卷积初始化
+        nn.init.kaiming_normal_(self.depthwise_weight, mode='fan_out', nonlinearity=nonlinearity)
+
+        # Pointwise 卷积初始化
         kaiming_init(self.pointwise, nonlinearity=nonlinearity)
+
+        # 批归一化层初始化
         if self.with_norm:
             constant_init(self.dwnorm, 1, bias=0)
             constant_init(self.pwnorm, 1, bias=0)
 
     def execute(self, x, norm=True):
+        # 使用完全自定义的 depthwise separable 卷积实现
         for layer_name in self.order:
-            if layer_name != "act":
-                layer = getattr(self, layer_name)
-                x = layer(x)
+            if layer_name == "depthwise":
+                # 🚀 自定义 depthwise 卷积实现
+                x = self._custom_depthwise_conv(x)
+            elif layer_name == "pointwise":
+                x = self.pointwise(x)  # 1x1 Conv2d
+            elif layer_name == "dwnorm" and norm and self.with_norm:
+                x = self.dwnorm(x)
+            elif layer_name == "pwnorm" and norm and self.with_norm:
+                x = self.pwnorm(x)
             elif layer_name == "act" and self.activation:
                 x = self.act(x)
         return x
+
+    def _custom_depthwise_conv(self, x):
+        """
+        正确的 depthwise 卷积实现
+        手动实现 depthwise 卷积逻辑，避免使用 groups 参数
+        """
+        # x shape: [batch, channels, height, width]
+        batch_size, channels, height, width = x.shape
+
+        # 手动实现 depthwise 卷积
+        # 对每个通道独立进行卷积
+        outputs = []
+
+        for i in range(channels):
+            # 提取第 i 个通道: [batch, 1, height, width]
+            channel_input = x[:, i:i+1, :, :]
+
+            # 获取第 i 个通道的卷积核: [1, 1, k, k]
+            channel_weight = self.depthwise_weight[i:i+1, :, :, :]
+
+            # 对单个通道进行卷积
+            channel_output = jt.nn.conv2d(
+                channel_input, channel_weight,
+                bias=None,  # bias 稍后统一添加
+                stride=self.stride,
+                padding=self.padding,
+                dilation=self.dilation
+            )
+            outputs.append(channel_output)
+
+        # 合并所有通道: [batch, channels, height, width]
+        result = jt.concat(outputs, dim=1)
+
+        # 添加 bias（如果有）
+        if self.depthwise_bias is not None:
+            # bias shape: [channels] -> [1, channels, 1, 1]
+            bias = self.depthwise_bias.view(1, -1, 1, 1)
+            result = result + bias
+
+        return result
 
 class RepVGGConvModule(nn.Module):
     """RepVGG Conv Block (Jittor Version)."""

@@ -113,6 +113,22 @@ class TrainingTask(jt.Module):
                 )
             self.info(log_msg)
 
+            # 🔧 增强日志：添加详细的训练进度信息
+            if trainer.global_step % (self.cfg.log.interval * 5) == 0:  # 每5个日志间隔显示一次详细信息
+                total_steps = trainer.num_training_batches
+                progress = (batch_idx + 1) / total_steps * 100
+                eta_steps = total_steps - batch_idx - 1
+
+                print(f"📊 详细进度 - Epoch {trainer.current_epoch + 1}/{self.cfg.schedule.total_epochs}")
+                print(f"  步骤: {batch_idx + 1}/{total_steps} ({progress:.1f}%)")
+                print(f"  剩余步骤: {eta_steps}")
+                print(f"  损失详情:")
+                for loss_name, loss_value in loss_states.items():
+                    loss_val = loss_value.mean().item()
+                    print(f"    {loss_name}: {loss_val:.6f}")
+                print(f"  学习率: {lr:.2e}")
+                print("─" * 50)
+
         return loss
 
     def validation_step(self, batch, batch_idx, trainer):

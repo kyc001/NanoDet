@@ -22,20 +22,36 @@ def quality_focal_loss(pred, target, beta=2.0):
     # [遷移] .size(1) -> .shape[1]
     bg_class_ind = pred.shape[1]
     # [遷移] torch.nonzero(...) -> jt.nonzero(...), 並處理返回形狀
-    pos_search = ((label >= 0) & (label < bg_class_ind)).nonzero()
-    if pos_search.numel() == 0:
+    # 🔧 修复：Jittor 中需要先 flatten 再找正样本
+    label_flat = label.flatten()
+    score_flat = score.flatten()
+    pred_flat = pred.view(-1, pred.shape[-1])  # [N, num_classes]
+    pred_sigmoid_flat = pred_sigmoid.view(-1, pred_sigmoid.shape[-1])
+    loss_flat = loss.view(-1, loss.shape[-1])
+
+    pos_mask = (label_flat >= 0) & (label_flat < bg_class_ind)
+    if not pos_mask.any():
         return loss.sum(dim=1, keepdims=False)
-    
-    pos = pos_search[:, 0]
-    # [遷移] .long() -> .int64()
-    pos_label = label[pos].int64()
-    
-    scale_factor = score[pos] - pred_sigmoid[pos, pos_label]
-    loss[pos, pos_label] = jt.nn.binary_cross_entropy_with_logits(
-        pred[pos, pos_label], score[pos]
+
+    pos_indices = pos_mask.nonzero().squeeze(-1)  # [num_pos]
+    pos_labels = label_flat[pos_indices].int64()  # [num_pos]
+    pos_scores = score_flat[pos_indices]  # [num_pos]
+
+    # 🔧 修复：使用高级索引获取对应位置的预测值
+    pos_pred_sigmoid = pred_sigmoid_flat[pos_indices, pos_labels]  # [num_pos]
+    scale_factor = pos_scores - pos_pred_sigmoid
+
+    # 计算正样本的损失
+    pos_loss = jt.nn.binary_cross_entropy_with_logits(
+        pred_flat[pos_indices, pos_labels], pos_scores
     ) * scale_factor.abs().pow(beta)
 
-    loss = loss.sum(dim=1, keepdims=False)
+    # 将正样本损失写回原位置
+    loss_flat[pos_indices, pos_labels] = pos_loss
+
+    # 🔧 修复：重新整形并求和
+    loss = loss_flat.view(pred.shape[:-1] + (pred.shape[-1],))  # 恢复原始形状
+    loss = loss.sum(dim=-1)  # 在类别维度求和
     return loss
 
 

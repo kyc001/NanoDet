@@ -2,6 +2,7 @@ import math
 
 import cv2
 import numpy as np
+import jittor as jt  # 添加 jittor 导入
 import jtorch as torch
 import jtorch.nn as nn
 
@@ -261,9 +262,12 @@ class NanoDetPlusHead(nn.Module):
             (labels >= 0) & (labels < self.num_classes)
         ).squeeze(1)
 
+        # 🔧 标签问题已修复：类别定义和标注数据现在都使用0-19
+
         if len(pos_inds) > 0:
             weight_targets = cls_preds[pos_inds].detach().sigmoid().max(dim=1)[0]
-            bbox_avg_factor = max(reduce_mean(weight_targets.sum()).item(), 1.0)
+            # 修复：避免使用 .item() 破坏计算图，保持 tensor 形式
+            bbox_avg_factor = jt.clamp(reduce_mean(weight_targets.sum()), min_v=1.0)
 
             loss_bbox = self.loss_bbox(
                 decoded_bboxes[pos_inds],
@@ -369,7 +373,7 @@ class NanoDetPlusHead(nn.Module):
         if gt_bboxes.numel() == 0:
             # hack for index error case
             assert pos_assigned_gt_inds.numel() == 0
-            pos_gt_bboxes = torch.empty_like(gt_bboxes).view(-1, 4)
+            pos_gt_bboxes = jt.zeros_like(gt_bboxes).view(-1, 4)  # 修复：使用 jt.zeros_like 替代 torch.empty_like
         else:
             if len(gt_bboxes.shape) < 2:
                 gt_bboxes = gt_bboxes.view(-1, 4)
