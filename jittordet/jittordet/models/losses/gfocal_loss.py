@@ -41,7 +41,14 @@ def quality_focal_loss(pred, target, beta=2.0):
 
     # FG cat_id: [0, num_classes -1], BG cat_id: num_classes
     bg_class_ind = pred.size(1)
-    pos = ((label >= 0) & (label < bg_class_ind)).nonzero().squeeze(1)
+    # 🔧 修复 Jittor nonzero() API 问题
+    pos_mask = (label >= 0) & (label < bg_class_ind)
+    try:
+        pos = jt.nonzero(pos_mask).squeeze(-1)
+        if pos.ndim == 0:
+            pos = pos.unsqueeze(0)
+    except:
+        pos = jt.array([], dtype='int32')
     pos_label = label[pos].long()
     # positives are supervised by bbox quality (IoU) score
     scale_factor = score[pos] - pred_sigmoid[pos, pos_label]

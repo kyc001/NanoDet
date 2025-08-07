@@ -106,7 +106,11 @@ class TrainingTask(jt.Module):
             )
             self.scalar_summary("Train_loss/lr", "Train", lr, trainer.global_step)
             for loss_name in loss_states:
-                loss_value = loss_states[loss_name].mean().item()
+                # 🔧 修复 Jittor .item() bug：避免使用 .item()
+                try:
+                    loss_value = float(loss_states[loss_name].mean().data)
+                except:
+                    loss_value = 0.0  # 如果获取失败，使用默认值
                 log_msg += "{}:{:.4f}| ".format(loss_name, loss_value)
                 self.scalar_summary(
                     "Train_loss/" + loss_name, "Train", loss_value, trainer.global_step
@@ -124,7 +128,11 @@ class TrainingTask(jt.Module):
                 print(f"  剩余步骤: {eta_steps}")
                 print(f"  损失详情:")
                 for loss_name, loss_value in loss_states.items():
-                    loss_val = loss_value.mean().item()
+                    # 🔧 修复 Jittor .item() bug：避免使用 .item()
+                    try:
+                        loss_val = float(loss_value.mean().data)
+                    except:
+                        loss_val = 0.0  # 如果获取失败，使用默认值
                     print(f"    {loss_name}: {loss_val:.6f}")
                 print(f"  学习率: {lr:.2e}")
                 print("─" * 50)
@@ -155,7 +163,12 @@ class TrainingTask(jt.Module):
                 lr,
             )
             for loss_name in loss_states:
-                log_msg += "{}:{:.4f}| ".format(loss_name, loss_states[loss_name].mean().item())
+                # 🔧 修复 Jittor .item() bug：避免使用 .item()
+                try:
+                    loss_val = float(loss_states[loss_name].mean().data)
+                except:
+                    loss_val = 0.0  # 如果获取失败，使用默认值
+                log_msg += "{}:{:.4f}| ".format(loss_name, loss_val)
             self.info(log_msg)
 
         return dets

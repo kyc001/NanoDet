@@ -37,5 +37,9 @@ def act_layers(name):
         return nn.GELU()
     elif name == "PReLU":
         return nn.PReLU()
+    elif name == "ReLU":
+        return nn.ReLU()  # 🔧 Jittor 的 ReLU 不支持 inplace 参数
+    elif name == "ReLU6":
+        return nn.ReLU6()  # 🔧 Jittor 的 ReLU6 不支持 inplace 参数
     else:
-        return activations[name](inplace=True)
+        return activations[name]()

@@ -171,7 +171,14 @@ class GhostPAN(nn.Module):
             feat_heigh = inner_outs[0]
             feat_low = inputs[idx - 1]
             inner_outs[0] = feat_heigh
-            upsample_feat = self.upsample(feat_heigh)
+            # 🔧 修复尺寸不匹配问题：使用目标尺寸而不是缩放因子
+            target_size = feat_low.shape[2:4]  # [H, W]
+            upsample_feat = jt.nn.interpolate(
+                feat_heigh,
+                size=target_size,
+                mode='bilinear',
+                align_corners=False
+            )
             
             ## [Jittor 迁移] ##
             # torch.cat -> jt.concat

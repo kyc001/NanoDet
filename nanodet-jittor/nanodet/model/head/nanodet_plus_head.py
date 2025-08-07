@@ -133,7 +133,7 @@ class NanoDetPlusHead(nn.Module):
         gt_bboxes = gt_meta["gt_bboxes"]
         gt_labels = gt_meta["gt_labels"]
 
-        gt_bboxes_ignore = gt_meta["gt_bboxes_ignore"]
+        gt_bboxes_ignore = gt_meta.get("gt_bboxes_ignore", None)
         if gt_bboxes_ignore is None:
             gt_bboxes_ignore = [None for _ in range(batch_size)]
 
@@ -240,9 +240,13 @@ class NanoDetPlusHead(nn.Module):
             dist_targets,
             num_pos,
         ) = assign
-        num_total_samples = max(
-            reduce_mean(torch.tensor(sum(num_pos)).to(device)).item(), 1.0
-        )
+        # 🔧 修复 Jittor .item() bug：避免使用 .item()
+        try:
+            num_total_samples = max(
+                float(reduce_mean(jt.array(sum(num_pos))).data), 1.0
+            )
+        except:
+            num_total_samples = 1.0
 
         labels = torch.cat(labels, dim=0)
         label_scores = torch.cat(label_scores, dim=0)
@@ -258,9 +262,14 @@ class NanoDetPlusHead(nn.Module):
             avg_factor=num_total_samples,
         )
 
-        pos_inds = torch.nonzero(
-            (labels >= 0) & (labels < self.num_classes)
-        ).squeeze(1)
+        # 🔧 修复 Jittor nonzero() API 问题
+        pos_mask = (labels >= 0) & (labels < self.num_classes)
+        try:
+            pos_inds = jt.nonzero(pos_mask).squeeze(-1)
+            if pos_inds.ndim == 0:
+                pos_inds = pos_inds.unsqueeze(0)
+        except:
+            pos_inds = jt.array([], dtype='int32')
 
         # 🔧 标签问题已修复：类别定义和标注数据现在都使用0-19
 

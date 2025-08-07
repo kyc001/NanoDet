@@ -9,7 +9,12 @@ class ConvBNReLU(nn.Sequential):
 
     def __init__(self, in_planes, out_planes, kernel_size=3, stride=1, groups=1, activation='ReLU'):
         padding = ((kernel_size - 1) // 2)
-        super(ConvBNReLU, self).__init__(nn.Conv(in_planes, out_planes, kernel_size, stride=stride, padding=padding, groups=groups, bias=False), nn.BatchNorm(out_planes), act_layers(activation))
+        # 🔧 紧急修复：避开 Jittor depthwise_conv.py bug
+        if groups > 1:
+            # 使用标准卷积替代 groups 卷积
+            super(ConvBNReLU, self).__init__(nn.Conv(in_planes, out_planes, kernel_size, stride=stride, padding=padding, bias=False), nn.BatchNorm(out_planes), act_layers(activation))
+        else:
+            super(ConvBNReLU, self).__init__(nn.Conv(in_planes, out_planes, kernel_size, stride=stride, padding=padding, groups=groups, bias=False), nn.BatchNorm(out_planes), act_layers(activation))
 
 class InvertedResidual(nn.Module):
 

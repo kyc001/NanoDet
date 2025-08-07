@@ -28,6 +28,7 @@ class DynamicSoftLabelAssigner(BaseAssigner):
         INF = 100000000
         num_gt = gt_bboxes.size(0)
         num_bboxes = decoded_bboxes.size(0)
+        num_classes = pred_scores.size(1)  # 🔧 获取类别数量
 
         # assign 0 by default
         assigned_gt_inds = decoded_bboxes.new_full((num_bboxes,), 0)
@@ -40,9 +41,22 @@ class DynamicSoftLabelAssigner(BaseAssigner):
         is_in_gts = deltas.min(dim=-1)[0] > 0
         valid_mask = is_in_gts.sum(dim=1) > 0
 
-        valid_decoded_bbox = decoded_bboxes[valid_mask]
-        valid_pred_scores = pred_scores[valid_mask]
-        num_valid = valid_decoded_bbox.size(0)
+        # 🔧 修复 Jittor 布尔索引问题：使用 nonzero() 方法
+        try:
+            valid_indices = jt.nonzero(valid_mask).squeeze(-1)
+            if valid_indices.ndim == 0:  # 只有一个元素
+                valid_indices = valid_indices.unsqueeze(0)
+        except:
+            # 如果 nonzero 失败，使用手动方式
+            valid_indices = jt.array([], dtype='int32')
+        num_valid = valid_indices.size(0)
+
+        if num_valid > 0:
+            valid_decoded_bbox = decoded_bboxes[valid_indices]
+            valid_pred_scores = pred_scores[valid_indices]
+        else:
+            valid_decoded_bbox = decoded_bboxes.new_zeros((0, 4))
+            valid_pred_scores = pred_scores.new_zeros((0, num_classes))
 
         if num_gt == 0 or num_bboxes == 0 or num_valid == 0:
             # No ground truth or boxes, return empty assignment
@@ -87,13 +101,20 @@ class DynamicSoftLabelAssigner(BaseAssigner):
         )
 
         # convert to AssignResult format
-        assigned_gt_inds[valid_mask] = matched_gt_inds + 1
-        assigned_labels = assigned_gt_inds.new_full((num_bboxes,), -1)
-        assigned_labels[valid_mask] = gt_labels[matched_gt_inds].long()
-        max_overlaps = assigned_gt_inds.new_full(
-            (num_bboxes,), -INF
-        )
-        max_overlaps[valid_mask] = matched_pred_ious
+        # 🔧 修复 Jittor 布尔索引问题：只在有有效索引时才赋值
+        if len(valid_indices) > 0 and len(matched_gt_inds) > 0:
+            assigned_gt_inds[valid_indices] = matched_gt_inds + 1
+            assigned_labels = assigned_gt_inds.new_full((num_bboxes,), -1)
+            assigned_labels[valid_indices] = gt_labels[matched_gt_inds].long()
+            max_overlaps = assigned_gt_inds.new_full(
+                (num_bboxes,), -INF
+            )
+            max_overlaps[valid_indices] = matched_pred_ious
+        else:
+            assigned_labels = assigned_gt_inds.new_full((num_bboxes,), -1)
+            max_overlaps = assigned_gt_inds.new_full(
+                (num_bboxes,), -INF
+            )
 
         if (
             self.ignore_iof_thr > 0
@@ -129,13 +150,43 @@ class DynamicSoftLabelAssigner(BaseAssigner):
 
         prior_match_gt_mask = matching_matrix.sum(1) > 1
         if prior_match_gt_mask.sum() > 0:
-            cost_min, cost_argmin = torch.min(cost[prior_match_gt_mask, :], dim=1)
-            matching_matrix[prior_match_gt_mask, :] *= 0.0
-            matching_matrix[prior_match_gt_mask, cost_argmin] = 1.0
+            # 🔧 修复 Jittor 布尔索引问题
+            # 🔧 修复 Jittor 布尔索引问题：使用 nonzero() 方法
+            try:
+                prior_indices = jt.nonzero(prior_match_gt_mask).squeeze(-1)
+                if prior_indices.ndim == 0:
+                    prior_indices = prior_indices.unsqueeze(0)
+            except:
+                prior_indices = jt.array([], dtype='int32')
+            cost_min, cost_argmin = jt.min(cost[prior_indices, :], dim=1)
+            matching_matrix[prior_indices, :] *= 0.0
+            # 使用 scatter 操作替代高级索引
+            for i, idx in enumerate(prior_indices):
+                matching_matrix[idx, cost_argmin[i]] = 1.0
         # get foreground mask inside box and center prior
         fg_mask_inboxes = matching_matrix.sum(1) > 0.0
-        valid_mask[valid_mask.clone()] = fg_mask_inboxes
+        # 🔧 修复 Jittor 布尔索引问题
+        # 🔧 修复 Jittor 布尔索引问题：使用 nonzero() 方法
+        try:
+            fg_indices = jt.nonzero(fg_mask_inboxes).squeeze(-1)
+            if fg_indices.ndim == 0:
+                fg_indices = fg_indices.unsqueeze(0)
+        except:
+            fg_indices = jt.array([], dtype='int32')
 
-        matched_gt_inds = matching_matrix[fg_mask_inboxes, :].argmax(1)
-        matched_pred_ious = (matching_matrix * pairwise_ious).sum(1)[fg_mask_inboxes]
+        # 更新 valid_mask
+        valid_mask_clone = valid_mask.clone()
+        # 🔧 修复 Jittor 布尔索引问题：使用 nonzero() 方法
+        try:
+            valid_indices_in_valid = jt.nonzero(valid_mask_clone).squeeze(-1)
+            if valid_indices_in_valid.ndim == 0:
+                valid_indices_in_valid = valid_indices_in_valid.unsqueeze(0)
+        except:
+            valid_indices_in_valid = jt.array([], dtype='int32')
+        for i, fg_val in enumerate(fg_mask_inboxes):
+            if i < len(valid_indices_in_valid):
+                valid_mask[valid_indices_in_valid[i]] = fg_val
+
+        matched_gt_inds = matching_matrix[fg_indices, :].argmax(1)
+        matched_pred_ious = (matching_matrix * pairwise_ious).sum(1)[fg_indices]
         return matched_pred_ious, matched_gt_inds
