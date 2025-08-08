@@ -1,6 +1,6 @@
 import jittor
 import jittor.nn as nn
-import jtorch as torch
+import jittor as jt
 
 from ..module.conv import ConvModule
 from ..module.init_weights import normal_init
@@ -95,7 +95,7 @@ class SimpleConvHead(nn.Module):
                 reg_feat = reg_conv(reg_feat)
             cls_score = self.gfl_cls(cls_feat)
             bbox_pred = scale(self.gfl_reg(reg_feat)).float()
-            output = torch.cat([cls_score, bbox_pred], dim=1)
+            output = jt.cat([cls_score, bbox_pred], dim=1)
             outputs.append(output.flatten(start_dim=2))
-        outputs = torch.cat(outputs, dim=2).permute(0, 2, 1)
+        outputs = jt.cat(outputs, dim=2).permute(0, 2, 1)
         return outputs

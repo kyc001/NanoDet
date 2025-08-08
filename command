@@ -278,6 +278,12 @@ ImageNet预训练权重没有意义，可以忽略了，直接用jittor加载pyt
 希望：使用一样的训练参数完成jittor的50轮微调训练，实现权重转换脚本，最后完成实验对比。
 我该怎么做？
 
+rm -rf ~/.cache/jittor/
+python -m pip install jittor
+rm -rf /home/kyc/.cache/jittor/cutlass
+python -m jittor.test.test_example
+python -m jittor.test.test_cudnn_op
+python -m jittor.test.test_core
 
 
 
@@ -299,6 +305,4 @@ cd /home/kyc/project/nanodet/nanodet-pytorch
 python tools/train.py config/nanodet-plus-m_320_voc_bs64_50epochs.yml
 
 
-
-python -m jittor.test.test_example
 

@@ -4,9 +4,9 @@ import cv2
 import numpy as np
 import jittor as jt
 import jittor.nn as nn
-import jtorch as torch
-import jtorch.nn as F
-import jtorch.distributed as dist
+import jittor as jt
+import jittor.nn as F
+# import jittor.distributed as dist  # 不需要分布式
 
 from nanodet.util import (
     bbox2distance,
@@ -157,9 +157,9 @@ class GFLHead(nn.Module):
                 reg_feat = reg_conv(reg_feat)
             cls_score = self.gfl_cls(cls_feat)
             bbox_pred = scale(self.gfl_reg(reg_feat)).float()
-            output = torch.cat([cls_score, bbox_pred], dim=1)
+            output = jt.cat([cls_score, bbox_pred], dim=1)
             outputs.append(output.flatten(start_dim=2))
-        outputs = torch.cat(outputs, dim=2).permute(0, 2, 1)
+        outputs = jt.cat(outputs, dim=2).permute(0, 2, 1)
         return outputs
 
     def loss(self, preds, gt_meta):
@@ -220,15 +220,14 @@ class GFLHead(nn.Module):
         # 修复：避免使用 .item() 破坏计算图
         avg_factor = reduce_mean(avg_factor)
         if avg_factor <= 0:
-            loss_qfl = torch.tensor(0, dtype=torch.float32, requires_grad=True).to(
-                device
-            )
-            loss_bbox = torch.tensor(0, dtype=torch.float32, requires_grad=True).to(
-                device
-            )
-            loss_dfl = torch.tensor(0, dtype=torch.float32, requires_grad=True).to(
-                device
-            )
+            # 🔧 Jittor 不需要 .to(device)，且 tensor 构造方式不同
+            loss_qfl = jt.array(0.0, dtype=jt.float32)
+            loss_bbox = jt.array(0.0, dtype=jt.float32)
+            loss_dfl = jt.array(0.0, dtype=jt.float32)
+            # 确保这些张量需要梯度
+            loss_qfl.requires_grad = True
+            loss_bbox.requires_grad = True
+            loss_dfl.requires_grad = True
         else:
             losses_bbox = list(map(lambda x: x / avg_factor, losses_bbox))
             losses_dfl = list(map(lambda x: x / avg_factor, losses_dfl))
@@ -262,7 +261,7 @@ class GFLHead(nn.Module):
 
         # FG cat_id: [0, num_classes -1], BG cat_id: num_classes
         bg_class_ind = self.num_classes
-        pos_inds = torch.nonzero(
+        pos_inds = jt.nonzero(
             (labels >= 0) & (labels < bg_class_ind), as_tuple=False
         ).squeeze(1)
 
@@ -307,7 +306,8 @@ class GFLHead(nn.Module):
         else:
             loss_bbox = bbox_pred.sum() * 0
             loss_dfl = bbox_pred.sum() * 0
-            weight_targets = torch.tensor(0).to(cls_score.device)
+            # 🔧 Jittor 不需要 .to(device)
+            weight_targets = jt.array(0.0)
 
         # qfl loss
         loss_qfl = self.loss_qfl(
@@ -346,7 +346,7 @@ class GFLHead(nn.Module):
                 featmap_sizes[i],
                 self.grid_cell_scale,
                 stride,
-                dtype=torch.float32,
+                dtype=jt.float32,
                 device=device,
             )
             for i, stride in enumerate(self.strides)
@@ -358,7 +358,7 @@ class GFLHead(nn.Module):
         num_level_cells_list = [num_level_cells] * batch_size
         # concat all level cells and to a single tensor
         for i in range(batch_size):
-            mlvl_grid_cells_list[i] = torch.cat(mlvl_grid_cells_list[i])
+            mlvl_grid_cells_list[i] = jt.cat(mlvl_grid_cells_list[i])
         # compute targets for each image
         if gt_bboxes_ignore_list is None:
             gt_bboxes_ignore_list = [None for _ in range(batch_size)]
@@ -422,11 +422,11 @@ class GFLHead(nn.Module):
         :return: Assign results of a single image
         """
         device = grid_cells.device
-        gt_bboxes = torch.from_numpy(gt_bboxes).to(device)
-        gt_labels = torch.from_numpy(gt_labels).to(device)
+        gt_bboxes = jt.from_numpy(gt_bboxes).to(device)
+        gt_labels = jt.from_numpy(gt_labels).to(device)
 
         if gt_bboxes_ignore is not None:
-            gt_bboxes_ignore = torch.from_numpy(gt_bboxes_ignore).to(device)
+            gt_bboxes_ignore = jt.from_numpy(gt_bboxes_ignore).to(device)
 
         assign_result = self.assigner.assign(
             grid_cells, num_level_cells, gt_bboxes, gt_bboxes_ignore, gt_labels
@@ -437,10 +437,10 @@ class GFLHead(nn.Module):
         )
 
         num_cells = grid_cells.shape[0]
-        bbox_targets = torch.zeros_like(grid_cells)
-        bbox_weights = torch.zeros_like(grid_cells)
-        labels = grid_cells.new_full((num_cells,), self.num_classes, dtype=torch.long)
-        label_weights = grid_cells.new_zeros(num_cells, dtype=torch.float)
+        bbox_targets = jt.zeros_like(grid_cells)
+        bbox_weights = jt.zeros_like(grid_cells)
+        labels = grid_cells.new_full((num_cells,), self.num_classes, dtype=jt.long)
+        label_weights = grid_cells.new_zeros(num_cells, dtype=jt.float)
 
         if len(pos_inds) > 0:
             pos_bbox_targets = pos_gt_bboxes
@@ -469,12 +469,12 @@ class GFLHead(nn.Module):
 
     def sample(self, assign_result, gt_bboxes):
         pos_inds = (
-            torch.nonzero(assign_result.gt_inds > 0, as_tuple=False)
+            jt.nonzero(assign_result.gt_inds > 0, as_tuple=False)
             .squeeze(-1)
             .unique()
         )
         neg_inds = (
-            torch.nonzero(assign_result.gt_inds == 0, as_tuple=False)
+            jt.nonzero(assign_result.gt_inds == 0, as_tuple=False)
             .squeeze(-1)
             .unique()
         )
@@ -483,7 +483,7 @@ class GFLHead(nn.Module):
         if gt_bboxes.numel() == 0:
             # hack for index error case
             assert pos_assigned_gt_inds.numel() == 0
-            pos_gt_bboxes = torch.empty_like(gt_bboxes).view(-1, 4)
+            pos_gt_bboxes = jt.empty_like(gt_bboxes).view(-1, 4)
         else:
             if len(gt_bboxes.shape) < 2:
                 gt_bboxes = gt_bboxes.view(-1, 4)
@@ -503,17 +503,17 @@ class GFLHead(nn.Module):
         )
         img_heights = (
             meta["img_info"]["height"].cpu().numpy()
-            if isinstance(meta["img_info"]["height"], torch.Tensor)
+            if isinstance(meta["img_info"]["height"], jt.Tensor)
             else meta["img_info"]["height"]
         )
         img_widths = (
             meta["img_info"]["width"].cpu().numpy()
-            if isinstance(meta["img_info"]["width"], torch.Tensor)
+            if isinstance(meta["img_info"]["width"], jt.Tensor)
             else meta["img_info"]["width"]
         )
         img_ids = (
             meta["img_info"]["id"].cpu().numpy()
-            if isinstance(meta["img_info"]["id"], torch.Tensor)
+            if isinstance(meta["img_info"]["id"], jt.Tensor)
             else meta["img_info"]["id"]
         )
 
@@ -570,13 +570,13 @@ class GFLHead(nn.Module):
         mlvl_center_priors = []
         for i, stride in enumerate(self.strides):
             y, x = self.get_single_level_center_point(
-                featmap_sizes[i], stride, torch.float32, device
+                featmap_sizes[i], stride, jt.float32, device
             )
             strides = x.new_full((x.shape[0],), stride)
-            proiors = torch.stack([x, y, strides, strides], dim=-1)
+            proiors = jt.stack([x, y, strides, strides], dim=-1)
             mlvl_center_priors.append(proiors.unsqueeze(0).repeat(b, 1, 1))
 
-        center_priors = torch.cat(mlvl_center_priors, dim=1)
+        center_priors = jt.cat(mlvl_center_priors, dim=1)
         dis_preds = self.distribution_project(reg_preds) * center_priors[..., 2, None]
         bboxes = distance2bbox(center_priors[..., :2], dis_preds, max_shape=input_shape)
         scores = cls_preds.sigmoid()
@@ -586,7 +586,7 @@ class GFLHead(nn.Module):
             # same with mmdetection2.0
             score, bbox = scores[i], bboxes[i]
             padding = score.new_zeros(score.shape[0], 1)
-            score = torch.cat([score, padding], dim=1)
+            score = jt.cat([score, padding], dim=1)
             results = multiclass_nms(
                 bbox,
                 score,
@@ -610,9 +610,9 @@ class GFLHead(nn.Module):
         :return: y and x of the center points
         """
         h, w = featmap_size
-        x_range = (torch.arange(w, dtype=dtype, device=device) + 0.5) * stride
-        y_range = (torch.arange(h, dtype=dtype, device=device) + 0.5) * stride
-        y, x = torch.meshgrid(y_range, x_range)
+        x_range = (jt.arange(w, dtype=dtype, device=device) + 0.5) * stride
+        y_range = (jt.arange(h, dtype=dtype, device=device) + 0.5) * stride
+        y, x = jt.meshgrid(y_range, x_range)
         if flatten:
             y = y.flatten()
             x = x.flatten()
@@ -632,7 +632,7 @@ class GFLHead(nn.Module):
         y, x = self.get_single_level_center_point(
             featmap_size, stride, dtype, device, flatten=True
         )
-        grid_cells = torch.stack(
+        grid_cells = jt.stack(
             [
                 x - 0.5 * cell_size,
                 y - 0.5 * cell_size,
@@ -651,7 +651,7 @@ class GFLHead(nn.Module):
         """
         cells_cx = (grid_cells[:, 2] + grid_cells[:, 0]) / 2
         cells_cy = (grid_cells[:, 3] + grid_cells[:, 1]) / 2
-        return torch.stack([cells_cx, cells_cy], dim=-1)
+        return jt.stack([cells_cx, cells_cy], dim=-1)
 
     def _forward_onnx(self, feats):
         """only used for onnx export"""
@@ -666,6 +666,6 @@ class GFLHead(nn.Module):
             cls_pred = self.gfl_cls(cls_feat)
             reg_pred = scale(self.gfl_reg(reg_feat))
             cls_pred = cls_pred.sigmoid()
-            out = torch.cat([cls_pred, reg_pred], dim=1)
+            out = jt.cat([cls_pred, reg_pred], dim=1)
             outputs.append(out.flatten(start_dim=2))
-        return torch.cat(outputs, dim=2).permute(0, 2, 1)
+        return jt.cat(outputs, dim=2).permute(0, 2, 1)

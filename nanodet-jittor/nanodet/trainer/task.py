@@ -106,10 +106,14 @@ class TrainingTask(jt.Module):
             )
             self.scalar_summary("Train_loss/lr", "Train", lr, trainer.global_step)
             for loss_name in loss_states:
-                # 🔧 修复 Jittor .item() bug：避免使用 .item()
+                # 🔧 修复 Jittor .item() bug：确保标量转换
                 try:
-                    loss_value = float(loss_states[loss_name].mean().data)
-                except:
+                    loss_tensor = loss_states[loss_name]
+                    loss_mean = loss_tensor.mean() if loss_tensor.numel() > 1 else loss_tensor
+                    # 统一通过 float() 提取标量
+                    loss_value = float(loss_mean)
+                except Exception as e:
+                    print(f"⚠️ 损失值转换失败 {loss_name}: {e}")
                     loss_value = 0.0  # 如果获取失败，使用默认值
                 log_msg += "{}:{:.4f}| ".format(loss_name, loss_value)
                 self.scalar_summary(
@@ -128,10 +132,12 @@ class TrainingTask(jt.Module):
                 print(f"  剩余步骤: {eta_steps}")
                 print(f"  损失详情:")
                 for loss_name, loss_value in loss_states.items():
-                    # 🔧 修复 Jittor .item() bug：避免使用 .item()
+                    # 🔧 修复 Jittor .item() bug：确保标量转换
                     try:
-                        loss_val = float(loss_value.mean().data)
-                    except:
+                        loss_mean = loss_value.mean() if loss_value.numel() > 1 else loss_value
+                        loss_val = float(loss_mean)
+                    except Exception as e:
+                        print(f"⚠️ 详细损失值转换失败 {loss_name}: {e}")
                         loss_val = 0.0  # 如果获取失败，使用默认值
                     print(f"    {loss_name}: {loss_val:.6f}")
                 print(f"  学习率: {lr:.2e}")
@@ -163,10 +169,13 @@ class TrainingTask(jt.Module):
                 lr,
             )
             for loss_name in loss_states:
-                # 🔧 修复 Jittor .item() bug：避免使用 .item()
+                # 🔧 修复 Jittor .item() bug：确保标量转换
                 try:
-                    loss_val = float(loss_states[loss_name].mean().data)
-                except:
+                    loss_tensor = loss_states[loss_name]
+                    loss_mean = loss_tensor.mean() if loss_tensor.numel() > 1 else loss_tensor
+                    loss_val = float(loss_mean)
+                except Exception as e:
+                    print(f"⚠️ 验证损失值转换失败 {loss_name}: {e}")
                     loss_val = 0.0  # 如果获取失败，使用默认值
                 log_msg += "{}:{:.4f}| ".format(loss_name, loss_val)
             self.info(log_msg)
@@ -178,28 +187,30 @@ class TrainingTask(jt.Module):
         results = {}
         for res in validation_step_outputs:
             results.update(res)
-        
+
         # JITTOR HIGH-FIDELITY MOD: 使用 jt.world_size > 1 判断是否为分布式环境
         all_results = gather_results(results) if jt.world_size > 1 else results
-        
+
+        eval_results = None
         if jt.rank == 0 and all_results:
+            # 🎯 自动调用测评工具
             eval_results = self.evaluator.evaluate(all_results, self.cfg.save_dir)
             self.log_metrics(eval_results, current_epoch + 1)
-            
+
             metric = eval_results.get(self.cfg.evaluator.save_key)
             if metric is None:
                 warnings.warn(f"Warning! Save_key '{self.cfg.evaluator.save_key}' is not in eval results! Only save model last!")
-                return
+                return eval_results
 
             if metric > self.save_flag:
                 self.save_flag = metric
                 best_save_path = os.path.join(self.cfg.save_dir, "model_best")
                 mkdir(best_save_path) # mkdir 只在 rank 0 执行
-                
+
                 # JITTOR HIGH-FIDELITY MOD: 保存模型状态和检查点
                 self.save_model_state(os.path.join(best_save_path, "nanodet_model_best.pth"))
                 self.model.save(os.path.join(best_save_path, "model_best.ckpt")) # 保存Jittor的检查点
-                
+
                 txt_path = os.path.join(best_save_path, "eval_results.txt")
                 with open(txt_path, "a") as f:
                     f.write(f"Epoch:{current_epoch + 1}\n")
@@ -207,6 +218,9 @@ class TrainingTask(jt.Module):
                         f.write(f"{k}: {v}\n")
         elif not all_results:
             self.info(f"Skip val on rank {jt.rank}")
+
+        # 🎯 返回测评指标供训练脚本使用
+        return eval_results
 
     def test_step(self, batch):
         """单个测试步骤。"""

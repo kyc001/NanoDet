@@ -28,7 +28,7 @@ def bbox_overlaps(bboxes1, bboxes2, mode="iou", is_aligned=False, eps=1e-6):
     area2 = (bboxes2[..., 2] - bboxes2[..., 0]) * (bboxes2[..., 3] - bboxes2[..., 1])
 
     if is_aligned:
-        # [遷移] torch.max/min -> jt.maximum/minimum
+        # [遷移] jt.max/min -> jt.maximum/minimum
         lt = jt.maximum(bboxes1[..., :2], bboxes2[..., :2])
         rb = jt.minimum(bboxes1[..., 2:], bboxes2[..., 2:])
         wh = (rb - lt).clamp(min_v=0)
@@ -43,7 +43,7 @@ def bbox_overlaps(bboxes1, bboxes2, mode="iou", is_aligned=False, eps=1e-6):
             enclosed_rb = jt.maximum(bboxes1[..., 2:], bboxes2[..., 2:])
     else:
         lt = jt.maximum(bboxes1[..., :, None, :2], bboxes2[..., None, :, :2])
-        rb = jt.minimum(bboxes1[..., :, None, 2:], bboxes2[..., None, :, :2])
+        rb = jt.minimum(bboxes1[..., :, None, 2:], bboxes2[..., None, :, 2:])
         wh = (rb - lt).clamp(min_v=0)
         overlap = wh[..., 0] * wh[..., 1]
 
@@ -53,7 +53,7 @@ def bbox_overlaps(bboxes1, bboxes2, mode="iou", is_aligned=False, eps=1e-6):
             union = area1[..., None]
         if mode == "giou":
             enclosed_lt = jt.minimum(bboxes1[..., :, None, :2], bboxes2[..., None, :, :2])
-            enclosed_rb = jt.maximum(bboxes1[..., :, None, 2:], bboxes2[..., None, :, :2])
+            enclosed_rb = jt.maximum(bboxes1[..., :, None, 2:], bboxes2[..., None, :, 2:])
 
     # [遷移] .new_tensor([eps]) -> jt.array([eps])
     eps_var = jt.array([eps]).cast(union.dtype)
@@ -84,7 +84,7 @@ def bounded_iou_loss(pred, target, beta=0.2, eps=1e-3):
     pred_ctry = (pred[:, 1] + pred[:, 3]) * 0.5
     pred_w = pred[:, 2] - pred[:, 0]
     pred_h = pred[:, 3] - pred[:, 1]
-    # [遷移] @torch.no_grad() -> @jt.no_grad()
+    # [遷移] @jt.no_grad() -> @jt.no_grad()
     with jt.no_grad():
         target_ctrx = (target[:, 0] + target[:, 2]) * 0.5
         target_ctry = (target[:, 1] + target[:, 3]) * 0.5
@@ -104,7 +104,7 @@ def bounded_iou_loss(pred, target, beta=0.2, eps=1e-3):
     loss_dh = 1 - jt.minimum(target_h / (pred_h + eps), pred_h / (target_h + eps))
     loss_comb = jt.stack([loss_dx, loss_dy, loss_dw, loss_dh], dim=-1).view(loss_dx.shape[0], -1)
     
-    # [遷移] torch.where -> jt.where
+    # [遷移] jt.where -> jt.where
     loss = jt.where(
         loss_comb < beta, 0.5 * loss_comb * loss_comb / beta, loss_comb - 0.5 * beta
     ).sum(dim=-1)
@@ -168,7 +168,7 @@ def ciou_loss(pred, target, eps=1e-7):
     right = ((b2_y1 + b2_y2) - (b1_y1 + b1_y2)) ** 2 / 4
     rho2 = left + right
     factor = 4 / math.pi**2
-    # [遷移] torch.pow(torch.atan(...)) -> jt.atan(...).pow(2)
+    # [遷移] jt.pow(jt.atan(...)) -> jt.atan(...).pow(2)
     v = factor * (jt.atan(w2 / h2) - jt.atan(w1 / h1)).pow(2)
     cious = ious - (rho2 / c2 + v**2 / (1 - ious + v))
     loss = 1 - cious
@@ -186,7 +186,7 @@ class IoULoss(nn.Module):
     def execute(self, pred, target, weight=None, avg_factor=None, reduction_override=None, **kwargs):
         assert reduction_override in (None, "none", "mean", "sum")
         reduction = reduction_override if reduction_override else self.reduction
-        # [遷移] torch.any -> jt.any
+        # [遷移] jt.any -> jt.any
         if (weight is not None) and (not jt.any(weight > 0)) and (reduction != "none"):
             if pred.ndim == weight.ndim + 1:
                 weight = weight.unsqueeze(1)

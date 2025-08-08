@@ -23,7 +23,7 @@ def distance2bbox(points, distance, max_shape=None):
         y1 = y1.clamp(min_v=0, max_v=max_shape[0])
         x2 = x2.clamp(min_v=0, max_v=max_shape[1])
         y2 = y2.clamp(min_v=0, max_v=max_shape[0])
-    # JITTOR MIGRATION: torch.stack -> jt.stack
+    # JITTOR MIGRATION: jt.stack -> jt.stack
     return jt.stack([x1, y1, x2, y2], -1)
 
 
@@ -49,5 +49,5 @@ def bbox2distance(points, bbox, max_dis=None, eps=0.1):
         top = top.clamp(min_v=0, max_v=max_dis - eps)
         right = right.clamp(min_v=0, max_v=max_dis - eps)
         bottom = bottom.clamp(min_v=0, max_v=max_dis - eps)
-    # JITTOR MIGRATION: torch.stack -> jt.stack
+    # JITTOR MIGRATION: jt.stack -> jt.stack
     return jt.stack([left, top, right, bottom], -1)

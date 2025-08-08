@@ -3,7 +3,7 @@ import os
 import platform
 import warnings
 
-# JITTOR MIGRATION: 将 torch.multiprocessing 替换为 Python 内置的 multiprocessing
+# JITTOR MIGRATION: 将 jt.multiprocessing 替换为 Python 内置的 multiprocessing
 import multiprocessing as mp
 
 

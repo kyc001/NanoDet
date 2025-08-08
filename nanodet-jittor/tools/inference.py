@@ -14,7 +14,7 @@ class Predictor(object):
         self.cfg = cfg
         self.device = device
         model = build_model(cfg.model)
-        ckpt = torch.load(model_path, map_location=lambda storage, loc: storage)
+        ckpt = jt.load(model_path, map_location=lambda storage, loc: storage)
         load_model_weight(model, ckpt, logger)
         if cfg.model.arch.backbone.name == "RepVGG":
             deploy_config = cfg.model
@@ -40,11 +40,11 @@ class Predictor(object):
         meta = dict(img_info=img_info, raw_img=img, img=img)
         meta = self.pipeline(meta, self.cfg.data.val.input_size)
         meta["img"] = (
-            torch.from_numpy(meta["img"].transpose(2, 0, 1))
+            jt.from_numpy(meta["img"].transpose(2, 0, 1))
             .unsqueeze(0)
             .to(self.device)
         )
-        with torch.no_grad():
+        with jt.no_grad():
             results = self.model.inference(meta)
         return meta, results
 

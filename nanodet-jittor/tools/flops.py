@@ -1,21 +1,23 @@
 import argparse
 
-import torch
+import jittor as jt
 
 from nanodet.model.arch import build_model
-from nanodet.util import cfg, load_config
+from nanodet.util import cfg, load_config, get_model_complexity_info
 
 
 def main(config, input_shape=(320, 320)):
     model = build_model(config.model)
+    # 使用 Jittor 版本的 FLOPs 计算
     try:
-        import mobile_cv.lut.lib.pt.flops_utils as flops_utils
-    except ImportError:
-        print("mobile-cv is not installed. Skip flops calculation.")
+        flops, params = get_model_complexity_info(
+            model, input_shape, print_per_layer_stat=True
+        )
+        print(f"FLOPs: {flops}")
+        print(f"Params: {params}")
+    except Exception as e:
+        print(f"FLOPs calculation failed: {e}")
         return
-    first_batch = torch.rand((1, 3, input_shape[0], input_shape[1]))
-    input_args = (first_batch,)
-    flops_utils.print_model_flops(model, input_args)
 
 
 def parse_args():

@@ -33,8 +33,8 @@ def parse_args():
 def main(args):
     load_config(cfg, args.config)
     local_rank = -1
-    torch.backends.cudnn.enabled = True
-    torch.backends.cudnn.benchmark = True
+    jt.backends.cudnn.enabled = True
+    jt.backends.cudnn.benchmark = True
     cfg.defrost()
     timestr = datetime.datetime.now().__format__("%Y%m%d%H%M%S")
     cfg.save_dir = os.path.join(cfg.save_dir, timestr)
@@ -46,7 +46,7 @@ def main(args):
 
     logger.info("Setting up data...")
     val_dataset = build_dataset(cfg.data.val, args.task)
-    val_dataloader = torch.utils.data.DataLoader(
+    val_dataloader = jt.utils.data.DataLoader(
         val_dataset,
         batch_size=cfg.device.batchsize_per_gpu,
         shuffle=False,
@@ -60,7 +60,7 @@ def main(args):
     logger.info("Creating model...")
     task = TrainingTask(cfg, evaluator)
 
-    ckpt = torch.load(args.model)
+    ckpt = jt.load(args.model)
     if "pytorch-lightning_version" not in ckpt:
         warnings.warn(
             "Warning! Old .pth checkpoint is deprecated. "

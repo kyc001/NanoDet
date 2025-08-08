@@ -26,7 +26,7 @@ class ExpMovingAverager(object):
 
     def apply_to(self, model: nn.Module) -> None:
         """将 EMA 状态应用于模型。"""
-        # [迁移] @torch.no_grad() -> @jt.no_grad()
+        # [迁移] @jt.no_grad() -> @jt.no_grad()
         with jt.no_grad():
             for name, val in self._get_model_state_iterator(model):
                 assert name in self.state, f"Name {name} not exist"

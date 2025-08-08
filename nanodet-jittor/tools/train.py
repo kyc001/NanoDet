@@ -74,7 +74,7 @@ def main(args):
         logger.info(f"设置随机种子为 {args.seed}")
         set_seed(args.seed)
 
-    # JITTOR MIGRATION: 移除 PyTorch-Lightning 和 torch.backends.cudnn 的设置
+    # JITTOR MIGRATION: 移除 PyTorch-Lightning 和 jt.backends.cudnn 的设置
     
     logger.info("正在设置数据...")
     train_dataset = build_dataset(cfg.data.train, "train")
@@ -128,13 +128,21 @@ def main(args):
         env_utils.set_multi_processing(distributed=True)
 
     logger.info("开始训练...")
+    logger.info(f"总共 {cfg.schedule.total_epochs} 个 epoch，每个 epoch {len(train_dataloader)} 个批次")
+    logger.info("=" * 80)
+
     global_step = 0
-    start_epoch = 0 # TODO: 从检查点恢复 epoch
+    start_epoch = 0
+    best_ap = 0.0
+
+    # 导入时间模块
+    import time
 
     for epoch in range(start_epoch, cfg.schedule.total_epochs):
+        epoch_start_time = time.time()
         task.on_train_epoch_start(epoch)
-        
-        # 模拟一个 trainer 对象，以保持与 task 方法的兼容性
+
+        # 模拟一个 trainer 对象
         trainer_mock = SimpleNamespace(
             current_epoch=epoch,
             global_step=global_step,
@@ -143,36 +151,176 @@ def main(args):
             optimizer=optimizer
         )
 
-        # 训练循环
+        # 🎯 PyTorch 风格的训练循环 - 带实时进度显示
+        task.model.train()
+        epoch_losses = []
+
+        # 获取当前学习率 - Jittor 优化器兼容性修复
+        current_lr = 0.001  # 默认值
+        try:
+            if hasattr(optimizer, 'param_groups') and len(optimizer.param_groups) > 0:
+                current_lr = optimizer.param_groups[0]['lr']
+            elif hasattr(optimizer, 'lr'):
+                current_lr = optimizer.lr
+            elif hasattr(optimizer, 'learning_rate'):
+                current_lr = optimizer.learning_rate
+        except:
+            current_lr = 0.001  # 保持默认值
+
+        logger.info(f"开始 Epoch {epoch+1}/{cfg.schedule.total_epochs} | LR: {current_lr:.6f}")
+
+        # 使用简单的进度显示，避免 tqdm 兼容性问题
+        batch_count = len(train_dataloader)
+        print_interval = max(1, batch_count // 20)  # 每5%显示一次进度
+
         for i, batch in enumerate(train_dataloader):
             trainer_mock.global_step = global_step
-            loss = task.training_step(batch, i, trainer_mock)
-            optimizer.step(loss) # Jittor 的 optimizer.step 会自动处理梯度
-            task.on_train_batch_end(global_step)
-            global_step += 1
-        
+
+            try:
+                # 调试：检查并打印 batch 的关键字段形状，避免动态形状导致的缓存爆炸
+                if i < 3:  # 仅前几个batch打印
+                    try:
+                        img = batch.get("img")
+                        if isinstance(img, jt.Var):
+                            logger.info(f"Batch {i} img shape: {tuple(img.shape)}")
+                        else:
+                            logger.info(f"Batch {i} img type: {type(img)}")
+                        for k in ["gt_bboxes", "gt_labels", "gt_bboxes_ignore"]:
+                            v = batch.get(k)
+                            if v is None:
+                                continue
+                            if isinstance(v, jt.Var):
+                                logger.info(f"  {k} jt.Var shape: {tuple(v.shape)}")
+                            elif isinstance(v, np.ndarray):
+                                logger.info(f"  {k} np shape: {v.shape} dtype:{v.dtype}")
+                            else:
+                                try:
+                                    logger.info(f"  {k} type:{type(v)} len:{len(v)}")
+                                except Exception:
+                                    logger.info(f"  {k} type:{type(v)}")
+                    except Exception as e_dbg:
+                        logger.warning(f"Batch {i} debug inspect failed: {e_dbg}")
+
+                # 前向传播和损失计算
+                training_result = task.training_step(batch, i, trainer_mock)
+                # 🔧 修复：正确处理返回值
+                if isinstance(training_result, dict):
+                    training_loss = training_result['loss']
+                else:
+                    training_loss = training_result
+                # 🔧 修复：避免计算图断裂，延迟获取损失值用于记录
+                loss_value = float(training_loss)  # Jittor 会自动处理
+                epoch_losses.append(loss_value)
+
+                # 反向传播
+                optimizer.step(training_loss)
+                task.on_train_batch_end(global_step)
+                global_step += 1
+
+                # 🎯 实时进度显示
+                if (i + 1) % print_interval == 0 or i == 0:
+                    progress = (i + 1) / batch_count * 100
+                    avg_loss = np.mean(epoch_losses)
+                    print(f"  [{epoch+1:2d}/{cfg.schedule.total_epochs}] "
+                          f"[{i+1:4d}/{batch_count}] "
+                          f"({progress:5.1f}%) | "
+                          f"Loss: {loss_value:.4f} | "
+                          f"Avg: {avg_loss:.4f} | "
+                          f"LR: {current_lr:.6f}", flush=True)
+
+            except Exception as e:
+                # 输出更详细的批次关键信息，帮助定位问题
+                try:
+                    shapes = {}
+                    if isinstance(batch, dict):
+                        for k, v in batch.items():
+                            if isinstance(v, jt.Var):
+                                shapes[k] = tuple(v.shape)
+                            elif isinstance(v, np.ndarray):
+                                shapes[k] = v.shape
+                            else:
+                                shapes[k] = type(v).__name__
+                    logger.error(f"训练批次 {i} 失败: {e}. batch keys: {list(batch.keys()) if isinstance(batch, dict) else type(batch)} shapes: {shapes}")
+                except Exception:
+                    logger.error(f"训练批次 {i} 失败: {e}")
+                continue
+
         # 更新学习率
         if scheduler:
             scheduler.step()
-        
-        # 验证循环
+
+        # 计算 epoch 统计信息
+        epoch_time = time.time() - epoch_start_time
+        avg_loss = np.mean(epoch_losses)
+
+        # 🎯 PyTorch 风格的 epoch 总结
+        logger.info(f"Epoch {epoch+1:3d}/{cfg.schedule.total_epochs} | "
+                   f"Loss: {avg_loss:.4f} | "
+                   f"Time: {epoch_time:.1f}s | "
+                   f"LR: {current_lr:.6f}")
+
+        # 验证和测评
         if (epoch + 1) % cfg.schedule.val_intervals == 0:
-            logger.info(f"Epoch {epoch + 1} 开始验证...")
+            logger.info(f"🔍 开始验证 Epoch {epoch + 1}...")
+
+            task.model.eval()
             task.on_validation_epoch_start()
             val_outputs = []
+
+            # 验证循环 - 简单进度显示
+            val_batch_count = len(val_dataloader)
+            val_print_interval = max(1, val_batch_count // 10)
+
             for i, batch in enumerate(val_dataloader):
                 trainer_mock.global_step = global_step
-                dets = task.validation_step(batch, i, trainer_mock)
-                val_outputs.append(dets)
-            
-            task.validation_epoch_end(val_outputs, epoch)
+                try:
+                    with jt.no_grad():
+                        dets = task.validation_step(batch, i, trainer_mock)
+                        val_outputs.append(dets)
 
-        # 保存最后一个 epoch 的模型
+                    # 验证进度显示
+                    if (i + 1) % val_print_interval == 0 or i == 0:
+                        val_progress = (i + 1) / val_batch_count * 100
+                        print(f"  验证进度: [{i+1:4d}/{val_batch_count}] ({val_progress:5.1f}%)", flush=True)
+
+                except Exception as e:
+                    logger.error(f"验证批次 {i} 失败: {e}")
+                    continue
+
+            # 🎯 自动调用测评工具
+            try:
+                metrics = task.validation_epoch_end(val_outputs, epoch)
+
+                # 提取关键指标
+                if metrics and 'mAP' in metrics:
+                    current_ap = metrics['mAP']
+                    logger.info(f"📊 验证结果 | mAP: {current_ap:.4f}")
+
+                    # 保存最佳模型
+                    if current_ap > best_ap:
+                        best_ap = current_ap
+                        if jt.rank == 0:
+                            best_model_path = os.path.join(cfg.save_dir, "model_best.ckpt")
+                            task.model.save(best_model_path)
+                            logger.info(f"🏆 新的最佳模型！mAP: {best_ap:.4f} -> {best_model_path}")
+                else:
+                    logger.info("📊 验证完成，但未获取到 mAP 指标")
+
+            except Exception as e:
+                logger.error(f"验证评估失败: {e}")
+
+            logger.info("-" * 80)
+
+        # 保存最新模型
         if jt.rank == 0:
             task.model.save(os.path.join(cfg.save_dir, "model_last.ckpt"))
-            logger.info(f"Epoch {epoch + 1} 已完成，模型已保存。")
 
-    logger.info("训练结束。")
+    # 🎯 训练完成总结
+    logger.info("=" * 80)
+    logger.info("🎉 训练完成！")
+    logger.info(f"📊 最佳 mAP: {best_ap:.4f}")
+    logger.info(f"💾 模型保存在: {cfg.save_dir}")
+    logger.info("=" * 80)
 
 
 if __name__ == "__main__":

@@ -60,7 +60,7 @@ def save_model(model, path, epoch, iter, optimizer=None):
     if optimizer is not None:
         data["optimizer"] = optimizer.state_dict()
 
-    # JITTOR MIGRATION: 使用 jt.save 替换 torch.save
+    # JITTOR MIGRATION: 使用 jt.save 替换 jt.save
     jt.save(data, path)
 
 

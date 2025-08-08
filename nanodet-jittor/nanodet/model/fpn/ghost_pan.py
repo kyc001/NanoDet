@@ -181,7 +181,7 @@ class GhostPAN(nn.Module):
             )
             
             ## [Jittor 迁移] ##
-            # torch.cat -> jt.concat
+            # jt.cat -> jt.concat
             inner_out = self.top_down_blocks[len(self.in_channels) - 1 - idx](
                 jt.concat([upsample_feat, feat_low], 1)
             )
@@ -195,7 +195,7 @@ class GhostPAN(nn.Module):
             downsample_feat = self.downsamples[idx](feat_low)
             
             ## [Jittor 迁移] ##
-            # torch.cat -> jt.concat
+            # jt.cat -> jt.concat
             out = self.bottom_up_blocks[idx](
                 jt.concat([downsample_feat, feat_height], 1)
             )

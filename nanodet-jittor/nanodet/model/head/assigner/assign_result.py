@@ -44,7 +44,7 @@ class AssignResult:
         """Add ground truth as assigned results.
 
         Args:
-            gt_labels (torch.Tensor): Labels of gt boxes
+            gt_labels (jt.Tensor): Labels of gt boxes
         """
         self_inds = jt.arange(1, len(gt_labels) + 1, dtype=jt.int64)
         self.gt_inds = jt.concat([self_inds, self.gt_inds])

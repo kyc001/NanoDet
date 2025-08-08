@@ -8,7 +8,7 @@ class Scale(nn.Module):
     """
     def __init__(self, scale=1.0):
         super(Scale, self).__init__()
-        # [遷移] nn.Parameter(torch.tensor(...)) -> nn.Parameter(jt.float32(...))
+        # [遷移] nn.Parameter(jt.tensor(...)) -> nn.Parameter(jt.float32(...))
         # 使用 nn.Parameter 使其成為可訓練的參數
         self.scale = jt.float32(scale)
 

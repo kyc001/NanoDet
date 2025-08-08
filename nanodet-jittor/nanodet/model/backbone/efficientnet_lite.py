@@ -68,7 +68,7 @@ class MBConvBlock(nn.Module):
             x = self._relu(self._bn0(self._expand_conv(x)))
         x = self._relu(self._bn1(self._depthwise_conv(x)))
         if self.has_se:
-            x_squeezed = jt.nn.AdaptiveAvgPool2d(x, 1) # F.adaptive_avg_pool2d(x, 1)
+            x_squeezed = jt.nn.AdaptiveAvgPool2d(x, 1) # jt.nn.adaptive_avg_pool2d(x, 1)
             x_squeezed = self._se_expand(self._relu(self._se_reduce(x_squeezed)))
             x = (jt.nn.sigmoid(x_squeezed) * x)
         x = self._bn2(self._project_conv(x))
@@ -130,10 +130,10 @@ class EfficientNetLite(nn.Module):
                 n = ((m.kernel_size[0] * m.kernel_size[1]) * m.out_channels)
                 init.gauss_(0, mean=math.sqrt((2.0 / n)))
                 if (m.bias is not None):
-                    m.bias.data.zero_()
+                    m.bias.assign(jt.zeros_like(m.bias))
             elif isinstance(m, nn.BatchNorm):
-                m.weight.data.fill_(1)
-                m.bias.data.zero_()
+                m.weight.assign(jt.ones_like(m.weight))
+                m.bias.assign(jt.zeros_like(m.bias))
 
         if pretrain:
             url = model_urls[self.model_name]

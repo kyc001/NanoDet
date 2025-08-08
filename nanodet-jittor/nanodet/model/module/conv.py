@@ -104,14 +104,11 @@ class DepthwiseConvModule(nn.Module):
         if self.with_norm and self.with_bias:
             warnings.warn("ConvModule has norm and bias at the same time")
 
-        # 🔧 紧急修复：完全避开 Jittor depthwise 卷积 bug
-        print("🚀 使用标准卷积替代 Depthwise Separable 卷积（避开 Jittor bug）")
-
-        # 直接使用标准卷积替代 depthwise separable 卷积
-        # 这不是真正的 depthwise separable，但可以避开 Jittor 的 bug
+        # 🔧 正确的 depthwise 卷积实现：groups=in_channels
         self.depthwise = nn.Conv2d(
             in_channels, in_channels, kernel_size,
             stride=stride, padding=padding, dilation=dilation,
+            groups=in_channels,  # 🔧 关键：groups=in_channels 实现真正的 depthwise
             bias=False  # depthwise 不使用 bias
         )
 
@@ -157,28 +154,17 @@ class DepthwiseConvModule(nn.Module):
             constant_init(self.pwnorm, 1, bias=0)
 
     def execute(self, x, norm=True):
-        # 使用完全自定义的 depthwise separable 卷积实现
+        # 🔧 与PyTorch版本完全一致的实现
         for layer_name in self.order:
-            if layer_name == "depthwise":
-                # 🚀 自定义 depthwise 卷积实现
-                x = self._custom_depthwise_conv(x)
-            elif layer_name == "pointwise":
-                x = self.pointwise(x)  # 1x1 Conv2d
-            elif layer_name == "dwnorm" and norm and self.with_norm:
-                x = self.dwnorm(x)
-            elif layer_name == "pwnorm" and norm and self.with_norm:
-                x = self.pwnorm(x)
+            if layer_name != "act":
+                # 🔧 对于norm层，需要检查norm参数
+                if ("norm" in layer_name and not norm):
+                    continue
+                layer = getattr(self, layer_name)
+                x = layer(x)
             elif layer_name == "act" and self.activation:
                 x = self.act(x)
         return x
-
-    def _custom_depthwise_conv(self, x):
-        """
-        🔧 紧急修复：使用标准卷积替代 depthwise 卷积
-        完全避开 Jittor depthwise_conv.py 的 bug
-        """
-        # 直接使用标准卷积
-        return self.depthwise(x)
 
 class RepVGGConvModule(nn.Module):
     """RepVGG Conv Block (Jittor Version)."""

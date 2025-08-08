@@ -84,5 +84,5 @@ class CustomCspNet(nn.Module):
             if isinstance(m, nn.Conv):
                 nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity=nonlinearity)
             elif isinstance(m, nn.BatchNorm):
-                m.weight.data.fill_(1)
-                m.bias.data.zero_()
+                m.weight.assign(jt.ones_like(m.weight))
+                m.bias.assign(jt.zeros_like(m.bias))

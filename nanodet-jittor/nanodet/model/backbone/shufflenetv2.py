@@ -12,7 +12,7 @@ def channel_shuffle(x, groups):
     x = x.reshape(batchsize, groups, channels_per_group, height, width)
     
     # transpose
-    # PyTorch: torch.transpose(x, 1, 2).contiguous()
+    # PyTorch: jt.transpose(x, 1, 2).contiguous()
     x = x.permute(0, 2, 1, 3, 4)
 
     # flatten
@@ -68,7 +68,7 @@ class ShuffleV2Block(nn.Module):
         if self.stride == 1:
             # x.chunk -> jt.chunk
             x1, x2 = jt.chunk(x, 2, dim=1)
-            # torch.cat -> jt.concat
+            # jt.cat -> jt.concat
             out = jt.concat((x1, self.branch2(x2)), dim=1)
         else:
             out = jt.concat((self.branch1(x), self.branch2(x)), dim=1)

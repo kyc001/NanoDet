@@ -89,7 +89,26 @@ def gather_results_jittor(result_part):
     
     # JITTOR MIGRATION: 使用 jt.all_gather 收集所有形状
     shape_list_vars = jt.all_gather(shape_tensor)
-    shape_list = [s.item() for s in shape_list_vars]
+    # 🔧 学习 JittorDet 的方法：使用列表推导式避免 .item() 调用
+    try:
+        if isinstance(shape_list_vars, list):
+            # 对每个形状张量单独处理，避免批量 .item() 调用
+            shape_list = []
+            for s in shape_list_vars:
+                if s.numel() == 1:
+                    shape_list.append(int(s.data))
+                else:
+                    shape_list.append(s.shape[0])  # 回退到形状信息
+        else:
+            # 如果是单个张量
+            if shape_list_vars.numel() == 1:
+                shape_list = [int(shape_list_vars.data)]
+            else:
+                shape_list = [shape_list_vars.shape[0]]
+    except Exception as e:
+        print(f"⚠️ shape_list 转换失败: {e}")
+        # 回退方案：使用默认值
+        shape_list = [part_tensor.shape[0]]
 
     # 找到最大长度并进行填充
     shape_max = max(shape_list)

@@ -1,7 +1,7 @@
 import jittor as jt
 import jittor.nn as nn
-import jtorch as torch
-import jtorch.nn as F
+import jittor as jt
+import jittor.nn as F
 
 from ..module.conv import ConvModule, DepthwiseConvModule
 from jittordet.models.utils.initialize import normal_init
@@ -140,9 +140,9 @@ class NanoDetHead(GFLHead):
             else:
                 cls_score = gfl_cls(cls_feat)
                 bbox_pred = gfl_reg(reg_feat)
-                output = torch.cat([cls_score, bbox_pred], dim=1)
+                output = jt.cat([cls_score, bbox_pred], dim=1)
             outputs.append(output.flatten(start_dim=2))
-        outputs = torch.cat(outputs, dim=2).permute(0, 2, 1)
+        outputs = jt.cat(outputs, dim=2).permute(0, 2, 1)
         return outputs
 
     def _forward_onnx(self, feats):
@@ -167,6 +167,6 @@ class NanoDetHead(GFLHead):
                 reg_pred = gfl_reg(reg_feat)
 
             cls_pred = cls_pred.sigmoid()
-            out = torch.cat([cls_pred, reg_pred], dim=1)
+            out = jt.cat([cls_pred, reg_pred], dim=1)
             outputs.append(out.flatten(start_dim=2))
-        return torch.cat(outputs, dim=2).permute(0, 2, 1)
+        return jt.cat(outputs, dim=2).permute(0, 2, 1)

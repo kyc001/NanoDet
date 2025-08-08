@@ -40,7 +40,7 @@ def multiclass_nms(
 
     valid_mask = scores > score_thr
 
-    # [遷移] torch.masked_select -> Jittor's boolean indexing
+    # [遷移] jt.masked_select -> Jittor's boolean indexing
     bboxes = bboxes[valid_mask.unsqueeze(-1).expand_as(bboxes)].reshape(-1, 4)
     if score_factors is not None:
         scores = scores * score_factors[:, None]

@@ -19,7 +19,7 @@ def images_to_levels(target, num_level_anchors):
 
     [target_img0, target_img1] -> [target_level0, target_level1, ...]
     """
-    # JITTOR MIGRATION: torch.stack -> jt.stack
+    # JITTOR MIGRATION: jt.stack -> jt.stack
     target = jt.stack(target, 0)
     level_targets = []
     start = 0
@@ -35,12 +35,12 @@ def unmap(data, count, inds, fill=0):
     if data.ndim == 1:
         # JITTOR MIGRATION: data.new_full -> jt.full, 并指定 dtype
         ret = jt.full((count,), fill, dtype=data.dtype)
-        # JITTOR MIGRATION: inds.type(torch.bool) -> inds.bool()
+        # JITTOR MIGRATION: inds.type(jt.bool) -> inds.bool()
         ret[inds.bool()] = data
     else:
         new_size = (count,) + data.shape[1:]
         # JITTOR MIGRATION: data.new_full -> jt.full, 并指定 dtype
         ret = jt.full(new_size, fill, dtype=data.dtype)
-        # JITTOR MIGRATION: inds.type(torch.bool) -> inds.bool()
+        # JITTOR MIGRATION: inds.type(jt.bool) -> inds.bool()
         ret[inds.bool(), :] = data
     return ret
