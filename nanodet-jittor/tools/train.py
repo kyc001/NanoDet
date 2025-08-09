@@ -10,6 +10,7 @@ import argparse
 import random
 import warnings
 from types import SimpleNamespace
+import traceback
 
 # JITTOR MIGRATION: 导入 jittor 和 numpy
 import jittor as jt
@@ -39,6 +40,11 @@ def parse_args():
         "--local_rank", default=-1, type=int, help="用于分布式训练的节点排名"
     )
     parser.add_argument("--seed", type=int, default=None, help="随机种子")
+    # 便于快速调试的可选参数
+    parser.add_argument("--max_epochs", type=int, default=None, help="最多训练的 epoch 数（可选）")
+    parser.add_argument("--max_train_batches", type=int, default=None, help="每个 epoch 训练的最大 batch 数（可选）")
+    parser.add_argument("--max_val_batches", type=int, default=None, help="每次验证的最大 batch 数（可选）")
+    parser.add_argument("--warmup_steps", type=int, default=0, help="预热步数，仅用于触发JIT编译缓存（不做验证与保存）")
     args = parser.parse_args()
     return args
 
@@ -131,6 +137,32 @@ def main(args):
     logger.info(f"总共 {cfg.schedule.total_epochs} 个 epoch，每个 epoch {len(train_dataloader)} 个批次")
     logger.info("=" * 80)
 
+    # 预热阶段：仅用于触发 JIT 编译缓存
+    if args.warmup_steps and args.warmup_steps > 0:
+        logger.info(f"🚀 开始预热 warmup，共 {args.warmup_steps} 步（不保存模型/不验证）...")
+        task.model.train()
+        warmup_losses = []
+        warmup_batches = iter(train_dataloader)
+        for wi in range(args.warmup_steps):
+            try:
+                batch = next(warmup_batches)
+            except StopIteration:
+                warmup_batches = iter(train_dataloader)
+                batch = next(warmup_batches)
+            try:
+                res = task.training_step(batch, wi, SimpleNamespace(current_epoch=0, global_step=wi, optimizer=None, num_training_batches=len(train_dataloader), num_val_batches=len(val_dataloader)))
+                warmup_loss = res['loss'] if isinstance(res, dict) else res
+                # 只做一次 optimizer.step 以确保反向路径被编译
+                optimizer.step(warmup_loss)
+                warmup_losses.append(float(warmup_loss))
+                if (wi+1) % max(1, args.warmup_steps//5) == 0:
+                    logger.info(f"Warmup {wi+1}/{args.warmup_steps} | loss:{np.mean(warmup_losses):.4f}")
+            except Exception as e:
+                logger.warning(f"Warmup 第 {wi} 步失败: {e}")
+                traceback.print_exc()
+                continue
+        logger.info("✅ 预热完成，开始正式训练")
+
     global_step = 0
     start_epoch = 0
     best_ap = 0.0
@@ -138,7 +170,8 @@ def main(args):
     # 导入时间模块
     import time
 
-    for epoch in range(start_epoch, cfg.schedule.total_epochs):
+    total_epochs = cfg.schedule.total_epochs if args.max_epochs is None else min(cfg.schedule.total_epochs, args.max_epochs)
+    for epoch in range(start_epoch, total_epochs):
         epoch_start_time = time.time()
         task.on_train_epoch_start(epoch)
 
@@ -221,12 +254,27 @@ def main(args):
                 if (i + 1) % print_interval == 0 or i == 0:
                     progress = (i + 1) / batch_count * 100
                     avg_loss = np.mean(epoch_losses)
-                    print(f"  [{epoch+1:2d}/{cfg.schedule.total_epochs}] "
-                          f"[{i+1:4d}/{batch_count}] "
-                          f"({progress:5.1f}%) | "
-                          f"Loss: {loss_value:.4f} | "
-                          f"Avg: {avg_loss:.4f} | "
-                          f"LR: {current_lr:.6f}", flush=True)
+                    # 遵循用户要求的日志格式
+                    # [NanoDet][MM-DD HH:MM:SS]INFO: Train|Epoch1/50|Iter0(1/108)| mem:5.06G| lr:1.00e-06| loss_qfl:...|
+                    # Jittor 当前无 used_cuda_mem，可安全置0避免 AttributeError
+                    mem_gb = 0.0
+                    iter_str = f"Iter{trainer_mock.global_step}({i+1}/{batch_count})"
+                    # 当 loss_states 可用时逐项打印；否则回退为 Loss/Avg
+                    base = f"Train|Epoch{epoch+1}/{cfg.schedule.total_epochs}|{iter_str}| mem:{mem_gb:.2f}G| lr:{current_lr:.2e}| "
+                    try:
+                        if isinstance(training_result, dict) and 'loss_states' in training_result:
+                            loss_states = training_result['loss_states']
+                            for k, v in loss_states.items():
+                                try:
+                                    v_mean = v.mean() if hasattr(v, 'numel') and v.numel()>1 else v
+                                    base += f"{k}:{float(v_mean):.4f}| "
+                                except Exception:
+                                    pass
+                        else:
+                            base += f"loss:{loss_value:.4f}| avg:{avg_loss:.4f}| "
+                    except Exception:
+                        base += f"loss:{loss_value:.4f}| avg:{avg_loss:.4f}| "
+                    logger.info(base)
 
             except Exception as e:
                 # 输出更详细的批次关键信息，帮助定位问题
@@ -243,7 +291,13 @@ def main(args):
                     logger.error(f"训练批次 {i} 失败: {e}. batch keys: {list(batch.keys()) if isinstance(batch, dict) else type(batch)} shapes: {shapes}")
                 except Exception:
                     logger.error(f"训练批次 {i} 失败: {e}")
+                # 无论如何都打印完整堆栈，便于定位
+                traceback.print_exc()
                 continue
+
+            # 早停：限制每个 epoch 的训练 batch 数
+            if args.max_train_batches is not None and (i + 1) >= args.max_train_batches:
+                break
 
         # 更新学习率
         if scheduler:
@@ -286,6 +340,10 @@ def main(args):
                 except Exception as e:
                     logger.error(f"验证批次 {i} 失败: {e}")
                     continue
+
+                # 早停：限制验证 batch 数
+                if args.max_val_batches is not None and (i + 1) >= args.max_val_batches:
+                    break
 
             # 🎯 自动调用测评工具
             try:

@@ -92,10 +92,18 @@ class TrainingTask(jt.Module):
 
         # JITTOR HIGH-FIDELITY MOD: 日志记录逻辑保持不变，但依赖外部 trainer 提供状态
         if trainer.global_step % self.cfg.log.interval == 0:
-            # memory = jt.flags.used_cuda_mem / 1e9 if jt.flags.use_cuda else 0
-            memory = 0
-            lr = trainer.optimizer.lr
-            log_msg = "Train|Epoch{}/{}|Iter{}({}/{})| mem:{:.3g}G| lr:{:.2e}| ".format(
+            # 统一格式：与 PyTorch 版一致（Jittor 无 used_cuda_mem，安全回退为 0）
+            try:
+                use_cuda = getattr(jt.flags, 'use_cuda', 0)
+                memory = 0.0
+            except Exception:
+                memory = 0.0
+            # 允许从 optimizer 取 lr 或 param_groups[0]['lr']
+            try:
+                lr = trainer.optimizer.param_groups[0]["lr"]
+            except Exception:
+                lr = getattr(trainer.optimizer, 'lr', 0.0)
+            log_msg = "Train|Epoch{}/{}|Iter{}({}/{})| mem:{:.2f}G| lr:{:.2e}| ".format(
                 trainer.current_epoch + 1,
                 self.cfg.schedule.total_epochs,
                 trainer.global_step,

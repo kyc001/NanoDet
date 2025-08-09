@@ -217,8 +217,10 @@ class GhostPAN(nn.Module):
 
             inner_outs[0] = feat_heigh
 
-            upsample_feat = self.upsample(feat_heigh)
-
+            # align to feat_low spatial size to avoid ceil/round mismatch
+            upsample_feat = torch.nn.functional.interpolate(
+                feat_heigh, size=feat_low.shape[-2:], mode='bilinear', align_corners=False
+            )
             inner_out = self.top_down_blocks[len(self.in_channels) - 1 - idx](
                 torch.cat([upsample_feat, feat_low], 1)
             )

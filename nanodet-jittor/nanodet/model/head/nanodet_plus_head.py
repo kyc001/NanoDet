@@ -7,12 +7,35 @@ import jittor.nn as nn
 
 # 🔧 直接使用 JittorDet 的成熟实现，不再使用本地复制
 from nanodet.util import  multi_apply, overlay_bbox_cv
-from jittordet.utils.bbox_transforms import distance2bbox, bbox2distance
+# 使用本地兼容实现，避免修改标准库 jittordet 并修复 clamp_ 参数不兼容
+from nanodet.util.box_transform import distance2bbox, bbox2distance
 from jittordet.models.losses import DistributionFocalLoss, QualityFocalLoss  # 🔧 直接使用 JittorDet
 from jittordet.models.losses.iou_loss import GIoULoss
 from jittordet.models.utils.initialize import normal_init
-from jittordet.models.utils import multiclass_nms
-from jittordet.models.dense_heads.gfl_head import Integral
+# Use project-local NMS wrapper to avoid API mismatch
+from ..module.nms import multiclass_nms
+# 替换外部 Integral，使用本地 DistributionProject 实现以严格对齐 PyTorch 逻辑
+# from jittordet.models.dense_heads.gfl_head import Integral
+class DistributionProject(nn.Module):
+    def __init__(self, reg_max: int):
+        super().__init__()
+        self.reg_max = reg_max
+        # [m+1] 投影向量 0..m
+        self.register_buffer("project", jt.arange(0, reg_max + 1, dtype=jt.float32))
+
+    def execute(self, reg_logits: jt.Var) -> jt.Var:
+        # 期望输入形状 [B, N, 4*(m+1)]
+        assert reg_logits.ndim == 3, f"expect 3D [B,N,4*(m+1)], got {reg_logits.shape}"
+        B, N, C = reg_logits.shape
+        m = self.reg_max
+        assert C == 4 * (m + 1), f"last dim {C} != 4*(m+1)={4*(m+1)}"
+        # 转 float32，减少 AMP 误差放大
+        x = reg_logits.float().reshape(B * N * 4, m + 1)
+        x = nn.softmax(x, dim=1)
+        proj = self.project
+        out = (x * proj).sum(dim=1)
+        out = out.reshape(B, N, 4)
+        return out
 from jittordet.utils import reduce_mean  # 🔧 使用 JittorDet 的 reduce_mean
 from .assigner.dsl_assigner import DynamicSoftLabelAssigner
 from ...data.transform.warp import warp_boxes
@@ -54,7 +77,7 @@ class NanoDetPlusHead(nn.Module):
         self.norm_cfg = norm_cfg
 
         self.assigner = DynamicSoftLabelAssigner(**assigner_cfg)
-        self.distribution_project = Integral(self.reg_max)
+        self.distribution_project = DistributionProject(self.reg_max)
 
         self.loss_qfl = QualityFocalLoss(
             beta=self.loss_cfg.loss_qfl.beta,
@@ -114,6 +137,9 @@ class NanoDetPlusHead(nn.Module):
         print("Finish initialize NanoDet-Plus Head.")
 
     def execute(self, feats):
+        # 只消费与 strides 对应的前 N 层
+        if isinstance(feats, (list, tuple)) and len(feats) > len(self.strides):
+            feats = feats[:len(self.strides)]
         outputs = []
         for feat, cls_convs, gfl_cls in zip(
             feats,
@@ -124,7 +150,6 @@ class NanoDetPlusHead(nn.Module):
                 feat = conv(feat)
             output = gfl_cls(feat)
             outputs.append(output.flatten(start_dim=2))
-        # 🔧 修复：使用 jt.cat 而不是 jt.cat
         outputs = jt.cat(outputs, dim=2).permute(0, 2, 1)
         return outputs
 
@@ -141,7 +166,7 @@ class NanoDetPlusHead(nn.Module):
 
         input_height, input_width = gt_meta["img"].shape[2:]
         featmap_sizes = [
-            (math.ceil(input_height / stride), math.ceil(input_width) / stride)
+            (int(math.ceil(input_height / stride)), int(math.ceil(input_width / stride)))
             for stride in self.strides
         ]
         # get grid cells of one image
@@ -415,19 +440,13 @@ class NanoDetPlusHead(nn.Module):
             else meta["warp_matrix"]
         )
         img_heights = (
-            meta["img_info"]["height"].cpu().numpy()
-            if isinstance(meta["img_info"]["height"], jt.Tensor)
-            else meta["img_info"]["height"]
+            meta["img_info"]["height"]
         )
         img_widths = (
-            meta["img_info"]["width"].cpu().numpy()
-            if isinstance(meta["img_info"]["width"], jt.Tensor)
-            else meta["img_info"]["width"]
+            meta["img_info"]["width"]
         )
         img_ids = (
-            meta["img_info"]["id"].cpu().numpy()
-            if isinstance(meta["img_info"]["id"], jt.Tensor)
-            else meta["img_info"]["id"]
+            meta["img_info"].get("id", 0)
         )
 
         for result, img_width, img_height, img_id, warp_matrix in zip(
@@ -456,19 +475,31 @@ class NanoDetPlusHead(nn.Module):
         self, img, dets, class_names, score_thres=0.3, show=True, save_path=None
     ):
         result = overlay_bbox_cv(img, dets, class_names, score_thresh=score_thres)
+        # 保存可视化结果
+        if save_path:
+            try:
+                import os
+                os.makedirs(os.path.dirname(save_path) or ".", exist_ok=True)
+                ok = cv2.imwrite(save_path, result)
+                if not ok:
+                    print(f"[warn] cv2.imwrite failed for: {save_path}")
+            except Exception as e:
+                print(f"[warn] save visualization failed: {e}")
         if show:
             cv2.imshow("det", result)
         return result
 
     def get_bboxes(self, cls_preds, reg_preds, img_metas):
 
-        device = cls_preds.device
+        # Jittor 的 Var 无 .device 属性，保持占位
+        device = None
         b = cls_preds.shape[0]
         input_height, input_width = img_metas["img"].shape[2:]
         input_shape = (input_height, input_width)
 
+        # 与 PyTorch 保持一致（注意其实现中对 w 的写法为 ceil(w)/stride）：
         featmap_sizes = [
-            (math.ceil(input_height / stride), math.ceil(input_width) / stride)
+            (int(math.ceil(input_height / stride)), int(math.ceil(input_width / stride)))
             for stride in self.strides
         ]
         # get grid cells of one image
@@ -491,14 +522,15 @@ class NanoDetPlusHead(nn.Module):
             # add a dummy background class at the end of all labels
             # same with mmdetection2.0
             score, bbox = scores[i], bboxes[i]
-            padding = score.new_zeros(score.shape[0], 1)
-            score = jt.cat([score, padding], dim=1)
+            padding = jt.zeros((score.shape[0], 1), dtype=score.dtype)
+            score = jt.concat([score, padding], dim=1)
+            # 使用项目内封装的 NMS（需要 nms_cfg 参数）
             results = multiclass_nms(
                 bbox,
                 score,
-                score_thr=0.05,
-                nms_cfg=dict(type="nms", iou_threshold=0.6),
-                max_num=100,
+                0.05,
+                dict(type="nms", iou_threshold=0.6),
+                100,
             )
             result_list.append(results)
         return result_list

@@ -31,10 +31,40 @@ conda activate nano
 python tools/train.py config/nanodet-plus-m_320_voc_bs64_50epochs.yml
 ```
 
-### 推理
+### 单图推理（Jittor 直接加载 PyTorch ckpt）
 
 ```bash
-python tools/demo.py image --config config/nanodet-plus-m_320_voc_bs64_50epochs.yml --model path/to/model.pkl --path path/to/image
+conda activate nano
+cd nanodet-jittor
+python tools/infer_from_pt_ckpt.py \
+  --cfg ../nanodet-pytorch/config/nanodet-plus-m_320_voc_bs64_50epochs.yml \
+  --ckpt ../nanodet-pytorch/workspace/nanodet-plus-m_320_voc_bs64_50epochs/model_best/nanodet_model_best.pth \
+  --img ../nanodet-pytorch/data/VOCdevkit/VOC2007/JPEGImages/000001.jpg \
+  --score_thr 0.3
+# 输出可视化默认保存到: nanodet-jittor/result/infer/pt2jt_vis.jpg
+```
+
+### 小规模评估（mini-eval）
+
+```bash
+python tools/mini_eval_from_pt_ckpt.py \
+  --cfg ../nanodet-pytorch/config/nanodet-plus-m_320_voc_bs64_50epochs.yml \
+  --ckpt ../nanodet-pytorch/workspace/nanodet-plus-m_320_voc_bs64_50epochs/model_best/nanodet_model_best.pth \
+  --max_val_batches 50 \
+  --save_dir result/jittor_from_pt_mini \
+  --vis_num 2 \
+  --score_thr 0.3
+```
+
+### 评估现有 PyTorch JSON（自动 VOC→COCO 类目重映射）
+
+```bash
+python tools/eval_results_json.py \
+  --cfg ../nanodet-pytorch/config/nanodet-plus-m_320_voc_bs64_50epochs.yml \
+  --json ../nanodet-pytorch/workspace/nanodet-plus-m_320_voc_bs64_50epochs/results0.json \
+  --save_dir result/pytorch_eval \
+  --auto_remap_cat
+# 会在 result/pytorch_eval/ 打印整表评估，AP≈0.357（与您的日志一致）
 ```
 
 ## 🏗️ 模型架构

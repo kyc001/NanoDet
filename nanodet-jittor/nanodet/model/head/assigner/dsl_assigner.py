@@ -95,36 +95,43 @@ class DynamicSoftLabelAssigner(BaseAssigner):
         # 🔧 IoU 计算结果调试信息 (已清理)
         iou_cost = -jt.log(pairwise_ious + 1e-7)
 
-        # 🔧 学习 JittorDet 的方法：直接使用 one_hot，避免复杂的类型转换
+        # 🔧 学习 JittorDet 的方法：避免巨张量物化，使用广播 + 分块
         try:
             # 确保 gt_labels 是正确的整数类型
             gt_labels_int = gt_labels.long() if gt_labels.ndim > 0 else gt_labels.unsqueeze(0).long()
-
-            # GT标签转换完成
-
-            # 直接使用 one_hot，这是 JittorDet 中的标准做法
+            # 仅构造 [1, num_gt, num_classes]，避免对 num_valid 维度 repeat
             gt_onehot_label = (
                 jt.nn.one_hot(gt_labels_int, pred_scores.shape[-1])
                 .float()
-                .unsqueeze(0)
-                .repeat(num_valid, 1, 1)
+                .unsqueeze(0)  # [1, G, C]
             )
         except Exception as e:
             print(f"⚠️ GT标签处理失败: {e}")
-            # 🔧 学习 JittorDet：使用更简单的回退方案
-            gt_onehot_label = jt.zeros((num_valid, num_gt, pred_scores.shape[-1]))
-            # 默认所有GT都是第一个类别
+            gt_onehot_label = jt.zeros((1, num_gt, pred_scores.shape[-1]))
             gt_onehot_label[:, :, 0] = 1.0
-        valid_pred_scores = valid_pred_scores.unsqueeze(1).repeat(1, num_gt, 1)
 
-        soft_label = gt_onehot_label * pairwise_ious[..., None]
-        scale_factor = soft_label - valid_pred_scores.sigmoid()
+        # 仅在 num_gt 维度进行广播，不对 num_valid 进行 repeat
+        valid_pred_scores_u = valid_pred_scores.unsqueeze(1)  # [V, 1, C]
 
-        cls_cost = losses.cross_entropy_loss.binary_cross_entropy_with_logits(
-            valid_pred_scores, soft_label,reduction="none"
-        ) * scale_factor.abs().pow(2.0)
-
-        cls_cost = cls_cost.sum(dim=-1)
+        # 分块以降低峰值显存
+        V = num_valid
+        G = num_gt
+        C = pred_scores.shape[-1]
+        cls_cost = jt.zeros((V, G), dtype=valid_pred_scores.dtype)
+        chunk = 16384  # 可根据显存调整
+        for s in range(0, V, chunk):
+            e = min(V, s + chunk)
+            # [blk, G]
+            iou_blk = pairwise_ious[s:e]
+            # [blk, G, C]，依赖广播，不物化全量
+            soft_label_blk = iou_blk.unsqueeze(-1) * gt_onehot_label  # [blk, G, C]
+            pred_blk = valid_pred_scores_u[s:e]                       # [blk, 1, C]
+            scale_factor_blk = (soft_label_blk - jt.sigmoid(pred_blk)).abs().pow(2.0)
+            bce_blk = losses.cross_entropy_loss.binary_cross_entropy_with_logits(
+                pred_blk, soft_label_blk, reduction="none"
+            ) * scale_factor_blk
+            cls_cost_blk = bce_blk.sum(dim=-1)  # [blk, G]
+            cls_cost[s:e] = cls_cost_blk
 
         cost_matrix = cls_cost + iou_cost * self.iou_factor
 

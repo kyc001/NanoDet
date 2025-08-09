@@ -292,9 +292,6 @@ python -m jittor.test.test_core
 
 conda activate nano
 
-
-
-
 cd /home/kyc/project/nanodet/nanodet-jittor
 python tools/train.py config/nanodet-plus-m_320_voc_bs64_50epochs.yml
 
@@ -306,3 +303,10 @@ python tools/train.py config/nanodet-plus-m_320_voc_bs64_50epochs.yml
 
 
 
+[NanoDet][08-01 23:06:27]INFO: Train|Epoch1/50|Iter0(1/108)| mem:5.06G| lr:1.00e-06| loss_qfl:0.6752| loss_bbox:1.1003| loss_dfl:0.5205| aux_loss_qfl:0.6853| aux_loss_bbox:1.0881| aux_loss_dfl:0.5195| 
+
+
+
+conda activate nano
+cd nanodet-jittor
+python tools/train.py config/nanodet-plus-m_320_voc_bs64_50epochs.yml --warmup_steps 100 --max_train_batches 200 --max_val_batches 5

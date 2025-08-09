@@ -172,8 +172,9 @@ class GFLHead(nn.Module):
         gt_labels = gt_meta["gt_labels"]
         input_height, input_width = gt_meta["img"].shape[2:]
 
+        # 修复：保证特征图尺寸为整数，且按 (H/stride, W/stride) 计算
         featmap_sizes = [
-            (math.ceil(input_height / stride), math.ceil(input_width) / stride)
+            (int(math.ceil(input_height / stride)), int(math.ceil(input_width / stride)))
             for stride in self.strides
         ]
 
@@ -563,7 +564,7 @@ class GFLHead(nn.Module):
         input_shape = (input_height, input_width)
 
         featmap_sizes = [
-            (math.ceil(input_height / stride), math.ceil(input_width) / stride)
+            (int(math.ceil(input_height / stride)), int(math.ceil(input_width / stride)))
             for stride in self.strides
         ]
         # get grid cells of one image

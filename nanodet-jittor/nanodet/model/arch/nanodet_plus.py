@@ -17,12 +17,18 @@ class NanoDetPlus(OneStageDetector):
         img = gt_meta['img']
         feat = self.backbone(img)
         fpn_feat = self.fpn(feat)
+        # 仅消费前三层特征，严格对齐 PT 推理（P3,P4,P5）
+        if isinstance(fpn_feat, (list, tuple)) and len(fpn_feat) > 3:
+            fpn_feat = fpn_feat[:3]
         if (self.epoch >= self.detach_epoch):
             aux_fpn_feat = self.aux_fpn([f.detach() for f in feat])
+            if isinstance(aux_fpn_feat, (list, tuple)) and len(aux_fpn_feat) > 3:
+                aux_fpn_feat = aux_fpn_feat[:3]
             dual_fpn_feat = [jt.contrib.concat([f.detach(), aux_f], dim=1) for (f, aux_f) in zip(fpn_feat, aux_fpn_feat)]
         else:
             aux_fpn_feat = self.aux_fpn(feat)
-            # 使用列表而非生成器，避免后续多次迭代导致的意外行为
+            if isinstance(aux_fpn_feat, (list, tuple)) and len(aux_fpn_feat) > 3:
+                aux_fpn_feat = aux_fpn_feat[:3]
             dual_fpn_feat = [jt.contrib.concat([f, aux_f], dim=1) for (f, aux_f) in zip(fpn_feat, aux_fpn_feat)]
         head_out = self.head(fpn_feat)
         aux_head_out = self.aux_head(dual_fpn_feat)

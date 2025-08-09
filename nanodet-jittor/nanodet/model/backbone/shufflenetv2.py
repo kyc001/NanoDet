@@ -59,9 +59,8 @@ class ShuffleV2Block(nn.Module):
 
     @staticmethod
     def depthwise_conv(i, o, kernel_size, stride=1, padding=0, bias=False):
-        # 🔧 紧急修复：避开 Jittor depthwise_conv.py bug
-        # 使用标准卷积替代 groups 卷积
-        return nn.Conv(i, o, kernel_size, stride, padding, bias=bias)
+        # 正确的 depthwise：groups=i，使每个输入通道独立卷积
+        return nn.Conv(i, o, kernel_size, stride, padding, groups=i, bias=bias)
 
     # forward -> execute
     def execute(self, x):

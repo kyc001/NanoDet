@@ -15,13 +15,12 @@ def batched_nms(boxes, scores, idxs, nms_cfg, class_agnostic=False):
     nms_op_name = nms_cfg_.pop("type", "nms")
     assert nms_op_name == "nms", "Only vanilla NMS is supported in this placeholder"
     
-    # Jittor's nms takes iou_threshold
+    # Jittor's nms signature: jt.nms(dets, iou_thr), where dets = [x1,y1,x2,y2,score]
     iou_threshold = nms_cfg_.pop("iou_threshold", 0.5)
 
-    # Jittor's nms is simpler and doesn't have a split_thr logic internally
-    # It returns indices directly.
-    keep = jt.nms(boxes_for_nms, scores, iou_threshold)
-    
+    dets_for_nms = jt.concat([boxes_for_nms, scores[:, None]], -1)
+    keep = jt.nms(dets_for_nms, iou_threshold)
+
     boxes = boxes[keep]
     scores = scores[keep]
 
