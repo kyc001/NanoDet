@@ -558,7 +558,6 @@ class GFLHead(nn.Module):
         Returns:
             results_list (list[tuple]): List of detection bboxes and labels.
         """
-        device = cls_preds.device
         b = cls_preds.shape[0]
         input_height, input_width = img_metas["img"].shape[2:]
         input_shape = (input_height, input_width)

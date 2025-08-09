@@ -65,6 +65,7 @@ def main():
     ap.add_argument('--img', required=True)
     ap.add_argument('--out', default='result/jt_post.npz')
     ap.add_argument('--device', default='cuda:0')
+    ap.add_argument('--pt_npz', default=None, help='optional: path to PT dump npz to override reg_logits for pipeline check')
     args = ap.parse_args()
 
     jt.flags.use_cuda = 1 if args.device.startswith('cuda') else 0
@@ -87,7 +88,20 @@ def main():
     img = meta['img']
     feats = model.backbone(img)
     fpn_feats = model.fpn(feats)
+    print(f"[JT] FPN output feats count: {len(fpn_feats)}, head strides count: {len(model.head.strides)}")
+    for i, f in enumerate(fpn_feats):
+        print(f"  feat[{i}]: shape={f.shape}")
     preds = model.head(fpn_feats)
+
+    # Optional: override reg_logits with PT dump to isolate pipeline diffs
+    pt_npz = None
+    if args.pt_npz and os.path.isfile(args.pt_npz):
+        try:
+            pt_npz = np.load(args.pt_npz)
+            if 'reg_logits' in pt_npz:
+                print('[JT] Override reg_logits from PT npz for pipeline verification')
+        except Exception as e:
+            print('[JT] Failed loading pt_npz:', e)
 
     # build center priors as get_bboxes
     b = preds.shape[0]
@@ -96,17 +110,97 @@ def main():
     featmap_sizes = [ (int(np.ceil(input_h/ s)), int(np.ceil(input_w/ s))) for s in model.head.strides ]
     mlvl = [ model.head.get_single_level_center_priors(b, featmap_sizes[i], s, jt.float32, None) for i,s in enumerate(model.head.strides) ]
     center_priors = jt.cat(mlvl, dim=1)
+    # Debug: stride distribution and dtype
+    cp_stride = center_priors[..., 2]
+    uniq = np.unique(cp_stride.numpy().reshape(-1))
+    flat = cp_stride.reshape(-1)
+    print(f"[JT] center_priors stride dtype={cp_stride.dtype}, unique={uniq.tolist()}")
+    print("[JT] stride head10=", flat[:10].numpy().tolist(), "tail10=", flat[-10:].numpy().tolist())
+
+    # Layer-wise priors debug: print each level's range and count
+    print("[JT] Layer-wise priors debug:")
+    start_idx = 0
+    for i, (s, fs) in enumerate(zip(model.head.strides, featmap_sizes)):
+        h, w = fs
+        count = h * w
+        end_idx = start_idx + count
+        level_priors = center_priors[0, start_idx:end_idx]
+        xy_min = level_priors[:, :2].min(dim=0)
+        xy_max = level_priors[:, :2].max(dim=0)
+        print(f"  Level {i}: stride={s}, shape=({h},{w}), count={count}, idx=[{start_idx}:{end_idx})")
+        print(f"    xy_range: min=({xy_min[0].item():.1f},{xy_min[1].item():.1f}), max=({xy_max[0].item():.1f},{xy_max[1].item():.1f})")
+        start_idx = end_idx
+
 
     cls_preds, reg_preds = preds.split([model.head.num_classes, 4*(model.head.reg_max+1)], dim=-1)
     # 额外导出：reg_logits 与 softmax 概率 p（形状 [B,N,4,m+1]）
     B,N = cls_preds.shape[0], center_priors.shape[1]
     m = model.head.reg_max
     reg_logits = reg_preds.reshape(B, N, 4, m+1)
+    # override from pt_npz if provided (only for diagnostics)
+    if pt_npz is not None and 'reg_logits' in pt_npz and pt_npz['reg_logits'].shape == reg_logits.shape:
+        reg_logits = jt.array(pt_npz['reg_logits'])
+        print('[JT] reg_logits overridden by PT dump (diagnostics only)')
     p = nn.softmax(reg_logits, dim=-1)
     dis_only = (p * jt.arange(0, m+1, dtype=jt.float32)).sum(dim=-1)  # [B,N,4]
 
-    dis_preds = model.head.distribution_project(reg_preds) * center_priors[...,2,None]
-    bboxes = distance2bbox(center_priors[...,:2], dis_preds, max_shape=(input_h, input_w))
+    # 强制 float32 精度避免 stride 乘法的累积误差
+    stride_multiplier = center_priors[...,2,None].float32()
+    # Use dis_only computed from reg_logits to form dis_preds, ensuring path parity with PT
+    dis_preds = (dis_only.float32() * stride_multiplier).float32()
+
+    # Layer-wise head output debug: print each level's reg_logits stats
+    print("[JT] Layer-wise head output debug:")
+    start_idx = 0
+    for i, (s, fs) in enumerate(zip(model.head.strides, featmap_sizes)):
+        h, w = fs
+        count = h * w
+        end_idx = start_idx + count
+        level_reg = reg_logits[0, start_idx:end_idx]  # [count, 4, 8]
+        level_dis = dis_only[0, start_idx:end_idx]    # [count, 4]
+        print(f"  Level {i}: stride={s}, reg_logits mean={level_reg.mean().item():.6f}, std={level_reg.std().item():.6f}")
+        print(f"    dis_only mean={level_dis.mean().item():.6f}, std={level_dis.std().item():.6f}")
+        start_idx = end_idx
+
+
+
+    # Diagnostics: l,t,r,b pre/post clamp via xyxy clamp
+    pts = center_priors[..., :2]
+    ltrb = dis_preds
+    x1_raw = pts[..., 0] - ltrb[..., 0]
+    y1_raw = pts[..., 1] - ltrb[..., 1]
+    x2_raw = pts[..., 0] + ltrb[..., 2]
+    y2_raw = pts[..., 1] + ltrb[..., 3]
+    x1 = x1_raw.clamp(min_v=0, max_v=int(input_w))
+    y1 = y1_raw.clamp(min_v=0, max_v=int(input_h))
+    x2 = x2_raw.clamp(min_v=0, max_v=int(input_w))
+    y2 = y2_raw.clamp(min_v=0, max_v=int(input_h))
+    ltrb_after = jt.stack([pts[...,0]-x1, pts[...,1]-y1, x2-pts[...,0], y2-pts[...,1]], dim=-1)
+    diff = (ltrb_after - ltrb).abs()
+    print(f"[JT] ltrb clamp delta mean={float(diff.mean()) :.4e}, max={float(diff.max()) :.4e}")
+    # Show top-5 deltas (flat)
+    flat = diff.reshape(-1)
+    # print top-5 manually since Jittor lacks topk on 1D Var in some versions
+    vals = flat.numpy()
+    topk_idx = np.argpartition(vals, -5)[-5:]
+    print("[JT] top5 |Δ|:", [float(vals[i]) for i in topk_idx])
+    # Detailed decode diagnostics: export xyxy_raw and xyxy for element-level comparison
+    pts = center_priors[..., :2]
+    ltrb = dis_preds
+    x1_raw = pts[..., 0] - ltrb[..., 0]
+    y1_raw = pts[..., 1] - ltrb[..., 1]
+    x2_raw = pts[..., 0] + ltrb[..., 2]
+    y2_raw = pts[..., 1] + ltrb[..., 3]
+    xyxy_raw = jt.stack([x1_raw, y1_raw, x2_raw, y2_raw], dim=-1)
+
+    x1 = x1_raw.clamp(min_v=0, max_v=input_w)
+    y1 = y1_raw.clamp(min_v=0, max_v=input_h)
+    x2 = x2_raw.clamp(min_v=0, max_v=input_w)
+    y2 = y2_raw.clamp(min_v=0, max_v=input_h)
+    xyxy = jt.stack([x1, y1, x2, y2], dim=-1)
+
+    bboxes = xyxy
+    print(f"[JT] input_shape=({input_h},{input_w}), xyxy_raw vs xyxy diff: mean={float((xyxy_raw-xyxy).abs().mean()):.6f}, max={float((xyxy_raw-xyxy).abs().max()):.6f}")
     scores = cls_preds.sigmoid()
 
     # nms for img 0
@@ -123,6 +217,8 @@ def main():
         prob=p.numpy(),
         dis_only=dis_only.numpy(),
         dis_preds=dis_preds.numpy(),
+        xyxy_raw=xyxy_raw.numpy(),
+        xyxy=xyxy.numpy(),
         bboxes=bboxes.numpy(),
         scores=scores.numpy(),
         dets=dets0.numpy(),

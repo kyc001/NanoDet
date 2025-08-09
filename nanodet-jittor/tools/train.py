@@ -69,8 +69,7 @@ def main(args):
         jt.flags.use_cuda = 1
 
     # 创建保存目录和日志记录器
-    # JITTOR MIGRATION FIX: 修复 mkdir 的调用，传入 local_rank
-    mkdir(local_rank, cfg.save_dir)
+    mkdir(cfg.save_dir)
     # JITTOR MIGRATION FIX: 使用正确的类名实例化 Logger
     logger = NanoDetLightningLogger(cfg.save_dir)
     logger.dump_cfg(cfg)

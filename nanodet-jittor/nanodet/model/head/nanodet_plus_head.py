@@ -24,20 +24,23 @@ class DistributionProject(nn.Module):
         self.register_buffer("project", jt.arange(0, reg_max + 1, dtype=jt.float32))
 
     def execute(self, reg_logits: jt.Var) -> jt.Var:
-        # 期望输入形状 [B, N, 4*(m+1)]
-        assert reg_logits.ndim == 3, f"expect 3D [B,N,4*(m+1)], got {reg_logits.shape}"
-        B, N, C = reg_logits.shape
-        m = self.reg_max
-        assert C == 4 * (m + 1), f"last dim {C} != 4*(m+1)={4*(m+1)}"
-        # 转 float32，减少 AMP 误差放大
-        x = reg_logits.float().reshape(B * N * 4, m + 1)
-        x = nn.softmax(x, dim=1)
-        proj = self.project
-        out = (x * proj).sum(dim=1)
-        out = out.reshape(B, N, 4)
-        return out
+        # 完全模拟 PyTorch Integral 的实现：F.softmax + F.linear
+        shape = reg_logits.shape
+        # 强制 float32 精度并添加数值稳定性
+        reg_logits = reg_logits.float32()
+        x = reg_logits.reshape(*shape[:-1], 4, self.reg_max + 1)
+        # 数值稳定的 softmax：减去最大值避免溢出
+        x_max = x.max(dim=-1, keepdims=True)[0]
+        x_stable = x - x_max
+        x = nn.softmax(x_stable, dim=-1)
+        # 使用 matmul 模拟 F.linear，与 PT 的 F.linear(x, self.project) 完全一致
+        proj = self.project.float32()
+        # [..., 4, m+1] @ [m+1] -> [..., 4]
+        x = jt.matmul(x, proj)
+        return x.reshape(*shape[:-1], 4).float32()
 from jittordet.utils import reduce_mean  # 🔧 使用 JittorDet 的 reduce_mean
 from .assigner.dsl_assigner import DynamicSoftLabelAssigner
+from .assigner.center_radius_assigner import CenterRadiusAssigner
 from ...data.transform.warp import warp_boxes
 from ..module.conv import ConvModule, DepthwiseConvModule
 
@@ -76,7 +79,12 @@ class NanoDetPlusHead(nn.Module):
         self.loss_cfg = loss
         self.norm_cfg = norm_cfg
 
-        self.assigner = DynamicSoftLabelAssigner(**assigner_cfg)
+        # 按配置选择分配器，默认 DSL；可切 CenterRadiusAssigner 保证有正样本
+        assigner_type = assigner_cfg.get('type', 'DSL') if isinstance(assigner_cfg, dict) else 'DSL'
+        if assigner_type == 'CenterRadius':
+            self.assigner = CenterRadiusAssigner(center_radius=assigner_cfg.get('center_radius', 2.5))
+        else:
+            self.assigner = DynamicSoftLabelAssigner(**{k:v for k,v in assigner_cfg.items() if k!='type'})
         self.distribution_project = DistributionProject(self.reg_max)
 
         self.loss_qfl = QualityFocalLoss(
@@ -155,7 +163,8 @@ class NanoDetPlusHead(nn.Module):
 
     def loss(self, preds, gt_meta, aux_preds=None):
 
-        device = preds.device
+        # Jittor 无 .device 概念，直接忽略 device 参数
+        device = None
         batch_size = preds.shape[0]
         gt_bboxes = gt_meta["gt_bboxes"]
         gt_labels = gt_meta["gt_labels"]
@@ -175,9 +184,8 @@ class NanoDetPlusHead(nn.Module):
                 batch_size,
                 featmap_sizes[i],
                 stride,
-                # 🔧 修复：使用 jt.float32 而不是 jt.float32
                 dtype=jt.float32,
-                device=device,
+                device=None,
             )
             for i, stride in enumerate(self.strides)
         ]
@@ -202,9 +210,9 @@ class NanoDetPlusHead(nn.Module):
         # 3. (关键步骤) 将 dis_preds 的形状从 [136000, 4] 调整为 [64, 2125, 4]
         dis_preds = dis_preds.reshape(batch_size, num_priors, 4)
 
-        # 4. 现在可以安全地执行乘法了
+        # 4. 现在可以安全地执行乘法了，强制 float32 精度
         # [64, 2125, 4] * [64, 2125, 1] -> 广播后 -> [64, 2125, 4] * [64, 2125, 4]
-        dis_preds = dis_preds * center_priors[..., 2, None]
+        dis_preds = dis_preds.float32() * center_priors[..., 2, None].float32()
         decoded_bboxes = distance2bbox(center_priors[..., :2], dis_preds)
 
         if aux_preds is not None:
@@ -262,7 +270,6 @@ class NanoDetPlusHead(nn.Module):
         return loss, loss_states
 
     def _get_loss_from_assign(self, cls_preds, reg_preds, decoded_bboxes, assign):
-        device = cls_preds.device
         (
             labels,
             label_scores,
@@ -304,27 +311,21 @@ class NanoDetPlusHead(nn.Module):
             avg_factor=num_total_samples,
         )
 
-        # 🔧 使用已经计算好的 pos_inds，避免重复计算
+        # 超简化损失计算：直接用正样本数作为平均因子
         if len(pos_inds) > 0:
-            # 🔧 使用 JittorDet 标准方法计算权重，避免 detach() 断开计算图
-            weight_targets = cls_preds[pos_inds].sigmoid().max(dim=1)[0]
+            num_pos = len(pos_inds)
 
-            # 🔧 使用 JittorDet 标准方法计算平均因子
-            bbox_avg_factor = jt.clamp(reduce_mean(weight_targets.sum()), min_v=1.0)
-
+            # 简化bbox损失：直接用正样本数平均
             loss_bbox = self.loss_bbox(
                 decoded_bboxes[pos_inds],
-                bbox_targets[pos_inds],
-                weight=weight_targets,
-                avg_factor=bbox_avg_factor,
-            )
-            # 🔧 dist_targets 已经在前面拼接过了
+                bbox_targets[pos_inds]
+            ) / max(num_pos, 1)
+
+            # 简化DFL损失：直接用正样本数平均
             loss_dfl = self.loss_dfl(
                 reg_preds[pos_inds].reshape(-1, self.reg_max + 1),
-                dist_targets[pos_inds].reshape(-1),
-                weight=weight_targets[:, None].expand(-1, 4).reshape(-1),
-                avg_factor=4.0 * bbox_avg_factor,
-            )
+                dist_targets[pos_inds].reshape(-1)
+            ) / max(num_pos * 4, 1)
         else:
             # 负样本分支，设置损失为0
             loss_bbox = reg_preds.sum() * 0
@@ -345,14 +346,22 @@ class NanoDetPlusHead(nn.Module):
         gt_bboxes_ignore=None,
     ):
 
+        # 统一 GT 输入为 ndarray 形状 [num_gt,4] / [num_gt]
+        import numpy as np
+        if isinstance(gt_bboxes, list):
+            # 常见情形：每张图传入 [ndarray(N,4)] 的单元素列表
+            gt_bboxes = gt_bboxes[0] if len(gt_bboxes) == 1 else np.array(gt_bboxes)
+        if isinstance(gt_labels, list):
+            gt_labels = gt_labels[0] if len(gt_labels) == 1 else np.array(gt_labels)
+        if gt_bboxes_ignore is not None and isinstance(gt_bboxes_ignore, list):
+            gt_bboxes_ignore = gt_bboxes_ignore[0] if len(gt_bboxes_ignore) == 1 else np.array(gt_bboxes_ignore)
 
-        # 🔧 Jittor 使用 jt.array 而不是 from_numpy，且不需要 device
+        # 🔧 转为 Jittor 张量
         gt_bboxes = jt.array(gt_bboxes)
         gt_labels = jt.array(gt_labels)
         gt_bboxes = gt_bboxes.cast(decoded_bboxes.dtype)
 
         if gt_bboxes_ignore is not None:
-            # 🔧 Jittor API 修复
             gt_bboxes_ignore = jt.array(gt_bboxes_ignore)
             gt_bboxes_ignore = gt_bboxes_ignore.cast(decoded_bboxes.dtype)
 
@@ -371,15 +380,13 @@ class NanoDetPlusHead(nn.Module):
         num_priors = center_priors.size(0)
         bbox_targets = jt.zeros_like(center_priors)
         dist_targets = jt.zeros_like(center_priors)
-        labels = center_priors.new_full(
-            (num_priors,), self.num_classes
-        )
-        label_weights = center_priors.new_zeros(num_priors)
-        label_scores = center_priors.new_zeros(labels.shape)
+        labels = jt.full((num_priors,), self.num_classes, dtype=jt.int64)
+        label_weights = jt.zeros((num_priors,), dtype=jt.float32)
+        label_scores = jt.zeros_like(labels).float32()
 
         # 🔧 修复：确保返回 Python int，避免 .item() 调用
         num_pos_per_img = int(pos_inds.size(0))
-        pos_ious = assign_result.max_overlaps[pos_inds]
+        pos_ious = assign_result.max_overlaps[pos_inds].clamp(min_v=0.0, max_v=1.0)
 
         if len(pos_inds) > 0:
             bbox_targets[pos_inds, :] = pos_gt_bboxes
@@ -395,6 +402,18 @@ class NanoDetPlusHead(nn.Module):
             label_weights[pos_inds] = 1.0
         if len(neg_inds) > 0:
             label_weights[neg_inds] = 1.0
+
+        # 仅前两次调用输出轻量调试，便于确认正样本数量
+        if not hasattr(self, "_dbg_seen"):
+            self._dbg_seen = 0
+        if self._dbg_seen < 2:
+            try:
+                mean_iou = float(pos_ious.mean()) if len(pos_inds) > 0 else -1.0
+            except Exception:
+                mean_iou = -1.0
+            print(f"[AssignDebug] num_pos={num_pos_per_img}, pos_inds_shape={tuple(pos_inds.shape)}, pos_iou_mean={mean_iou:.4f}, gt_num={int(gt_bboxes.shape[0])}, priors={int(num_priors)}")
+            self._dbg_seen += 1
+
         return (
             labels,
             label_scores,
@@ -405,16 +424,12 @@ class NanoDetPlusHead(nn.Module):
         )
 
     def sample(self, assign_result, gt_bboxes):
-        pos_inds = (
-            jt.nonzero(assign_result.gt_inds > 0)
-            .squeeze(-1)
-            .unique()
-        )
-        neg_inds = (
-            jt.nonzero(assign_result.gt_inds == 0)
-            .squeeze(-1)
-            .unique()
-        )
+        # 显式转换 dtype 以适配 jittor unique 行为
+        gt_inds_i32 = assign_result.gt_inds.cast('int32')
+        pos_inds = jt.nonzero(gt_inds_i32 > 0).squeeze(-1)
+        pos_inds = pos_inds.unique() if pos_inds.numel() > 0 else pos_inds
+        neg_inds = jt.nonzero(gt_inds_i32 == 0).squeeze(-1)
+        neg_inds = neg_inds.unique() if neg_inds.numel() > 0 else neg_inds
         pos_assigned_gt_inds = assign_result.gt_inds[pos_inds] - 1
 
         if gt_bboxes.numel() == 0:
@@ -492,7 +507,6 @@ class NanoDetPlusHead(nn.Module):
     def get_bboxes(self, cls_preds, reg_preds, img_metas):
 
         # Jittor 的 Var 无 .device 属性，保持占位
-        device = None
         b = cls_preds.shape[0]
         input_height, input_width = img_metas["img"].shape[2:]
         input_shape = (input_height, input_width)
@@ -509,12 +523,12 @@ class NanoDetPlusHead(nn.Module):
                 featmap_sizes[i],
                 stride,
                 dtype=jt.float32,
-                device=device,
+                device=None,
             )
             for i, stride in enumerate(self.strides)
         ]
         center_priors = jt.cat(mlvl_center_priors, dim=1)
-        dis_preds = self.distribution_project(reg_preds) * center_priors[..., 2, None]
+        dis_preds = self.distribution_project(reg_preds).float32() * center_priors[..., 2, None].float32()
         bboxes = distance2bbox(center_priors[..., :2], dis_preds, max_shape=input_shape)
         scores = cls_preds.sigmoid()
         result_list = []
@@ -540,15 +554,16 @@ class NanoDetPlusHead(nn.Module):
     ):
 
         h, w = featmap_size
-        # 🔧 Jittor 不支持 device 参数，直接使用 dtype
-        x_range = jt.arange(w, dtype=dtype) * stride
-        y_range = jt.arange(h, dtype=dtype) * stride
+        # 🔧 强制 float32 精度，确保与 PyTorch 完全一致的坐标生成
+        x_range = (jt.arange(w, dtype=jt.float32) * stride).float32()
+        y_range = (jt.arange(h, dtype=jt.float32) * stride).float32()
+        # Jittor meshgrid 默认就是 'ij' indexing，与 PyTorch 一致
         y, x = jt.meshgrid(y_range, x_range)
-        y = y.flatten()
-        x = x.flatten()
-        strides = x.new_full((x.shape[0],), stride)
-        proiors = jt.stack([x, y, strides, strides], dim=-1)
-        return proiors.unsqueeze(0).repeat(batch_size, 1, 1)
+        y = y.flatten().float32()
+        x = x.flatten().float32()
+        strides = jt.full((x.shape[0],), stride, dtype=jt.float32)
+        priors = jt.stack([x, y, strides, strides], dim=-1).float32()
+        return priors.unsqueeze(0).repeat(batch_size, 1, 1)
 
     def _forward_onnx(self, feats):
         outputs = []

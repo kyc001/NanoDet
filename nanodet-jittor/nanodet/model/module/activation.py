@@ -32,6 +32,7 @@ activations = {
 def act_layers(name):
     assert name in activations.keys()
     if name == "LeakyReLU":
+        # 对齐 NanoDet 默认 negative_slope=0.1（与上游 PyTorch 实现一致）
         return nn.LeakyReLU(scale=0.1)
     elif name == "GELU":
         return nn.GELU()

@@ -71,9 +71,15 @@ class GhostModule(nn.Module):
         self.oup = oup
         init_channels = math.ceil((oup / ratio))
         new_channels = (init_channels * (ratio - 1))
-        self.primary_conv = nn.Sequential(nn.Conv(inp, init_channels, kernel_size, stride=stride, padding=(kernel_size // 2), bias=False), nn.BatchNorm(init_channels), (act_layers(activation) if activation else nn.Sequential()))
-        # 🔧 紧急修复：避开 Jittor depthwise_conv.py bug
-        self.cheap_operation = nn.Sequential(nn.Conv(init_channels, new_channels, dw_size, stride=1, padding=(dw_size // 2), bias=False), nn.BatchNorm(new_channels), (act_layers(activation) if activation else nn.Sequential()))
+        self.primary_conv = nn.Sequential(
+            nn.Conv(inp, init_channels, kernel_size, stride=stride, padding=(kernel_size // 2), bias=False),
+            nn.BatchNorm(init_channels),
+            (act_layers(activation) if activation else nn.Sequential()))
+        # 使用真正的 depthwise 卷积（groups=in_channels）
+        self.cheap_operation = nn.Sequential(
+            nn.Conv(init_channels, new_channels, dw_size, stride=1, padding=(dw_size // 2), groups=init_channels, bias=False),
+            nn.BatchNorm(new_channels),
+            (act_layers(activation) if activation else nn.Sequential()))
 
     def execute(self, x):
         x1 = self.primary_conv(x)
@@ -89,8 +95,8 @@ class GhostBottleneck(nn.Module):
         self.stride = stride
         self.ghost1 = GhostModule(in_chs, mid_chs, activation=activation)
         if (self.stride > 1):
-            # 🔧 紧急修复：避开 Jittor depthwise_conv.py bug
-            self.conv_dw = nn.Conv(mid_chs, mid_chs, dw_kernel_size, stride=stride, padding=((dw_kernel_size - 1) // 2), bias=False)
+            # 使用真正的 depthwise 卷积（groups=mid_chs）
+            self.conv_dw = nn.Conv(mid_chs, mid_chs, dw_kernel_size, stride=stride, padding=((dw_kernel_size - 1) // 2), groups=mid_chs, bias=False)
             self.bn_dw = nn.BatchNorm(mid_chs)
         if has_se:
             self.se = SqueezeExcite(mid_chs, se_ratio=se_ratio)
@@ -100,8 +106,13 @@ class GhostBottleneck(nn.Module):
         if ((in_chs == out_chs) and (self.stride == 1)):
             self.shortcut = nn.Sequential()
         else:
-            # 🔧 紧急修复：避开 Jittor depthwise_conv.py bug
-            self.shortcut = nn.Sequential(nn.Conv(in_chs, in_chs, dw_kernel_size, stride=stride, padding=((dw_kernel_size - 1) // 2), bias=False), nn.BatchNorm(in_chs), nn.Conv(in_chs, out_chs, 1, stride=1, padding=0, bias=False), nn.BatchNorm(out_chs))
+            # 使用真正的 depthwise 卷积（groups=in_chs）
+            self.shortcut = nn.Sequential(
+                nn.Conv(in_chs, in_chs, dw_kernel_size, stride=stride, padding=((dw_kernel_size - 1) // 2), groups=in_chs, bias=False),
+                nn.BatchNorm(in_chs),
+                nn.Conv(in_chs, out_chs, 1, stride=1, padding=0, bias=False),
+                nn.BatchNorm(out_chs)
+            )
 
     def execute(self, x):
         residual = x

@@ -12,6 +12,10 @@ def distance2bbox(points, distance, max_shape=None):
     Returns:
         jt.Var: 形状为 (n, 4) 的解码边界框，格式为 [x1, y1, x2, y2]。
     """
+    # 强制 float32 精度，避免累积误差
+    points = points.float32()
+    distance = distance.float32()
+
     x1 = points[..., 0] - distance[..., 0]
     y1 = points[..., 1] - distance[..., 1]
     x2 = points[..., 0] + distance[..., 2]

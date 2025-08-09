@@ -65,16 +65,102 @@ def main():
     with torch.no_grad():
         feats = model.backbone(meta['img'])
         fpn_feats = model.fpn(feats)
+        print(f"[PT] FPN output feats count: {len(fpn_feats)}, head strides count: {len(model.head.strides)}")
+        for i, f in enumerate(fpn_feats):
+            print(f"  feat[{i}]: shape={f.shape}")
         preds = model.head(fpn_feats)
 
     b = preds.shape[0]
     input_h, input_w = meta['img'].shape[2:]
-    featmap_sizes = [ (int(np.ceil(input_h/s)), int(np.ceil(input_w))/ s) for s in model.head.strides ]
+    featmap_sizes = [ (int(np.ceil(input_h / s)), int(np.ceil(input_w / s))) for s in model.head.strides ]
     mlvl = [ model.head.get_single_level_center_priors(b, featmap_sizes[i], s, torch.float32, device) for i,s in enumerate(model.head.strides) ]
     center_priors = torch.cat(mlvl, dim=1)
+    # Debug: stride distribution and dtype
+    cp_stride = center_priors[..., 2]
+    try:
+        uniq = torch.unique(cp_stride).tolist()
+    except Exception:
+        uniq = sorted(list(set(cp_stride.reshape(-1).tolist())))
+    flat = cp_stride.reshape(-1)
+    print(f"[PT] center_priors stride dtype={cp_stride.dtype}, unique={uniq}")
+    print("[PT] stride head10=", flat[:10].tolist(), "tail10=", flat[-10:].tolist())
+
+    # Layer-wise priors debug: print each level's range and count
+    print("[PT] Layer-wise priors debug:")
+    start_idx = 0
+    for i, (s, fs) in enumerate(zip(model.head.strides, featmap_sizes)):
+        h, w = fs
+        count = h * w
+        end_idx = start_idx + count
+        level_priors = center_priors[0, start_idx:end_idx]
+        xy_min = level_priors[:, :2].min(dim=0)[0]
+        xy_max = level_priors[:, :2].max(dim=0)[0]
+        print(f"  Level {i}: stride={s}, shape=({h},{w}), count={count}, idx=[{start_idx}:{end_idx})")
+        print(f"    xy_range: min=({xy_min[0]:.1f},{xy_min[1]:.1f}), max=({xy_max[0]:.1f},{xy_max[1]:.1f})")
+        start_idx = end_idx
+
+
     cls_preds, reg_preds = preds.split([model.head.num_classes, 4*(model.head.reg_max+1)], dim=-1)
-    dis_preds = model.head.distribution_project(reg_preds) * center_priors[...,2,None]
-    bboxes = distance2bbox(center_priors[...,:2], dis_preds, max_shape=(input_h, input_w))
+    # 额外导出：reg_logits 与 softmax 概率 p（形状 [B,N,4,m+1]）
+    B,N = cls_preds.shape[0], center_priors.shape[1]
+    m = model.head.reg_max
+    reg_logits = reg_preds.reshape(B, N, 4, m+1)
+    p = torch.softmax(reg_logits, dim=-1)
+    dis_only = (p * torch.arange(0, m+1, dtype=torch.float32, device=device)).sum(dim=-1)  # [B,N,4]
+
+    # Use dis_only for dis_preds to match JT diagnostics path exactly
+    dis_preds = dis_only * center_priors[...,2,None]
+
+    # Layer-wise head output debug: print each level's reg_logits stats
+    print("[PT] Layer-wise head output debug:")
+    start_idx = 0
+    for i, (s, fs) in enumerate(zip(model.head.strides, featmap_sizes)):
+        h, w = fs
+        count = h * w
+        end_idx = start_idx + count
+        level_reg = reg_logits[0, start_idx:end_idx]  # [count, 4, 8]
+        level_dis = dis_only[0, start_idx:end_idx]    # [count, 4]
+        print(f"  Level {i}: stride={s}, reg_logits mean={level_reg.mean().item():.6f}, std={level_reg.std().item():.6f}")
+        print(f"    dis_only mean={level_dis.mean().item():.6f}, std={level_dis.std().item():.6f}")
+        start_idx = end_idx
+
+    # Detailed decode diagnostics: export xyxy_raw and xyxy for element-level comparison
+    pts = center_priors[..., :2]
+    ltrb = dis_preds
+    x1_raw = pts[..., 0] - ltrb[..., 0]
+    y1_raw = pts[..., 1] - ltrb[..., 1]
+    x2_raw = pts[..., 0] + ltrb[..., 2]
+    y2_raw = pts[..., 1] + ltrb[..., 3]
+    xyxy_raw = torch.stack([x1_raw, y1_raw, x2_raw, y2_raw], dim=-1)
+
+    x1 = x1_raw.clamp(min=0, max=input_w)
+    y1 = y1_raw.clamp(min=0, max=input_h)
+    x2 = x2_raw.clamp(min=0, max=input_w)
+    y2 = y2_raw.clamp(min=0, max=input_h)
+    xyxy = torch.stack([x1, y1, x2, y2], dim=-1)
+
+    bboxes = xyxy
+    print(f"[PT] input_shape=({input_h},{input_w}), xyxy_raw vs xyxy diff: mean={torch.abs(xyxy_raw-xyxy).mean().item():.6f}, max={torch.abs(xyxy_raw-xyxy).max().item():.6f}")
+    # Diagnostics: l,t,r,b pre/post clamp via xyxy clamp
+    pts = center_priors[..., :2]
+    ltrb = dis_preds
+    x1_raw = pts[..., 0] - ltrb[..., 0]
+    y1_raw = pts[..., 1] - ltrb[..., 1]
+    x2_raw = pts[..., 0] + ltrb[..., 2]
+    y2_raw = pts[..., 1] + ltrb[..., 3]
+    x1 = x1_raw.clamp(min=0, max=int(input_w))
+    y1 = y1_raw.clamp(min=0, max=int(input_h))
+    x2 = x2_raw.clamp(min=0, max=int(input_w))
+    y2 = y2_raw.clamp(min=0, max=int(input_h))
+    ltrb_after = torch.stack([pts[...,0]-x1, pts[...,1]-y1, x2-pts[...,0], y2-pts[...,1]], dim=-1)
+    diff = (ltrb_after - ltrb).abs()
+    print(f"[PT] ltrb clamp delta mean={diff.mean().item():.4e}, max={diff.max().item():.4e}")
+    # Show top-5 deltas (flat)
+    flat = diff.reshape(-1)
+    if flat.numel() > 0:
+        topk = torch.topk(flat, k=min(5, flat.numel()))
+        print("[PT] top5 |Δ|:", [float(v) for v in topk.values.tolist()])
+
     scores = torch.sigmoid(cls_preds)
 
     score0 = scores[0]
@@ -91,7 +177,12 @@ def main():
     os.makedirs(os.path.dirname(args.out) or '.', exist_ok=True)
     np.savez(args.out,
         center_priors=center_priors.cpu().numpy(),
+        reg_logits=reg_logits.cpu().numpy(),
+        prob=p.cpu().numpy(),
+        dis_only=dis_only.cpu().numpy(),
         dis_preds=dis_preds.cpu().numpy(),
+        xyxy_raw=xyxy_raw.cpu().numpy(),
+        xyxy=xyxy.cpu().numpy(),
         bboxes=bboxes.cpu().numpy(),
         scores=scores.cpu().numpy(),
         dets=dets_np,

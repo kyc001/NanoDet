@@ -71,15 +71,27 @@ def pt_state_to_jt_checkpoint(pt_ckpt, model=None, prefer_avg=True):
             if vshape == tshape:
                 reconciled[k] = v_np
                 continue
-            # handle depthwise conv: pt (Cout,1,kh,kw) -> jt (Cout,Cin,kh,kw) where groups=in
+            # handle depthwise/group conv mapping: pt (Cout,1,kh,kw) -> jt (Cout,Cin,kh,kw)
             if v_np.ndim == 4 and len(tshape) == 4 and v_np.shape[0] == tshape[0]:
-                if v_np.shape[1] == 1 and tshape[1] == tshape[0]:
-                    # diagonal placement: each out channel connects to same-index input channel
-                    cout = tshape[0]
-                    kh, kw = tshape[2], tshape[3]
-                    neww = np.zeros(tshape, dtype=np.float32)
-                    for c in range(cout):
-                        neww[c, c, :, :] = v_np[c, 0, :, :]
+                if v_np.shape[1] == 1:
+                    cout_t, cin_t, kh, kw = tshape
+                    # Ghost-aware mapping: for Ghost cheap_operation, map based on actual topology
+                    if 'cheap_operation' in k and cin_t > 1:
+                        # Ghost cheap DW: init_channels -> new_channels with groups=init_channels
+                        # Each output channel maps to its corresponding input channel (1:1 for true DW)
+                        neww = np.zeros(tshape, dtype=np.float32)
+                        for oc in range(min(cout_t, cin_t)):
+                            neww[oc, oc, :, :] = v_np[oc, 0, :, :]
+                        # For extra output channels beyond cin_t, use modulo mapping
+                        for oc in range(cin_t, cout_t):
+                            ic = oc % cin_t
+                            neww[oc, ic, :, :] = v_np[oc, 0, :, :]
+                    else:
+                        # Standard channel-multiplier mapping for other DW convs
+                        neww = np.zeros(tshape, dtype=np.float32)
+                        for oc in range(cout_t):
+                            ic = oc % cin_t
+                            neww[oc, ic, :, :] = v_np[oc, 0, :, :]
                     reconciled[k] = neww
                     continue
             # expand scalar -> vector

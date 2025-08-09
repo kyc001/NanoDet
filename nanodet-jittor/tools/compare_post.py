@@ -3,7 +3,7 @@
 import os, argparse, numpy as np
 
 KEYS = [
-    'center_priors', 'dis_preds', 'bboxes', 'scores'
+    'center_priors', 'reg_logits', 'prob', 'dis_only', 'dis_preds', 'xyxy_raw', 'xyxy', 'bboxes', 'scores'
 ]
 
 def stat_diff(a, b):
@@ -38,6 +38,22 @@ def main():
         idx = np.argpartition(flat, -5)[-5:]
         top = sorted([(int(i), float(flat[i])) for i in idx], key=lambda x: -x[1])
         print(' top bbox diffs (flat idx, abs):', top)
+
+    # Grouped stats per stride level if center_priors are present and match
+    if 'center_priors' in pt and 'center_priors' in jt and pt['center_priors'].shape == jt['center_priors'].shape:
+        strides = pt['center_priors'][..., 2].reshape(-1)
+        uniq = sorted(list(set(strides.tolist())))
+        print('\nPer-stride mean_abs diffs:')
+        for s_val in uniq:
+            mask = (strides == s_val)
+            idxs = np.where(mask)[0]
+            print(f' stride={s_val}: count={idxs.size}')
+            for k in ['reg_logits','prob','dis_only','dis_preds','bboxes','scores']:
+                if k in pt and k in jt and pt[k].shape == jt[k].shape:
+                    a = pt[k].reshape((-1,)+pt[k].shape[2:])[idxs]
+                    b = jt[k].reshape((-1,)+jt[k].shape[2:])[idxs]
+                    d = np.abs(a-b)
+                    print(f'  - {k}: mean_abs={float(d.mean()):.4e}, max_abs={float(d.max()):.4e}')
 
 if __name__ == '__main__':
     main()
