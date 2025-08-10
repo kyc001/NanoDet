@@ -22,20 +22,17 @@ class NanoDetPlus(OneStageDetector):
         img = gt_meta['img']
         feat = self.backbone(img)
         fpn_feat = self.fpn(feat)
-        # 仅消费前三层特征，严格对齐 PT 推理（P3,P4,P5）
-        if isinstance(fpn_feat, (list, tuple)) and len(fpn_feat) > 3:
-            fpn_feat = fpn_feat[:3]
+        # 支持全部 FPN 层级输出（自适应 strides 个数）
+        # 不再截断到前三层，保持与 head.strides 一致
         aux_head_out = None
         if self.aux_head is not None and self.aux_fpn is not None:
             if (self.epoch >= self.detach_epoch):
                 aux_fpn_feat = self.aux_fpn([f.detach() for f in feat])
-                if isinstance(aux_fpn_feat, (list, tuple)) and len(aux_fpn_feat) > 3:
-                    aux_fpn_feat = aux_fpn_feat[:3]
+                # 不再截断到前三层，保持与 head.strides 一致
                 dual_fpn_feat = [jt.contrib.concat([f.detach(), aux_f], dim=1) for (f, aux_f) in zip(fpn_feat, aux_fpn_feat)]
             else:
                 aux_fpn_feat = self.aux_fpn(feat)
-                if isinstance(aux_fpn_feat, (list, tuple)) and len(aux_fpn_feat) > 3:
-                    aux_fpn_feat = aux_fpn_feat[:3]
+                # 不再截断到前三层，保持与 head.strides 一致
                 dual_fpn_feat = [jt.contrib.concat([f, aux_f], dim=1) for (f, aux_f) in zip(fpn_feat, aux_fpn_feat)]
             aux_head_out = self.aux_head(dual_fpn_feat)
         head_out = self.head(fpn_feat)

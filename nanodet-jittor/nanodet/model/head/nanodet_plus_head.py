@@ -12,31 +12,34 @@ from nanodet.util.box_transform import distance2bbox, bbox2distance
 from jittordet.models.losses import DistributionFocalLoss, QualityFocalLoss  # 🔧 直接使用 JittorDet
 from jittordet.models.losses.iou_loss import GIoULoss
 from jittordet.models.utils.initialize import normal_init
-# Use project-local NMS wrapper to avoid API mismatch
+# 使用 JittorDet 自带的 NMS，避免本地实现差异
 from ..module.nms import multiclass_nms
+
+# 学习 mmcv 的 Scale 模块，使用 Jittor 实现一个可训练标量
+class Scale(nn.Module):
+    def __init__(self, scale=1.0):
+        super().__init__()
+        # 使用可训练的标量参数
+        self.scale = jt.array([float(scale)], dtype=jt.float32)
+        self.scale.requires_grad = True
+    def execute(self, x):
+        return x * self.scale
 # 替换外部 Integral，使用本地 DistributionProject 实现以严格对齐 PyTorch 逻辑
 # from jittordet.models.dense_heads.gfl_head import Integral
 class DistributionProject(nn.Module):
     def __init__(self, reg_max: int):
         super().__init__()
         self.reg_max = reg_max
-        # [m+1] 投影向量 0..m
+        # 使用与 PyTorch Integral 完全一致的投影向量
         self.register_buffer("project", jt.arange(0, reg_max + 1, dtype=jt.float32))
 
     def execute(self, reg_logits: jt.Var) -> jt.Var:
-        # 完全模拟 PyTorch Integral 的实现：F.softmax + F.linear
-        shape = reg_logits.shape
-        # 强制 float32 精度并添加数值稳定性
-        reg_logits = reg_logits.float32()
-        x = reg_logits.reshape(*shape[:-1], 4, self.reg_max + 1)
-        # 数值稳定的 softmax：减去最大值避免溢出
-        x_max = x.max(dim=-1, keepdims=True)[0]
-        x_stable = x - x_max
-        x = nn.softmax(x_stable, dim=-1)
-        # 使用 matmul 模拟 F.linear，与 PT 的 F.linear(x, self.project) 完全一致
-        proj = self.project.float32()
-        # [..., 4, m+1] @ [m+1] -> [..., 4]
-        x = jt.matmul(x, proj)
+        # 与 PyTorch Integral 完全对齐：在每个方向的 (reg_max+1) 维上做 softmax 再投影
+        shape = reg_logits.shape  # [..., 4*(m+1)]
+        x = reg_logits.float32().reshape(*shape[:-1], 4, self.reg_max + 1)
+        x = nn.softmax(x, dim=-1)
+        proj = self.project.float32()  # [m+1]
+        x = (x * proj).sum(dim=-1)  # [..., 4]
         return x.reshape(*shape[:-1], 4).float32()
 from jittordet.utils import reduce_mean  # 🔧 使用 JittorDet 的 reduce_mean
 from .assigner.dsl_assigner import DynamicSoftLabelAssigner
@@ -63,10 +66,13 @@ class NanoDetPlusHead(nn.Module):
         reg_max=7,
         activation="LeakyReLU",
         assigner_cfg=dict(topk=13),
+        share_cls_reg_tower=False,
         **kwargs
     ):
         super(NanoDetPlusHead, self).__init__()
         self.num_classes = num_classes
+        # 允许共享 cls/reg 的 conv 塔，用于对齐部分 PT 版本仅保存 cls_convs 的情况
+        self.share_cls_reg_tower = share_cls_reg_tower
         self.in_channels = input_channel
         self.feat_channels = feat_channels
         self.stacked_convs = stacked_convs
@@ -99,22 +105,42 @@ class NanoDetPlusHead(nn.Module):
         self.init_weights()
 
     def _init_layers(self):
+        # 分类分支 conv 塔
         self.cls_convs = nn.ModuleList()
         for _ in self.strides:
-            cls_convs = self._buid_not_shared_head()
-            self.cls_convs.append(cls_convs)
-
+            self.cls_convs.append(self._buid_not_shared_head())
+        # 回归分支 conv 塔
+        if self.share_cls_reg_tower:
+            # 共享：直接引用 cls_convs
+            self.reg_convs = self.cls_convs
+        else:
+            self.reg_convs = nn.ModuleList()
+            for _ in self.strides:
+                self.reg_convs.append(self._buid_not_shared_head())
+        # 逐层输出头：分离头（与我们之前稳定形态一致），并保留 scales
         self.gfl_cls = nn.ModuleList(
             [
                 nn.Conv2d(
                     self.feat_channels,
-                    self.num_classes + 4 * (self.reg_max + 1),
+                    self.num_classes,
                     1,
                     padding=0,
                 )
                 for _ in self.strides
             ]
         )
+        self.gfl_reg = nn.ModuleList(
+            [
+                nn.Conv2d(
+                    self.feat_channels,
+                    4 * (self.reg_max + 1),
+                    1,
+                    padding=0,
+                )
+                for _ in self.strides
+            ]
+        )
+        self.scales = nn.ModuleList([Scale(1.0) for _ in self.strides])
 
     def _buid_not_shared_head(self):
         cls_convs = nn.ModuleList()
@@ -135,28 +161,38 @@ class NanoDetPlusHead(nn.Module):
         return cls_convs
 
     def init_weights(self):
-        for m in self.cls_convs.modules():
+        # 初始化分类与回归分支 conv 塔
+        for m in list(self.cls_convs.modules()) + list(self.reg_convs.modules()):
             if isinstance(m, nn.Conv2d):
                 normal_init(m, std=0.01)
         # init cls head with confidence = 0.01
         bias_cls = -4.595
         for i in range(len(self.strides)):
             normal_init(self.gfl_cls[i], std=0.01, bias=bias_cls)
+            normal_init(self.gfl_reg[i], std=0.01)
         print("Finish initialize NanoDet-Plus Head.")
 
     def execute(self, feats):
-        # 只消费与 strides 对应的前 N 层
+        # 与 strides 个数保持一致
         if isinstance(feats, (list, tuple)) and len(feats) > len(self.strides):
             feats = feats[:len(self.strides)]
         outputs = []
-        for feat, cls_convs, gfl_cls in zip(
-            feats,
-            self.cls_convs,
-            self.gfl_cls,
+        for idx, (feat, cls_convs, reg_convs, gfl_cls, gfl_reg, scale) in enumerate(
+            zip(feats, self.cls_convs, self.reg_convs, self.gfl_cls, self.gfl_reg, self.scales)
         ):
+            # 分类分支
+            cls_feat = feat
             for conv in cls_convs:
-                feat = conv(feat)
-            output = gfl_cls(feat)
+                cls_feat = conv(cls_feat)
+            cls_pred = gfl_cls(cls_feat)
+            # 回归分支
+            reg_feat = feat
+            for conv in reg_convs:
+                reg_feat = conv(reg_feat)
+            reg_logits = gfl_reg(reg_feat)
+            reg_logits = scale(reg_logits)
+            # 拼接为原格式：[C + 4*(m+1), H, W]
+            output = jt.concat([cls_pred, reg_logits], dim=1)
             outputs.append(output.flatten(start_dim=2))
         outputs = jt.cat(outputs, dim=2).permute(0, 2, 1)
         return outputs
@@ -470,6 +506,7 @@ class NanoDetPlusHead(nn.Module):
             det_result = {}
             det_bboxes, det_labels = result
             det_bboxes = det_bboxes.detach().cpu().numpy()
+            # 还原到原图坐标系
             det_bboxes[:, :4] = warp_boxes(
                 det_bboxes[:, :4], np.linalg.inv(warp_matrix), img_width, img_height
             )
@@ -530,15 +567,14 @@ class NanoDetPlusHead(nn.Module):
         center_priors = jt.cat(mlvl_center_priors, dim=1)
         dis_preds = self.distribution_project(reg_preds).float32() * center_priors[..., 2, None].float32()
         bboxes = distance2bbox(center_priors[..., :2], dis_preds, max_shape=input_shape)
+        # 分类分数需做 sigmoid，execute 阶段未对 cls 做激活
         scores = cls_preds.sigmoid()
         result_list = []
         for i in range(b):
-            # add a dummy background class at the end of all labels
-            # same with mmdetection2.0
+            # 按 mmdet 接口约定，需在 scores 末尾补一列背景类得分
             score, bbox = scores[i], bboxes[i]
             padding = jt.zeros((score.shape[0], 1), dtype=score.dtype)
             score = jt.concat([score, padding], dim=1)
-            # 使用项目内封装的 NMS（需要 nms_cfg 参数）
             results = multiclass_nms(
                 bbox,
                 score,
@@ -554,7 +590,7 @@ class NanoDetPlusHead(nn.Module):
     ):
 
         h, w = featmap_size
-        # 🔧 强制 float32 精度，确保与 PyTorch 完全一致的坐标生成
+        # 与 PyTorch 版本对齐：不加 0.5 偏移，直接 i*stride（在我们的数据上更优）
         x_range = (jt.arange(w, dtype=jt.float32) * stride).float32()
         y_range = (jt.arange(h, dtype=jt.float32) * stride).float32()
         # Jittor meshgrid 默认就是 'ij' indexing，与 PyTorch 一致

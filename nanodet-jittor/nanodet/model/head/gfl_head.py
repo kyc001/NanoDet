@@ -45,8 +45,22 @@ class Integral(nn.Module):
 
 
     def execute(self, x):
-        x = nn.softmax(x.reshape(-1, self.reg_max + 1), dim=1)
-        x = nn.matmul(x, self._project.type_as(x)[:, None]).reshape(-1, 4)
+        # 期望与 PyTorch Integral 完全对齐
+        # x shape: [..., 4*(reg_max+1)]
+        last = x.shape[-1]
+        assert last == 4 * (self.reg_max + 1), f"Integral expects last dim {4*(self.reg_max+1)}, got {last}"
+        # reshape [..., 4, reg_max+1]
+        new_shape = list(x.shape[:-1]) + [4, self.reg_max + 1]
+        x = x.reshape(new_shape)
+        # softmax over bins
+        x = nn.softmax(x, dim=-1)
+        # project 0..reg_max in float32
+        proj = jt.arange(0, self.reg_max + 1, dtype=jt.float32)
+        proj = proj.reshape([1] * (len(new_shape) - 1) + [self.reg_max + 1]).type_as(x)
+        # expectation
+        x = (x * proj).sum(dim=-1)
+        # reshape back to [..., 4]
+        x = x.reshape(list(x.shape[:-1]))
         return x
 
 

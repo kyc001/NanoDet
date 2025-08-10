@@ -10,6 +10,7 @@ import argparse
 import random
 import warnings
 from types import SimpleNamespace
+import copy
 import traceback
 
 # JITTOR MIGRATION: 导入 jittor 和 numpy
@@ -57,6 +58,12 @@ def set_seed(seed):
 def main(args):
     # 加载配置
     load_config(cfg, args.config)
+    # 允许命令行覆盖总 epochs 数，便于快速微调
+    if args.max_epochs is not None and args.max_epochs > 0:
+        # yacs CfgNode 默认 immutable，先解锁再设置
+        cfg.defrost()
+        cfg.schedule.total_epochs = args.max_epochs
+        cfg.freeze()
     if cfg.model.arch.head.num_classes != len(cfg.class_names):
         raise ValueError(
             "cfg.model.arch.head.num_classes 必须等于 len(cfg.class_names), "
@@ -84,6 +91,12 @@ def main(args):
     logger.info("正在设置数据...")
     train_dataset = build_dataset(cfg.data.train, "train")
     val_dataset = build_dataset(cfg.data.val, "val") # 模式应为 'val'
+    try:
+        logger.info(f"数据集已构建完成 | 训练样本数: {len(train_dataset)} | 验证样本数: {len(val_dataset)}")
+        import sys as _sys
+        print(f"[Heartbeat] Datasets ready. train={len(train_dataset)} val={len(val_dataset)}", flush=True)
+    except Exception:
+        pass
 
     # JITTOR MIGRATION: Jittor 的 DataLoader 直接在 Dataset 对象上配置
     train_dataloader = train_dataset.set_attrs(
@@ -100,6 +113,11 @@ def main(args):
         collate_batch=naive_collate,
         drop_last=False,
     )
+    try:
+        logger.info(f"DataLoader 已就绪 | train_batches_per_epoch: {len(train_dataloader)} | val_batches: {len(val_dataloader)}")
+        print(f"[Heartbeat] Dataloaders ready. train_batches={len(train_dataloader)} val_batches={len(val_dataloader)}", flush=True)
+    except Exception:
+        pass
 
     evaluator = build_evaluator(cfg.evaluator, val_dataset)
 
@@ -107,19 +125,72 @@ def main(args):
     task = TrainingTask(cfg, evaluator, logger)
     
     # 加载预训练模型权重
-    if "load_model" in cfg.schedule:
-        ckpt = jt.load(cfg.schedule.load_model)
-        if "pytorch-lightning_version" in ckpt:
-             warnings.warn(
-                "警告！您正在加载一个 PyTorch Lightning 检查点。请确保其与当前模型兼容。"
-            )
-        elif "state_dict" not in ckpt:
+    if hasattr(cfg.schedule, 'load_model') and cfg.schedule.load_model:
+        lm = cfg.schedule.load_model
+        logger.info(f"🔄 计划加载预训练权重: {lm}")
+        # 既支持 Jittor .pkl，也支持直接指向 PyTorch .ckpt/.pth
+        if isinstance(lm, str) and (lm.endswith('.ckpt') or lm.endswith('.pth')):
+            from nanodet.util.check_point import pt_to_jt_checkpoint
+            try:
+                import torch
+            except Exception as e:
+                raise RuntimeError('需要安装 PyTorch 才能从 .ckpt/.pth 加载权重') from e
+            pt_ckpt = torch.load(lm, map_location='cpu')
+            ckpt = pt_to_jt_checkpoint(pt_ckpt, task.model)
+        else:
+            ckpt = jt.load(lm)
+        # 统计转换后 state_dict 关键信息
+        if isinstance(ckpt, dict) and 'state_dict' in ckpt:
+            sd_keys = list(ckpt['state_dict'].keys())
+            n_keys = len(sd_keys)
+            has_head_cls = any(k.startswith('head.gfl_cls.') for k in sd_keys)
+            has_head_reg = any(k.startswith('head.gfl_reg.') for k in sd_keys)
+            logger.info(f"✅ 预训练权重键数: {n_keys}, 含 head.gfl_cls: {has_head_cls}, 含 head.gfl_reg: {has_head_reg}")
+        # 优先使用 avg_model.* (EMA) 权重分支，提高评估稳定性（如有的话）
+        if isinstance(ckpt, dict) and "state_dict" in ckpt:
+            has_ema = any(k.startswith("avg_model.") for k in ckpt["state_dict"].keys())
+            if has_ema:
+                from nanodet.util.check_point import convert_avg_params
+                ema_state = convert_avg_params(ckpt)
+                ckpt = dict(state_dict=ema_state)
+        if isinstance(ckpt, dict) and "pytorch-lightning_version" in ckpt:
+            warnings.warn("警告！您正在加载一个 PyTorch Lightning 检查点。请确保其与当前模型兼容。")
+        elif isinstance(ckpt, dict) and "state_dict" not in ckpt:
             # 假设是旧格式
-            warnings.warn(
-                "警告！旧的 .pth 检查点格式已弃用。请使用 tools/convert_old_checkpoint.py 进行转换。"
-            )
+            warnings.warn("警告！旧的 .pth 检查点格式已弃用。请使用 tools/convert_old_checkpoint.py 进行转换。")
             ckpt = convert_old_model(ckpt)
+        # 微调时：保留 backbone、fpn，重置 head 的最后输出层（防止加载过拟合的偏置）
+        if getattr(cfg.schedule, 'finetune_reset_head', False):
+            model_sd = task.model.state_dict()
+            head_prefixes = ['head.gfl_cls.', 'head.gfl_reg.']
+            if isinstance(ckpt, dict) and 'state_dict' in ckpt:
+                sd = ckpt['state_dict']
+                for k in list(sd.keys()):
+                    if any(k.startswith(p) for p in head_prefixes):
+                        sd.pop(k)
+        # 实际加载
         load_model_weight(task.model, ckpt, logger)
+        # 若存在 avg_model（EMA），将其与当前 model 同步，避免验证时用到未初始化的 avg_model
+        try:
+            if getattr(task, 'avg_model', None) is not None:
+                task.avg_model.load_state_dict(task.model.state_dict())
+        except Exception as e:
+            logger.warning(f"avg_model 同步失败: {e}")
+        # 加载后快速打印若干关键层的范数，确认非随机初始化
+        try:
+            import numpy as _np
+            msd = task.model.state_dict()
+            def _norm(name):
+                v = msd.get(name, None)
+                return None if v is None else float(_np.linalg.norm(v.numpy()))
+            logger.info(
+                "🔎 参数范数 | head.gfl_cls.0.weight: {:.4f} | head.gfl_reg.0.weight: {:.4f}".format(
+                    _norm('head.gfl_cls.0.weight') or -1.0,
+                    _norm('head.gfl_reg.0.weight') or -1.0,
+                )
+            )
+        except Exception as e:
+            logger.warning(f"参数范数检查失败: {e}")
         logger.info(f"从 {cfg.schedule.load_model} 加载了模型权重")
 
     # JITTOR MIGRATION: 替换 PyTorch Lightning Trainer 为手动训练循环
@@ -312,6 +383,22 @@ def main(args):
                    f"Time: {epoch_time:.1f}s | "
                    f"LR: {current_lr:.6f}")
 
+        # 记录到 CSV 便于画曲线
+        try:
+            import csv, os
+            metrics_path = os.path.join(cfg.save_dir, 'logs', 'metrics.csv')
+            os.makedirs(os.path.dirname(metrics_path), exist_ok=True)
+            header = ['epoch','avg_train_loss','mAP','AP50','AP75']
+            # 先写入占位，mAP 将在验证后写入
+            file_exists = os.path.exists(metrics_path)
+            with open(metrics_path, 'a', newline='') as f:
+                w = csv.writer(f)
+                if not file_exists:
+                    w.writerow(header)
+                w.writerow([epoch+1, float(avg_loss), '', '', ''])
+        except Exception as e:
+            logger.warning(f"保存 metrics.csv 失败: {e}")
+
         # 验证和测评
         if (epoch + 1) % cfg.schedule.val_intervals == 0:
             logger.info(f"🔍 开始验证 Epoch {epoch + 1}...")
@@ -351,7 +438,30 @@ def main(args):
                 # 提取关键指标
                 if metrics and 'mAP' in metrics:
                     current_ap = metrics['mAP']
+                    ap50 = metrics.get('AP_50', '')
+                    ap75 = metrics.get('AP_75', '')
                     logger.info(f"📊 验证结果 | mAP: {current_ap:.4f}")
+
+                    # 将 mAP 写回 CSV（更新该 epoch 行）
+                    try:
+                        import csv, os
+                        metrics_path = os.path.join(cfg.save_dir, 'logs', 'metrics.csv')
+                        # 读出所有行，更新最后一行的 mAP/AP50/AP75
+                        rows = []
+                        if os.path.exists(metrics_path):
+                            with open(metrics_path, 'r') as f:
+                                rows = list(csv.reader(f))
+                        if rows:
+                            last = rows[-1]
+                            if last and last[0] == str(epoch+1):
+                                last[2] = f"{float(current_ap):.6f}"
+                                last[3] = f"{float(ap50):.6f}" if ap50 != '' else ''
+                                last[4] = f"{float(ap75):.6f}" if ap75 != '' else ''
+                                rows[-1] = last
+                                with open(metrics_path, 'w', newline='') as f:
+                                    csv.writer(f).writerows(rows)
+                    except Exception as e:
+                        logger.warning(f"更新 metrics.csv 失败: {e}")
 
                     # 保存最佳模型
                     if current_ap > best_ap:
@@ -371,6 +481,35 @@ def main(args):
         # 保存最新模型
         if jt.rank == 0:
             task.model.save(os.path.join(cfg.save_dir, "model_last.ckpt"))
+            # 绘制/更新 loss & mAP 曲线
+            try:
+                import csv, os
+                import matplotlib
+                matplotlib.use('Agg')
+                import matplotlib.pyplot as plt
+                metrics_path = os.path.join(cfg.save_dir, 'logs', 'metrics.csv')
+                if os.path.exists(metrics_path):
+                    epochs, tloss, mapv = [], [], []
+                    with open(metrics_path, 'r') as f:
+                        for i, row in enumerate(csv.reader(f)):
+                            if i == 0: continue
+                            if not row: continue
+                            epochs.append(int(row[0]))
+                            tloss.append(float(row[1]) if row[1] else None)
+                            mapv.append(float(row[2]) if row[2] else None)
+                    # 画图
+                    plt.figure(figsize=(8,4))
+                    if any(v is not None for v in tloss):
+                        plt.plot(epochs, tloss, '-o', label='avg_train_loss')
+                    if any(v is not None for v in mapv):
+                        plt.plot(epochs, mapv, '-o', label='mAP')
+                    plt.xlabel('epoch')
+                    plt.grid(True, ls='--', alpha=0.4)
+                    plt.legend()
+                    plt.tight_layout()
+                    plt.savefig(os.path.join(cfg.save_dir, 'logs', 'curves.png'), dpi=150)
+            except Exception as e:
+                logger.warning(f"绘制曲线失败: {e}")
 
     # 🎯 训练完成总结
     logger.info("=" * 80)

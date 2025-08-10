@@ -45,25 +45,59 @@ def pt_state_to_jt_checkpoint(pt_ckpt, model=None, prefer_avg=True, logger=None)
         v_np = v.detach().cpu().numpy() if isinstance(v, torch.Tensor) else np.array(v)
         proc_sd[k] = v_np
 
-    # shape-aware reconcile against model
+    # shape-aware reconcile against model, with head mapping (merged->split)
     if model is not None:
         model_sd = model.state_dict()
         reconciled = {}
         for k, v_np in proc_sd.items():
+            # 先做合并头 -> 分离头的映射（针对 gfl_cls.{i} 的 52 通道）
+            # 权重
+            if k.startswith("head.gfl_cls.") and k.endswith(".weight"):
+                try:
+                    i = int(k.split(".")[2])
+                    cls_w_key = f"head.gfl_cls.{i}.weight"
+                    reg_w_key = f"head.gfl_reg.{i}.weight"
+                    if cls_w_key in model_sd and reg_w_key in model_sd:
+                        cls_out = model_sd[cls_w_key].shape[0]
+                        reg_out = model_sd[reg_w_key].shape[0]
+                        if v_np.shape[0] == cls_out + reg_out:
+                            reconciled[cls_w_key] = v_np[:cls_out].astype(np.float32)
+                            reconciled[reg_w_key] = v_np[cls_out:cls_out+reg_out].astype(np.float32)
+                            if logger:
+                                logger.info(f"Split head weight {k} -> ({cls_w_key},{reg_w_key})")
+                            continue
+                except Exception:
+                    pass
+            # 偏置
+            if k.startswith("head.gfl_cls.") and k.endswith(".bias"):
+                try:
+                    i = int(k.split(".")[2])
+                    cls_b_key = f"head.gfl_cls.{i}.bias"
+                    reg_b_key = f"head.gfl_reg.{i}.bias"
+                    if cls_b_key in model_sd and reg_b_key in model_sd:
+                        cls_out = model_sd[cls_b_key].shape[0]
+                        reg_out = model_sd[reg_b_key].shape[0]
+                        if v_np.shape[0] == cls_out + reg_out:
+                            reconciled[cls_b_key] = v_np[:cls_out].astype(np.float32)
+                            reconciled[reg_b_key] = v_np[cls_out:cls_out+reg_out].astype(np.float32)
+                            if logger:
+                                logger.info(f"Split head bias {k} -> ({cls_b_key},{reg_b_key})")
+                            continue
+                except Exception:
+                    pass
+            # 其他正常对齐：
             if k not in model_sd:
                 continue
             tgt = model_sd[k]
             tshape = tuple(tgt.shape)
             vshape = tuple(v_np.shape)
             if vshape == tshape:
-                reconciled[k] = v_np
+                reconciled[k] = v_np.astype(np.float32)
                 continue
-            # 4D conv weights
+            # 4D conv weights（含 depthwise/grouped 适配）
             if v_np.ndim == 4 and len(tshape) == 4 and v_np.shape[0] == tshape[0]:
-                # depthwise conv mapping
                 if v_np.shape[1] == 1:
                     if tshape[1] == tshape[0]:
-                        # diagonal expand: (Cout,1,kh,kw) -> (Cout,Cout,kh,kw)
                         cout = tshape[0]
                         neww = np.zeros(tshape, dtype=np.float32)
                         for c in range(cout):
@@ -73,20 +107,19 @@ def pt_state_to_jt_checkpoint(pt_ckpt, model=None, prefer_avg=True, logger=None)
                             logger.info(f"Diagonal depthwise weight for {k}: {vshape} -> {tshape}")
                         continue
                     elif tshape[1] > 1:
-                        # grouped conv fallback: tile along in_channels
                         reps = [1, tshape[1], 1, 1]
-                        v_np = np.tile(v_np, reps)[:, :tshape[1], :, :]
-                        reconciled[k] = v_np.astype(np.float32)
+                        v_np_t = np.tile(v_np, reps)[:, :tshape[1], :, :]
+                        reconciled[k] = v_np_t.astype(np.float32)
                         if logger:
                             logger.info(f"Tiled depthwise weight for {k}: {vshape} -> {tshape}")
                         continue
-            # 1D params (e.g., scales): () -> (1,)
+            # 1D 标量扩展
             if v_np.ndim == 0 and len(tshape) == 1 and tshape[0] == 1:
                 reconciled[k] = np.array([v_np.item()], dtype=np.float32)
                 if logger:
                     logger.info(f"Expanded scalar to vector for {k}: {vshape} -> {tshape}")
                 continue
-            # fallback: skip; will be filled by model defaults later
+            # 其他不匹配：跳过，用模型默认初始化
             if logger:
                 logger.info(f"Shape mismatch keep default for {k}: pt{vshape} vs jt{tshape}")
         proc_sd = reconciled

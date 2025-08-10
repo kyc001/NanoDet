@@ -159,15 +159,25 @@ class TrainingTask(jt.Module):
         
         model_to_eval = self.avg_model if self.weight_averager else self.model
         
+        # 与 mini-eval 对齐：切换 eval 模式并使用 inference(meta) 完整推理路径
+        try:
+            model_to_eval.eval()
+        except Exception:
+            pass
         with jt.no_grad():
-            preds, loss, loss_states = model_to_eval.forward_train(batch)
-            dets = model_to_eval.head.post_process(preds, batch)
+            dets = model_to_eval.inference(batch)
 
-        # 日志记录
+        # 日志记录（验证阶段只记录主要 loss 指标时，此处没有 forward_train 的 loss_states，可选输出简略日志）
         if batch_idx % self.cfg.log.interval == 0:
-            memory = jt.flags.used_cuda_mem / 1e9 if jt.flags.use_cuda else 0
-            lr = trainer.optimizer.param_groups[0]["lr"]
-            log_msg = "Val|Epoch{}/{}|Iter{}({}/{})| mem:{:.3g}G| lr:{:.2e}| ".format(
+            try:
+                memory = jt.flags.used_cuda_mem / 1e9 if getattr(jt.flags, 'use_cuda', 0) else 0
+            except Exception:
+                memory = 0
+            try:
+                lr = trainer.optimizer.param_groups[0]["lr"]
+            except Exception:
+                lr = getattr(trainer.optimizer, 'lr', 0.0)
+            log_msg = "Val|Epoch{}/{}|Iter{}({}/{})| mem:{:.3g}G| lr:{:.2e}|".format(
                 trainer.current_epoch + 1,
                 self.cfg.schedule.total_epochs,
                 trainer.global_step,
@@ -176,16 +186,6 @@ class TrainingTask(jt.Module):
                 memory,
                 lr,
             )
-            for loss_name in loss_states:
-                # 🔧 修复 Jittor .item() bug：确保标量转换
-                try:
-                    loss_tensor = loss_states[loss_name]
-                    loss_mean = loss_tensor.mean() if loss_tensor.numel() > 1 else loss_tensor
-                    loss_val = float(loss_mean)
-                except Exception as e:
-                    print(f"⚠️ 验证损失值转换失败 {loss_name}: {e}")
-                    loss_val = 0.0  # 如果获取失败，使用默认值
-                log_msg += "{}:{:.4f}| ".format(loss_name, loss_val)
             self.info(log_msg)
 
         return dets
