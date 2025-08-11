@@ -165,7 +165,19 @@ class ShuffleNetV2(nn.Module):
                  return
             
             pretrained_model = model_factory[self.model_size](pretrained=True)
-            self.load_parameters(pretrained_model.state_dict())
+            # 仅加载与当前骨干网络形状完全匹配的权重，跳过分类头/不存在的层，避免告警
+            pre_sd = pretrained_model.state_dict()
+            cur_sd = self.state_dict()
+            filtered = {}
+            skipped = []
+            for k, v in pre_sd.items():
+                if k in cur_sd and tuple(cur_sd[k].shape) == tuple(v.shape):
+                    filtered[k] = v
+                else:
+                    skipped.append(k)
+            if len(filtered):
+                self.load_parameters(filtered)
+            print(f"[ShuffleNetV2] loaded {len(filtered)}/{len(pre_sd)} pretrained params; skipped {len(skipped)} (e.g. {[s for s in skipped[:5]]})")
 
         else:
             # Jittor 版本的随机初始化

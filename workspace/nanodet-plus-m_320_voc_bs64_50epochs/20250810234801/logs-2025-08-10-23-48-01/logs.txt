@@ -1,0 +1,31 @@
+[NanoDet][08-10 23:48:01]INFO: Setting up data...
+[NanoDet][08-10 23:48:01]INFO: Creating model...
+[NanoDet][08-10 23:48:02]INFO: Starting testing...
+[NanoDet][08-10 23:48:02]INFO: Loaded average state from checkpoint.
+[NanoDet][08-10 23:48:16]INFO: 
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.357
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.574
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.367
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.024
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.155
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.474
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.350
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.505
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.536
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.089
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.378
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.657
+
+[NanoDet][08-10 23:48:16]INFO: 
+| class       | AP50   | mAP   | class       | AP50   | mAP   |
+|:------------|:-------|:------|:------------|:-------|:------|
+| aeroplane   | 66.0   | 43.1  | bicycle     | 74.8   | 47.6  |
+| bird        | 57.5   | 31.8  | boat        | 38.9   | 19.1  |
+| bottle      | 20.2   | 11.2  | bus         | 52.2   | 39.1  |
+| car         | 63.8   | 43.5  | cat         | 75.5   | 50.0  |
+| chair       | 38.4   | 19.1  | cow         | 49.6   | 30.0  |
+| diningtable | 65.3   | 43.5  | dog         | 70.4   | 45.2  |
+| horse       | 70.0   | 43.1  | motorbike   | 71.2   | 47.4  |
+| person      | 67.4   | 37.0  | pottedplant | 42.1   | 18.5  |
+| sheep       | 34.7   | 21.1  | sofa        | 60.0   | 37.7  |
+| train       | 75.4   | 51.1  | tvmonitor   | 54.9   | 34.3  |

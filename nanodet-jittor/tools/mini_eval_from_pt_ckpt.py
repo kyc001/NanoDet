@@ -26,6 +26,8 @@ from nanodet.data.collate import naive_collate
 from nanodet.data.transform.pipeline import Pipeline
 from nanodet.evaluator import build_evaluator
 from nanodet.util.check_point import load_model_weight
+from nanodet.util.box_transform import distance2bbox
+from nanodet.model.module.nms import multiclass_nms
 from collections import OrderedDict
 
 
@@ -133,6 +135,9 @@ def parse_args():
     ap.add_argument("--ckpt", required=True)
     ap.add_argument("--max_val_batches", type=int, default=10)
     ap.add_argument("--save_dir", default="result/jittor_from_pt_mini")
+    ap.add_argument('--dump_post', action='store_true', help='dump post-process intermediates for first few samples')
+    ap.add_argument('--img', default=None, help='optional: specific image path used only for dump_post')
+
     ap.add_argument("--vis_num", type=int, default=2)
     ap.add_argument("--score_thr", type=float, default=0.3)
     ap.add_argument("--device", default="cuda:0")
@@ -170,12 +175,19 @@ def main():
 
     t0 = time.time()
     for idx in range(total_batches):
-        data = val_dataset[idx]
-        # single sample to meta
-        meta = data
-        # reconstruct raw image from file_name
-        file_name = meta["img_info"]["file_name"]
-        raw_img = cv2.imread(os.path.join(val_dataset.img_path, file_name))
+        # prefer a specific image for deterministic dump_post
+        if args.img is not None and os.path.isfile(args.img):
+            file_name = os.path.basename(args.img)
+            raw_img = cv2.imread(args.img)
+            meta = dict(img_info={"file_name": file_name, "height": raw_img.shape[0], "width": raw_img.shape[1], "id": idx}, img=raw_img)
+            # run pipeline to build input tensor & warp_matrix
+            pl = Pipeline(cfg.data.val.pipeline, cfg.data.val.keep_ratio)
+            meta = pl(val_dataset, meta, cfg.data.val.input_size)
+        else:
+            data = val_dataset[idx]
+            meta = data
+            file_name = meta["img_info"]["file_name"]
+            raw_img = cv2.imread(os.path.join(val_dataset.img_path, file_name))
         # ensure batch dimension for model input
         if isinstance(meta["img"], jt.Var):
             meta["img"] = meta["img"].unsqueeze(0)
@@ -192,6 +204,55 @@ def main():
             val = meta["img_info"].get(key, 0)
             if not isinstance(val, (list, tuple, np.ndarray)):
                 meta["img_info"][key] = [val]
+
+        if args.dump_post and idx < 3:
+            # dump intermediates from head.get_bboxes pipeline
+            # we re-run minimal parts here to capture tensors
+            cls_reg = model(meta['img'])
+            cls_pred, reg_pred = cls_reg.split([model.head.num_classes, 4*(model.head.reg_max+1)], dim=-1)
+            b = cls_pred.shape[0]
+            H, W = meta['img'].shape[2:]
+            # 优先使用 head.execute 记录的实际各层特征图尺寸，避免用 ceil 推断导致不一致
+            if hasattr(model.head, '_last_featmap_sizes') and len(model.head._last_featmap_sizes)==len(model.head.strides):
+                featmap_sizes = list(model.head._last_featmap_sizes)
+            else:
+                featmap_sizes = [(int(np.ceil(H/s)), int(np.ceil(W/s))) for s in model.head.strides]
+            priors = []
+            for i,s in enumerate(model.head.strides):
+                h,w = featmap_sizes[i]
+                x = (jt.arange(w, dtype=jt.float32) * s).float32()
+                y = (jt.arange(h, dtype=jt.float32) * s).float32()
+                yy, xx = jt.meshgrid(y, x)
+                pri = jt.stack([xx.flatten(), yy.flatten(), jt.full((xx.numel(),), s, dtype=jt.float32), jt.full((xx.numel(),), s, dtype=jt.float32)], dim=-1)
+                priors.append(pri.unsqueeze(0).repeat(b,1,1))
+            center_priors = jt.cat(priors, dim=1)
+            prob = model.head.distribution_project(reg_pred)
+            dis_only = prob
+            dis_preds = prob * center_priors[...,2,None]
+            xyxy = distance2bbox(center_priors[...,:2], dis_preds, max_shape=(H,W))
+            scores = cls_pred.sigmoid()
+            # NMS at input scale for alignment with PT
+            score0 = scores[0]
+            bbox0 = xyxy[0]
+            padding = jt.zeros((score0.shape[0],1), dtype=score0.dtype)
+            score0 = jt.concat([score0, padding], dim=1)
+            dets0, labels0 = multiclass_nms(bbox0, score0, 0.05, dict(type='nms', iou_threshold=0.6), 100)
+
+            npz = {
+                'center_priors': center_priors.numpy(),
+                'featmap_sizes': np.array(featmap_sizes, dtype=np.int32),
+                'reg_logits': reg_pred.numpy(),
+                'prob': prob.numpy(),
+                'dis_only': dis_only.numpy(),
+                'dis_preds': dis_preds.numpy(),
+                'xyxy': xyxy.numpy(),
+                'scores': scores.numpy(),
+                'dets': dets0.numpy(),
+                'labels': labels0.numpy(),
+                'file_name': np.array([file_name]),
+            }
+            outp = os.path.join(args.save_dir, f'post_jt_{idx}.npz')
+            np.savez_compressed(outp, **npz)
 
         # inference
         with jt.no_grad():

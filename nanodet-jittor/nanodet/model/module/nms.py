@@ -11,10 +11,10 @@ def batched_nms(boxes, scores, idxs, nms_cfg, class_agnostic=False):
         max_coordinate = boxes.max()
         offsets = idxs.cast(boxes.dtype) * (max_coordinate + 1)
         boxes_for_nms = boxes + offsets[:, None]
-    
+
     nms_op_name = nms_cfg_.pop("type", "nms")
     assert nms_op_name == "nms", "Only vanilla NMS is supported in this placeholder"
-    
+
     # Jittor's nms signature: jt.nms(dets, iou_thr), where dets = [x1,y1,x2,y2,score]
     iou_threshold = nms_cfg_.pop("iou_threshold", 0.5)
 
@@ -61,3 +61,65 @@ def multiclass_nms(
         keep = keep[:max_num]
 
     return dets, labels[keep]
+
+# Override with a safer per-class NMS implementation to avoid boolean indexing pitfalls in Jittor
+def multiclass_nms(
+    multi_bboxes, multi_scores, score_thr, nms_cfg, max_num=-1, score_factors=None
+):
+    """Multiclass NMS (per-class loop to ensure correct indexing on Jittor).
+    Args:
+        multi_bboxes: (N, 4) or (N, num_classes*4)
+        multi_scores: (N, num_classes+1), last column is background
+    Returns:
+        dets: (M, 5) [x1,y1,x2,y2,score], labels: (M,)
+    """
+    num_classes = multi_scores.shape[1] - 1  # last column is background
+    scores_all = multi_scores[:, :num_classes]
+    if multi_bboxes.shape[1] > 4:
+        # (N, num_classes*4) -> (N, num_classes, 4)
+        bboxes_all = multi_bboxes.reshape(multi_scores.shape[0], -1, 4)
+    else:
+        # shared boxes for all classes
+        bboxes_all = multi_bboxes[:, None].expand(multi_scores.shape[0], num_classes, 4)
+
+    dets_list = []
+    labels_list = []
+    for cls_id in range(num_classes):
+        cls_scores = scores_all[:, cls_id]
+        valid = cls_scores > score_thr
+        if valid.sum().item() == 0:
+            continue
+        boxes = bboxes_all[:, cls_id, :]
+        boxes = boxes[valid]
+        scores = cls_scores[valid]
+        if score_factors is not None:
+            scores = scores * score_factors[valid]
+        # run NMS for this class (class-agnostic boxes)
+        idxs = jt.zeros((scores.shape[0],), dtype='int32') + cls_id
+        dets_cls, keep = batched_nms(boxes, scores, idxs, nms_cfg, class_agnostic=True)
+        dets_list.append(dets_cls)
+        labels_list.append(jt.ones((dets_cls.shape[0],), dtype='int64') * cls_id)
+
+    if len(dets_list) == 0:
+        return jt.zeros((0, 5), dtype=multi_bboxes.dtype), jt.zeros((0,), dtype='int64')
+
+    dets = jt.concat(dets_list, dim=0)
+    labels = jt.concat(labels_list, dim=0)
+
+    # sort by score desc (handle Jittor argsort possibly returning (idx, sorted))
+    order_pack = jt.argsort(dets[:, 4], descending=True)
+    order = order_pack[0] if isinstance(order_pack, (tuple, list)) else order_pack
+    # ensure integer dtype
+    if getattr(order, 'dtype', None) != 'int32':
+        try:
+            order = order.int32()
+        except Exception:
+            pass
+    dets = dets[order]
+    labels = labels[order]
+
+    if max_num > 0 and dets.shape[0] > max_num:
+        dets = dets[:max_num]
+        labels = labels[:max_num]
+
+    return dets, labels

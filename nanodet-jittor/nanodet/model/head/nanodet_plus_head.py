@@ -177,6 +177,8 @@ class NanoDetPlusHead(nn.Module):
         if isinstance(feats, (list, tuple)) and len(feats) > len(self.strides):
             feats = feats[:len(self.strides)]
         outputs = []
+        # 记录每层特征图的空间尺寸，供 get_bboxes 精确生成 priors
+        self._last_featmap_sizes = []
         for idx, (feat, cls_convs, reg_convs, gfl_cls, gfl_reg, scale) in enumerate(
             zip(feats, self.cls_convs, self.reg_convs, self.gfl_cls, self.gfl_reg, self.scales)
         ):
@@ -191,6 +193,9 @@ class NanoDetPlusHead(nn.Module):
                 reg_feat = conv(reg_feat)
             reg_logits = gfl_reg(reg_feat)
             reg_logits = scale(reg_logits)
+            # 记录 H, W
+            _, _, H, W = cls_pred.shape
+            self._last_featmap_sizes.append((H, W))
             # 拼接为原格式：[C + 4*(m+1), H, W]
             output = jt.concat([cls_pred, reg_logits], dim=1)
             outputs.append(output.flatten(start_dim=2))
@@ -485,20 +490,25 @@ class NanoDetPlusHead(nn.Module):
         )
         result_list = self.get_bboxes(cls_scores, bbox_preds, meta)
         det_results = {}
-        warp_matrixes = (
-            meta["warp_matrix"]
-            if isinstance(meta["warp_matrix"], list)
-            else meta["warp_matrix"]
-        )
-        img_heights = (
-            meta["img_info"]["height"]
-        )
-        img_widths = (
-            meta["img_info"]["width"]
-        )
-        img_ids = (
-            meta["img_info"].get("id", 0)
-        )
+        # normalize meta fields to python types and numpy arrays
+        warp_mats = meta.get("warp_matrix", None)
+        if warp_mats is None:
+            warp_matrixes = [np.eye(3, dtype=np.float32)] * len(result_list)
+        else:
+            warp_matrixes = warp_mats if isinstance(warp_mats, list) else [warp_mats]
+        img_heights = list(meta["img_info"].get("height", []))
+        img_widths = list(meta["img_info"].get("width", []))
+        img_ids = list(meta["img_info"].get("id", []))
+        # ensure same length
+        n_items = len(result_list)
+        if len(warp_matrixes) != n_items:
+            warp_matrixes = (warp_matrixes * n_items)[:n_items]
+        if len(img_heights) != n_items:
+            img_heights = (img_heights * n_items)[:n_items]
+        if len(img_widths) != n_items:
+            img_widths = (img_widths * n_items)[:n_items]
+        if len(img_ids) != n_items:
+            img_ids = (img_ids * n_items)[:n_items]
 
         for result, img_width, img_height, img_id, warp_matrix in zip(
             result_list, img_widths, img_heights, img_ids, warp_matrixes
@@ -506,21 +516,47 @@ class NanoDetPlusHead(nn.Module):
             det_result = {}
             det_bboxes, det_labels = result
             det_bboxes = det_bboxes.detach().cpu().numpy()
-            # 还原到原图坐标系
-            det_bboxes[:, :4] = warp_boxes(
-                det_bboxes[:, :4], np.linalg.inv(warp_matrix), img_width, img_height
-            )
+            # restore to original image coords with robust warp handling
+            try:
+                # robustly convert warp_matrix to numpy 3x3
+                if isinstance(warp_matrix, jt.Var):
+                    W = warp_matrix.numpy()
+                else:
+                    W = np.array(warp_matrix)
+                W = W.astype(np.float64)
+                if W.ndim == 3 and W.shape[0] == 1:
+                    W = W[0]
+                if W.shape == (2, 3):
+                    # upgrade to 3x3
+                    W = np.vstack([W, [0.0, 0.0, 1.0]])
+                elif W.shape != (3, 3):
+                    raise ValueError(f"unexpected warp_matrix shape: {W.shape}")
+                invW = np.linalg.inv(W)
+                det_bboxes[:, :4] = warp_boxes(
+                    det_bboxes[:, :4], invW, int(img_width), int(img_height)
+                )
+            except Exception as e:
+                # fallback: skip warp if malformed matrix
+                print(f"[warn] warp_boxes failed for img_id={img_id}: {e}. Use input-scale boxes.")
+                pass
             classes = det_labels.detach().cpu().numpy()
             for i in range(self.num_classes):
                 inds = classes == i
-                det_result[i] = np.concatenate(
-                    [
-                        det_bboxes[inds, :4].astype(np.float32),
-                        det_bboxes[inds, 4:5].astype(np.float32),
-                    ],
-                    axis=1,
-                ).tolist()
-            det_results[img_id] = det_result
+                if np.any(inds):
+                    merged = np.concatenate(
+                        [
+                            det_bboxes[inds, :4].astype(np.float32),
+                            det_bboxes[inds, 4:5].astype(np.float32),
+                        ],
+                        axis=1,
+                    )
+                    det_result[i] = merged.tolist()
+                else:
+                    det_result[i] = []
+            # ensure python int for key
+            if hasattr(img_id, 'item'):
+                img_id = int(img_id.item())
+            det_results[int(img_id)] = det_result
         return det_results
 
     def show_result(
@@ -548,11 +584,14 @@ class NanoDetPlusHead(nn.Module):
         input_height, input_width = img_metas["img"].shape[2:]
         input_shape = (input_height, input_width)
 
-        # 与 PyTorch 保持一致（注意其实现中对 w 的写法为 ceil(w)/stride）：
-        featmap_sizes = [
-            (int(math.ceil(input_height / stride)), int(math.ceil(input_width / stride)))
-            for stride in self.strides
-        ]
+        # 优先使用 forward 记录的实际特征图尺寸，避免 ceil 推断造成的偏差
+        if hasattr(self, '_last_featmap_sizes') and len(getattr(self, '_last_featmap_sizes')) == len(self.strides):
+            featmap_sizes = list(self._last_featmap_sizes)
+        else:
+            featmap_sizes = [
+                (int(math.ceil(input_height / stride)), int(math.ceil(input_width / stride)))
+                for stride in self.strides
+            ]
         # get grid cells of one image
         mlvl_center_priors = [
             self.get_single_level_center_priors(
@@ -570,6 +609,14 @@ class NanoDetPlusHead(nn.Module):
         # 分类分数需做 sigmoid，execute 阶段未对 cls 做激活
         scores = cls_preds.sigmoid()
         result_list = []
+        # 动态读取评估阈值与最大检测数
+        try:
+            from nanodet.util import cfg as _cfg
+            score_thr = float(getattr(_cfg, 'eval_score_thr', 0.05))
+            iou_thr = float(getattr(_cfg, 'eval_iou_thr', 0.6))
+            max_det = int(getattr(_cfg, 'eval_max_det', 100))
+        except Exception:
+            score_thr, iou_thr, max_det = 0.05, 0.6, 100
         for i in range(b):
             # 按 mmdet 接口约定，需在 scores 末尾补一列背景类得分
             score, bbox = scores[i], bboxes[i]
@@ -578,9 +625,9 @@ class NanoDetPlusHead(nn.Module):
             results = multiclass_nms(
                 bbox,
                 score,
-                0.05,
-                dict(type="nms", iou_threshold=0.6),
-                100,
+                score_thr,
+                dict(type="nms", iou_threshold=iou_thr),
+                max_det,
             )
             result_list.append(results)
         return result_list

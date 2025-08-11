@@ -1,0 +1,33 @@
+✅ 使用 JittorDet 标准 IoU 计算
+model size is  1.0x
+init weights...
+=> loading pretrained model shufflenetv2_1.0x from jittor models...
+[ShuffleNetV2] loaded 275/282 pretrained params; skipped 7 (e.g. ['conv5.0.weight', 'conv5.1.weight', 'conv5.1.bias', 'conv5.1.running_mean', 'conv5.1.running_var'])
+Finish initialize NanoDet-Plus Head.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+Running mini-eval on 50 batches...
+Processed 10/50 batches
+Processed 20/50 batches
+Processed 30/50 batches
+Processed 40/50 batches
+Processed 50/50 batches
+Loading and preparing results...
+DONE (t=0.01s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=0.08s).
+Accumulating evaluation results...
+DONE (t=0.05s).
+
+Mini-eval results (50 batches):
+  mAP: 0.3617
+  AP_50: 0.6123
+  AP_75: 0.3332
+  AP_small: 0.0625
+  AP_m: 0.1443
+  AP_l: 0.4406

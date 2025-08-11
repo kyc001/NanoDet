@@ -40,13 +40,8 @@ def prepare_meta(img_path, pipeline, input_size):
     img = imread_bgr(img_path)
     img_info = {"file_name": os.path.basename(img_path), "height": img.shape[0], "width": img.shape[1], "id": 0}
     meta = dict(img_info=img_info, raw_img=img, img=img)
-    # 为严格对齐 PT，这里根据原图大小计算最小适配尺寸（如 320x232），再送入 pipeline
-    try:
-        from nanodet.data.transform.warp import get_minimum_dst_shape
-        dst_size = get_minimum_dst_shape((img_info['width'], img_info['height']), tuple(input_size))
-    except Exception:
-        dst_size = tuple(input_size)
-    meta = pipeline(None, meta, dst_size)
+    # 与 PT 保持一致：不在此处预计算最小适配尺寸，直接将 input_size 交给 pipeline
+    meta = pipeline(None, meta, input_size)
     im = meta["img"].transpose(2,0,1)
     im = np.ascontiguousarray(im)
     meta["img"] = jt.array(im).unsqueeze(0)
@@ -74,11 +69,16 @@ def main():
 
     model = build_model(cfg.model)
     model.eval()
-    # load PT ckpt into JT
-    import torch
-    pt_ckpt = torch.load(args.ckpt, map_location='cpu')
-    jt_ckpt = pt_state_to_jt_checkpoint(pt_ckpt, model=model, prefer_avg=True)
-    load_model_weight(model, jt_ckpt, logger)
+    # load checkpoint: support JT(.pkl) directly, or convert PT(.ckpt/.pth) on-the-fly
+    ckpt_path = args.ckpt
+    if ckpt_path.lower().endswith(('.pkl', '.jt', '.jittor')):
+        ckpt = jt.load(ckpt_path)
+        load_model_weight(model, ckpt, logger)
+    else:
+        import torch
+        pt_ckpt = torch.load(ckpt_path, map_location='cpu')
+        jt_ckpt = pt_state_to_jt_checkpoint(pt_ckpt, model=model, prefer_avg=True)
+        load_model_weight(model, jt_ckpt, logger)
 
     pipeline = Pipeline(cfg.data.val.pipeline, cfg.data.val.keep_ratio)
     input_size = cfg.data.val.input_size
@@ -210,6 +210,20 @@ def main():
     score0 = jt.concat([score0, padding], dim=1)
     dets0, labels0 = multiclass_nms(bbox0, score0, 0.05, dict(type='nms', iou_threshold=0.6), 100)
 
+    # also produce warped-to-original dets using inverse warp_matrix
+    from nanodet.data.transform.warp import warp_boxes
+    W = meta['warp_matrix'][0]
+    W = np.array(W, dtype=np.float64)
+    if W.ndim == 3 and W.shape[0] == 1:
+        W = W[0]
+    if W.shape == (2,3):
+        W = np.vstack([W, [0.0, 0.0, 1.0]])
+    invW = np.linalg.inv(W)
+    ow = int(meta['img_info']['width'][0]); oh = int(meta['img_info']['height'][0])
+    dets_warp = dets0.numpy().copy()
+    if dets_warp.shape[0] > 0:
+        dets_warp[:, :4] = warp_boxes(dets_warp[:, :4], invW, ow, oh)
+
     os.makedirs(os.path.dirname(args.out) or '.', exist_ok=True)
     np.savez(args.out,
         center_priors=center_priors.numpy(),
@@ -223,6 +237,8 @@ def main():
         scores=scores.numpy(),
         dets=dets0.numpy(),
         labels=labels0.numpy(),
+        dets_warped=dets_warp,
+        labels_warped=labels0.numpy(),
         input_shape=np.array([input_h, input_w], dtype=np.int32),
     )
     print(f"saved JT post to {args.out}")

@@ -49,6 +49,14 @@ class CocoDetectionEvaluator():
         json.dump(results_json, open(json_path, 'w'))
         coco_dets = self.coco_api.loadRes(json_path)
         coco_eval = COCOeval(copy.deepcopy(self.coco_api), copy.deepcopy(coco_dets), 'bbox')
+        # Restrict evaluation to the subset of images we actually predicted on (mini-eval case)
+        try:
+            subset_img_ids = sorted([int(k) for k in results.keys()])
+            if len(subset_img_ids) > 0:
+                coco_eval.params.imgIds = subset_img_ids
+                logger.info(f"Evaluating on subset of {len(subset_img_ids)} images (mini-eval mode)")
+        except Exception:
+            pass
         coco_eval.evaluate()
         coco_eval.accumulate()
         redirect_string = io.StringIO()

@@ -168,11 +168,26 @@ def main():
     padding = torch.zeros((score0.shape[0],1), device=device, dtype=score0.dtype)
     score0 = torch.cat([score0, padding], dim=1)
     dets_np = None; labels_np = None
+    dets_warp_np = None; labels_warp_np = None
     try:
         dets0, labels0 = multiclass_nms(bbox0, score0, 0.05, dict(type='nms', iou_threshold=0.6), 100)
-        dets_np = dets0.cpu().numpy(); labels_np = labels0.cpu().numpy()
+        dets_np = dets0.detach().cpu().numpy(); labels_np = labels0.detach().cpu().numpy()
+        # also produce warped-to-original dets using inverse warp_matrix
+        from nanodet.data.transform.warp import warp_boxes
+        W = meta['warp_matrix'][0]
+        import numpy as _np
+        W = _np.array(W, dtype=_np.float64)
+        if W.shape == (2,3):
+            W = _np.vstack([W, [0,0,1]])
+        invW = _np.linalg.inv(W)
+        ow = int(meta['img_info']['width'][0]); oh = int(meta['img_info']['height'][0])
+        dets_warp = dets0.detach().cpu().numpy().copy()
+        if dets_warp.shape[0] > 0:
+            dets_warp[:, :4] = warp_boxes(dets_warp[:, :4], invW, ow, oh)
+        dets_warp_np = dets_warp
+        labels_warp_np = labels_np
     except Exception as e:
-        print('[warn] PT NMS failed, skip dets/labels dump:', e)
+        print('[warn] PT NMS/warp failed, skip dets/labels dump:', e)
 
     os.makedirs(os.path.dirname(args.out) or '.', exist_ok=True)
     np.savez(args.out,
@@ -187,6 +202,8 @@ def main():
         scores=scores.cpu().numpy(),
         dets=dets_np,
         labels=labels_np,
+        dets_warped=dets_warp_np,
+        labels_warped=labels_warp_np,
         input_shape=np.array([input_h, input_w], dtype=np.int32),
     )
     print(f"saved PT post to {args.out}")

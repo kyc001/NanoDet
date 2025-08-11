@@ -3,6 +3,21 @@ import sys
 import os
 
 
+# Limit CPU threading for dataloader & OpenCV to improve throughput
+try:
+    import os as _os
+    _os.environ.setdefault('OMP_NUM_THREADS','1')
+    _os.environ.setdefault('MKL_NUM_THREADS','1')
+    _os.environ.setdefault('OPENBLAS_NUM_THREADS','1')
+    _os.environ.setdefault('NUMEXPR_NUM_THREADS','1')
+    import cv2 as _cv2
+    try:
+        _cv2.setNumThreads(0)
+    except Exception:
+        pass
+except Exception:
+    pass
+
 # 将项目根目录（nanodet-jittor）添加到 Python 路径
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -69,7 +84,7 @@ def main(args):
             "cfg.model.arch.head.num_classes 必须等于 len(cfg.class_names), "
             f"但得到了 {cfg.model.arch.head.num_classes} 和 {len(cfg.class_names)}"
         )
-    
+
     # JITTOR MIGRATION: 使用 jt.rank 获取排名，并设置 GPU
     local_rank = jt.rank if jt.world_size > 1 else 0
     if jt.has_cuda:
@@ -87,7 +102,7 @@ def main(args):
         set_seed(args.seed)
 
     # JITTOR MIGRATION: 移除 PyTorch-Lightning 和 jt.backends.cudnn 的设置
-    
+
     logger.info("正在设置数据...")
     train_dataset = build_dataset(cfg.data.train, "train")
     val_dataset = build_dataset(cfg.data.val, "val") # 模式应为 'val'
@@ -123,7 +138,7 @@ def main(args):
 
     logger.info("正在创建模型...")
     task = TrainingTask(cfg, evaluator, logger)
-    
+
     # 加载预训练模型权重
     if hasattr(cfg.schedule, 'load_model') and cfg.schedule.load_model:
         lm = cfg.schedule.load_model
@@ -194,10 +209,10 @@ def main(args):
         logger.info(f"从 {cfg.schedule.load_model} 加载了模型权重")
 
     # JITTOR MIGRATION: 替换 PyTorch Lightning Trainer 为手动训练循环
-    
+
     # 配置优化器和学习率调度器
     optimizer, scheduler = task.configure_optimizers()
-    
+
     # 如果是多 GPU 训练，使用 DataParallel 包装模型
     if jt.world_size > 1:
         task.model = jt.DataParallel(task.model)
@@ -236,6 +251,8 @@ def main(args):
     global_step = 0
     start_epoch = 0
     best_ap = 0.0
+    mid_eval_done = False  # 在全局第100个iter触发一次快速评估
+    mid_eval_batches = 50  # 评估使用前50个val batch，快速估计mAP是否保持在~35
 
     # 导入时间模块
     import time
@@ -368,6 +385,30 @@ def main(args):
             # 早停：限制每个 epoch 的训练 batch 数
             if args.max_train_batches is not None and (i + 1) >= args.max_train_batches:
                 break
+
+        # 在全局第100个iter触发一次快速评估（仅一次）
+        if (not mid_eval_done) and global_step >= 100:
+            try:
+                logger.info("🧪 触发中途快速评估：使用前50个val batch 估计 mAP，以确认未暴跌…")
+                task.model.eval()
+                task.on_validation_epoch_start()
+                val_outputs = []
+                for vi, vbatch in enumerate(val_dataloader):
+                    if vi >= mid_eval_batches:
+                        break
+                    with jt.no_grad():
+                        dets = task.validation_step(vbatch, vi, trainer_mock)
+                        val_outputs.append(dets)
+                metrics = task.validation_epoch_end(val_outputs, epoch)
+                if metrics and 'mAP' in metrics:
+                    logger.info(f"🧪 中途评估 mAP: {metrics['mAP']:.4f} | AP50: {metrics.get('AP_50','')}")
+                else:
+                    logger.info("🧪 中途评估完成，但未获取到 mAP 指标")
+            except Exception as e:
+                logger.warning(f"中途评估失败: {e}")
+            finally:
+                mid_eval_done = True
+                task.model.train()
 
         # 更新学习率
         if scheduler:

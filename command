@@ -310,3 +310,9 @@ python tools/train.py config/nanodet-plus-m_320_voc_bs64_50epochs.yml
 conda activate nano
 cd nanodet-jittor
 python tools/train.py config/nanodet-plus-m_320_voc_bs64_50epochs.yml --warmup_steps 100 --max_train_batches 200 --max_val_batches 5
+
+
+
+新芽第二阶段（培育期）重点培育和考察动手编程的能力，请大家从自己第一阶段汇报主题的相关文献中，选择一篇尚未有 Jittor 开源实现的论文用 Jittor 框架（https://github.com/Jittor/jittor）进行实现并开源在个人  Github 上。第二轮代码面试的 Jittor 代码开源链接，请将环境配置、数据准备脚本、训练脚本、测试脚本、与 PyTorch 实现对齐的实验 Log、性能 Log 都放在 README 中。如果计算资源有限，用少量数据的训练效果和 PyTorch 版本的结果对齐。请将训练过程 Log、Loss 曲线，结果、可视化等对齐情况进行记录。
+
+完成后，录制一个 20 - 30 分钟的视频，内容包括第二轮 Jittor 代码对应论文的算法讲解（要求控制在 10 分钟内）、第二轮的 Jittor 代码的训练、测试演示、实现细节等（要求不少于 10 分钟），并将对应的 PPT 和 录屏 上传到下面的链接
