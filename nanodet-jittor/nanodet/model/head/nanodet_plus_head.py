@@ -510,8 +510,8 @@ class NanoDetPlusHead(nn.Module):
         if len(img_ids) != n_items:
             img_ids = (img_ids * n_items)[:n_items]
 
-        for result, img_width, img_height, img_id, warp_matrix in zip(
-            result_list, img_widths, img_heights, img_ids, warp_matrixes
+        for idx, (result, img_width, img_height, img_id, warp_matrix) in enumerate(
+            zip(result_list, img_widths, img_heights, img_ids, warp_matrixes)
         ):
             det_result = {}
             det_bboxes, det_labels = result
@@ -524,8 +524,14 @@ class NanoDetPlusHead(nn.Module):
                 else:
                     W = np.array(warp_matrix)
                 W = W.astype(np.float64)
-                if W.ndim == 3 and W.shape[0] == 1:
-                    W = W[0]
+                # handle batched warp_matrix of shape (B,3,3)
+                if W.ndim == 3:
+                    if W.shape[0] == 1:
+                        W = W[0]
+                    elif W.shape[0] > idx:
+                        W = W[idx]
+                    else:
+                        raise ValueError(f"unexpected warp_matrix shape: {W.shape}")
                 if W.shape == (2, 3):
                     # upgrade to 3x3
                     W = np.vstack([W, [0.0, 0.0, 1.0]])

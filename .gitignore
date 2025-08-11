@@ -55,3 +55,10 @@ nanodet-jittor/workspace/
 
 
 *.npy
+
+
+新芽计划更改版/
+result/
+workspace/
+jtorch/
+jittordet/

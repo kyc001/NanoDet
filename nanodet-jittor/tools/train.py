@@ -121,16 +121,18 @@ def main(args):
         collate_batch=naive_collate,
         drop_last=True,
     )
+    # 方案A：验证阶段使用 batch_size=1，避免跨样本 padding 引发坐标系不一致
+    val_bs = getattr(cfg.device, 'val_batchsize_per_gpu', 1)
     val_dataloader = val_dataset.set_attrs(
-        batch_size=cfg.device.batchsize_per_gpu,
+        batch_size=val_bs,
         shuffle=False,
         num_workers=cfg.device.workers_per_gpu,
         collate_batch=naive_collate,
         drop_last=False,
     )
     try:
-        logger.info(f"DataLoader 已就绪 | train_batches_per_epoch: {len(train_dataloader)} | val_batches: {len(val_dataloader)}")
-        print(f"[Heartbeat] Dataloaders ready. train_batches={len(train_dataloader)} val_batches={len(val_dataloader)}", flush=True)
+        logger.info(f"DataLoader 已就绪 | train_batches_per_epoch: {len(train_dataloader)} | val_batches: {len(val_dataloader)} (val_bs={val_bs})")
+        print(f"[Heartbeat] Dataloaders ready. train_batches={len(train_dataloader)} val_batches={len(val_dataloader)} val_bs={val_bs}", flush=True)
     except Exception:
         pass
 
