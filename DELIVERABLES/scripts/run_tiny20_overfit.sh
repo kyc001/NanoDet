@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 conda activate nano
+mkdir -p workspace
 python - <<'PY'
 import json, os
 os.makedirs('data/annotations', exist_ok=True)

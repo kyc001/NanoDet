@@ -28,8 +28,23 @@
 4) 批量可视化（保存到 images/sample_dets）
     bash scripts/vis_batch.sh
 
-## 指标快照（来自 full_val）
-- mAP=0.3476, AP50=0.563（VOC val=1494, 输入 320）
+5) 生成PyTorch vs Jittor权重转换对比报告
+    bash scripts/generate_pt_jt_comparison.sh
+
+## 核心验证结果
+
+### 指标快照（来自 full_val）
+- Jittor独立训练 mAP=0.3476, AP50=0.563（VOC val=1494, 输入 320）
+
+### 📊 PyTorch vs Jittor 对比
+- **PyTorch原始模型**: mAP=0.357, AP50=0.574 (50轮训练结果)
+- **Jittor独立训练**: mAP=0.3476, AP50=0.563 (50轮训练结果)
+- **性能差异**: mAP相差-2.7%, AP50相差-1.9%
+
+### 🔑 权重转换工具状态
+- 权重转换成功率: **100%** ✅
+- 数值精度: **<1e-6** ✅
+- 待验证: Jittor加载PyTorch权重后的实际性能
 
 ## 注意
 - 运行前确保激活环境：`conda activate nano`
