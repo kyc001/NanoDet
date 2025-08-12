@@ -1,4 +1,3 @@
-# JITTOR MIGRATION & FIX by Google LLC.
 import copy
 import logging
 

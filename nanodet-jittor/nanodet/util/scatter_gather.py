@@ -1,4 +1,3 @@
-# JITTOR MIGRATION by Google LLC.
 import pickle
 # JITTOR MIGRATION: 导入 jittor 和 numpy
 import jittor as jt
