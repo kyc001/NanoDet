@@ -211,3 +211,4 @@ python tools/test.py config/nanodet-plus-m_320_voc_bs64_50epochs.yml \
 ---
 
 **项目状态**: ✅ 完成 | **最后更新**: 2025-08-11 | **维护者**: kyc
+# jittor
