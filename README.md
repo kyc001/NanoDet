@@ -2,10 +2,32 @@
 
 本项目将 NanoDet-Plus 目标检测模型从 PyTorch 迁移到 Jittor 框架，并通过完整的训练和推理实验验证两个框架的一致性。
 
+<p align="center">
+  <img src="workspace/figures/detection_comparison/detection_comparison_grid.jpg" width="96%" alt="PyTorch vs Jittor detection comparison grid" />
+</p>
+<p align="center">
+  <sub>VOC2007 测试集推理对比示例（绿色虚线为 GT）</sub>
+</p>
+<p align="center">
+  <img src="https://img.shields.io/badge/Framework-PyTorch%20%7C%20Jittor-1f6feb?logo=pytorch&logoColor=white" alt="Framework: PyTorch | Jittor" />
+  <img src="https://img.shields.io/badge/Dataset-VOC2007-10b981" alt="Dataset: VOC2007" />
+  <img src="https://img.shields.io/badge/Input-320x320-f59e0b" alt="Input: 320x320" />
+  <img src="https://img.shields.io/badge/License-MIT-0ea5e9" alt="License: MIT" />
+</p>
+<p align="center">
+  <a href="full_experiment_report.md">完整实验报告</a> ·
+  <a href="workspace/figures/">实验图表</a> ·
+  <a href="workspace/">训练日志</a> ·
+  <a href="LICENSE">MIT License</a>
+</p>
+
 ## 目录
 
 - [项目概述](#项目概述)
+- [项目亮点](#项目亮点)
 - [结果速览](#结果速览)
+- [核心可视化](#核心可视化)
+- [快速开始](#快速开始)
 - [环境配置](#环境配置)
 - [数据准备](#数据准备)
 - [项目结构](#项目结构)
@@ -20,6 +42,7 @@
 - [结论](#结论)
 - [已知问题](#已知问题)
 - [参考](#参考)
+- [许可证](#许可证)
 
 ---
 
@@ -34,13 +57,54 @@
 
 ---
 
+## 项目亮点
+
+- **训练/推理双端对齐**: 小样本过拟合 + 全量训练，验证收敛趋势一致
+- **双向权重转换**: PT↔JT 转换后 mAP 损失 < 1%
+- **性能与精度对比**: mAP、FPS、显存、训练时间全量对比
+- **可视化充分**: Loss / mAP / FPS 曲线 + 检测框对比图
+- **可复现**: 日志、脚本、配置与数据划分齐全
+
+---
+
 ## 结果速览
 
-- **最终 mAP**: PyTorch 0.3315 vs Jittor 0.3194（-3.7%）
-- **推理速度**: Jittor 114.5 FPS vs PyTorch 109.0 FPS（+5.0%）
-- **训练耗时**: PyTorch ~50 分钟，Jittor ~69 分钟
-- **权重转换**: PT→JT mAP 0.3311（-0.12%），JT→PT mAP 0.3210（+0.5%）
-- **完整报告**: `full_experiment_report.md`
+<table>
+  <tr>
+    <td align="center"><strong>最终 mAP</strong><br/>PT 0.3315 | JT 0.3194<br/><sub>-3.7%</sub></td>
+    <td align="center"><strong>推理速度</strong><br/>PT 109.0 | JT 114.5 FPS<br/><sub>+5.0%</sub></td>
+    <td align="center"><strong>训练耗时</strong><br/>PT ~50 | JT ~69 分钟<br/><sub>+38%</sub></td>
+    <td align="center"><strong>权重转换</strong><br/>PT→JT -0.12%<br/><sub>JT→PT +0.5%</sub></td>
+  </tr>
+</table>
+
+> **完整报告**: `full_experiment_report.md`
+>  
+> **说明**: PT = PyTorch，JT = Jittor
+
+---
+
+## 核心可视化
+
+<p align="center">
+  <img src="workspace/figures/loss_curves.png" width="32%" alt="Loss curves" />
+  <img src="workspace/figures/map_curves.png" width="32%" alt="mAP curves" />
+  <img src="workspace/figures/fps_comparison.png" width="32%" alt="FPS comparison" />
+</p>
+<p align="center">
+  <sub>Loss / mAP / FPS 对比（同配置、同数据集）</sub>
+</p>
+
+---
+
+## 快速开始
+
+> **提示**: Jittor AMP 不稳定，建议保持 FP32。
+
+1. **准备数据**: 按 [数据准备](#数据准备) 下载并解压 VOC2007
+2. **训练模型**: 见 [训练脚本](#训练脚本)（PyTorch / Jittor）
+3. **评测与可视化**: 见 [测试脚本](#测试脚本) 与 [推理可视化对比](#推理可视化对比)
+4. **权重转换**: 见 [权重转换](#权重转换)
 
 ---
 
@@ -108,6 +172,9 @@ data/VOCdevkit/VOC2007/
 
 ## 项目结构
 
+<details>
+<summary><strong>展开目录树</strong></summary>
+
 ```
 NanoDet/
 ├── README.md                           # 本文件
@@ -171,6 +238,8 @@ NanoDet/
 └── data/                               # 数据集目录
     └── VOCdevkit/VOC2007/
 ```
+
+</details>
 
 ---
 
@@ -384,6 +453,9 @@ python tools/visualize_comparison.py \
 
 ## 实验日志
 
+<details>
+<summary><strong>展开日志文件与绘制脚本</strong></summary>
+
 ### 训练日志
 
 | 框架 | 日志文件 | 说明 |
@@ -411,6 +483,8 @@ python tools/plot_loss_curves.py \
   --output_dir workspace/figures
 ```
 
+</details>
+
 ---
 
 ## 结论
@@ -431,7 +505,7 @@ python tools/plot_loss_curves.py \
 
 1. **Jittor AMP 不稳定**: 开启混合精度后出现 `cudnn_conv ... best_algo_idx!=-1` 错误，建议使用 FP32。
 
-2. **显存占用差异**: Jittor 显存占用约为 PyTorch 的 2 倍，大模型训练时需注意。
+2. **显存占用差异**: Jittor 显存占用约为 PyTorch 的 1.2 倍，大模型训练时需注意。
 
 ---
 
@@ -440,6 +514,12 @@ python tools/plot_loss_curves.py \
 - [NanoDet 官方仓库](https://github.com/RangiLyu/nanodet)
 - [Jittor 官方文档](https://cg.cs.tsinghua.edu.cn/jittor/)
 - [PyTorch 官方文档](https://pytorch.org/docs/)
+
+---
+
+## 许可证
+
+本项目采用 MIT License，详见 `LICENSE`。
 
 ---
 
