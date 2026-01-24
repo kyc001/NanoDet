@@ -2,7 +2,7 @@ import os
 import time
 
 import cv2
-import torch
+import jittor as jt
 
 from nanodet.data.transform import Pipeline
 from nanodet.model.arch import build_model
@@ -14,7 +14,7 @@ class Predictor(object):
         self.cfg = cfg
         self.device = device
         model = build_model(cfg.model)
-        ckpt = jt.load(model_path, map_location=lambda storage, loc: storage)
+        ckpt = jt.load(model_path)
         load_model_weight(model, ckpt, logger)
         if cfg.model.arch.backbone.name == "RepVGG":
             deploy_config = cfg.model
@@ -40,7 +40,7 @@ class Predictor(object):
         meta = dict(img_info=img_info, raw_img=img, img=img)
         meta = self.pipeline(meta, self.cfg.data.val.input_size)
         meta["img"] = (
-            jt.from_numpy(meta["img"].transpose(2, 0, 1))
+            jt.array(meta["img"].transpose(2, 0, 1))
             .unsqueeze(0)
             .to(self.device)
         )

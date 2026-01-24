@@ -19,8 +19,9 @@ def _strip_prefix_key(k: str) -> str:
     return k
 
 
-def pt_to_jt_checkpoint(pt_ckpt, model):
+def pt_to_jt_checkpoint(pt_ckpt, model, logger=None):
     """将 PyTorch ckpt/state_dict 转为 Jittor 检查点（含合并头->分离头切分）。"""
+    log = logger.info if logger is not None else (lambda *a, **k: print(*a))
     # 允许 pt_ckpt 是路径
     if torch is not None and isinstance(pt_ckpt, (str, bytes)):
         pt_ckpt = torch.load(pt_ckpt, map_location='cpu')
@@ -59,6 +60,13 @@ def pt_to_jt_checkpoint(pt_ckpt, model):
     # 形状对齐与合并头切分（增强版，含 depthwise/group conv 自适应）
     model_sd = model.state_dict()
     reconciled = {}
+    stats = {
+        'split_head': 0,
+        'depthwise_expand': 0,
+        'tile_expand': 0,
+        'shape_match': 0,
+        'shape_mismatch': 0,
+    }
     for k, v_np in proc.items():
         # 合并头 -> 分离头映射（逐层 i=0..N-1，全覆盖）
         if k.startswith('head.gfl_cls.') and (k.endswith('.weight') or k.endswith('.bias')):
@@ -76,6 +84,7 @@ def pt_to_jt_checkpoint(pt_ckpt, model):
                         import numpy as np
                         reconciled[cls_key] = v_np[:cls_out].astype(np.float32)
                         reconciled[reg_key] = v_np[cls_out:cls_out+reg_out].astype(np.float32)
+                        stats['split_head'] += 1
                         continue
             except Exception:
                 pass
@@ -83,6 +92,7 @@ def pt_to_jt_checkpoint(pt_ckpt, model):
         if k in model_sd and getattr(v_np, 'shape', None) == model_sd[k].shape:
             import numpy as np
             reconciled[k] = v_np.astype(np.float32)
+            stats['shape_match'] += 1
             continue
         # 4D conv 权重适配（特别是 depthwise/grouped 差异）
         if k in model_sd:
@@ -100,13 +110,79 @@ def pt_to_jt_checkpoint(pt_ckpt, model):
                         for c in range(cout):
                             neww[c, c, :, :] = v_np[c, 0, :, :]
                         reconciled[k] = neww
+                        stats['depthwise_expand'] += 1
                         continue
                     # 目标是一般 conv: (C_out, C_in, k, k) 且 C_in>1 -> 平铺截断
                     elif tshape[1] > 1:
                         reps = [1, tshape[1], 1, 1]
                         v_np_t = np.tile(v_np, reps)[:, :tshape[1], :, :]
                         reconciled[k] = v_np_t.astype(np.float32)
+                        stats['tile_expand'] += 1
                         continue
+            # 标量 -> [1] 向量（用于 Scale 参数）
+            if vshape == () and len(tshape) == 1 and tshape[0] == 1:
+                import numpy as np
+                reconciled[k] = np.array([float(v_np)], dtype=np.float32)
+                stats['shape_match'] += 1
+                continue
+        if k in model_sd:
+            stats['shape_mismatch'] += 1
+
+    # 若 PT 没有 reg_convs.*，用 cls_convs.* 补齐（NanoDet-Plus 兼容）
+    # 这一步用于 pt_to_jt_checkpoint（直接转换保存），否则 reg_convs 会保持随机初始化
+    for mk in model_sd.keys():
+        if mk.startswith("head.reg_convs.") and mk not in reconciled:
+            mirror_k = mk.replace("head.reg_convs.", "head.cls_convs.")
+            if mirror_k in reconciled:
+                reconciled[mk] = reconciled[mirror_k]
+                # 视为一种匹配（统计不区分来源）
+                stats['shape_match'] += 1
+
+    # 统计每层对齐情况（matched / mismatch / missing / extra）
+    prefixes = ['backbone.', 'fpn.', 'head.', 'aux_fpn.', 'aux_head.']
+    def _bucket(key):
+        for p in prefixes:
+            if key.startswith(p):
+                return p
+        return 'other'
+    # 先统计模型侧
+    model_counts = {}
+    matched_counts = {}
+    mismatch_counts = {}
+    missing_counts = {}
+    for mk in model_sd.keys():
+        b = _bucket(mk)
+        model_counts[b] = model_counts.get(b, 0) + 1
+        if mk in reconciled:
+            matched_counts[b] = matched_counts.get(b, 0) + 1
+        else:
+            # 若 PT 有该 key 但形状/规则不匹配 -> mismatch；否则 missing
+            if mk in proc:
+                mismatch_counts[b] = mismatch_counts.get(b, 0) + 1
+            else:
+                missing_counts[b] = missing_counts.get(b, 0) + 1
+    # 再统计 PT 侧多余 key（无法落到模型上）
+    extra_counts = {}
+    for pk in proc.keys():
+        if pk in model_sd or pk in reconciled:
+            continue
+        b = _bucket(pk)
+        extra_counts[b] = extra_counts.get(b, 0) + 1
+
+    log("[pt_to_jt] align summary per-layer (matched/mismatch/missing/extra):")
+    for p in prefixes + ['other']:
+        total = model_counts.get(p, 0)
+        matched = matched_counts.get(p, 0)
+        mismatch = mismatch_counts.get(p, 0)
+        missing = missing_counts.get(p, 0)
+        extra = extra_counts.get(p, 0)
+        if total == 0 and extra == 0:
+            continue
+        log(f"  {p:10s} matched {matched}/{total} | mismatch {mismatch} | missing {missing} | extra {extra}")
+    log(
+        f"[pt_to_jt] shape_match={stats['shape_match']} shape_mismatch={stats['shape_mismatch']} "
+        f"split_head={stats['split_head']} depthwise_expand={stats['depthwise_expand']} tile_expand={stats['tile_expand']}"
+    )
     return {'state_dict': reconciled}
 
 

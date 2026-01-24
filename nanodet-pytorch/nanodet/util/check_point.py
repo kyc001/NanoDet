@@ -74,12 +74,15 @@ def convert_old_model(old_model_dict):
     if "pytorch-lightning_version" in old_model_dict:
         raise ValueError("This model is not old format. No need to convert!")
     version = pl.__version__
-    epoch = old_model_dict["epoch"]
-    global_step = old_model_dict["iter"]
-    state_dict = old_model_dict["state_dict"]
+    epoch = old_model_dict.get("epoch", 0)
+    global_step = old_model_dict.get("iter", old_model_dict.get("global_step", 0))
+    state_dict = old_model_dict.get("state_dict", old_model_dict)
     new_state_dict = OrderedDict()
     for name, value in state_dict.items():
-        new_state_dict["model." + name] = value
+        if name.startswith("model."):
+            new_state_dict[name] = value
+        else:
+            new_state_dict["model." + name] = value
 
     new_checkpoint = {
         "epoch": epoch,

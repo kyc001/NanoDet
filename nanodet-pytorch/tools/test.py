@@ -28,6 +28,7 @@ from nanodet.util import (
     NanoDetLightningLogger,
     cfg,
     convert_old_model,
+    load_model_weight,
     load_config,
     mkdir,
 )
@@ -75,13 +76,16 @@ def main(args):
     task = TrainingTask(cfg, evaluator)
 
     ckpt = torch.load(args.model)
-    if "pytorch-lightning_version" not in ckpt:
+    if "pytorch-lightning_version" in ckpt:
+        task.load_state_dict(ckpt["state_dict"])
+    else:
         warnings.warn(
-            "Warning! Old .pth checkpoint is deprecated. "
-            "Convert the checkpoint with tools/convert_old_checkpoint.py "
+            "Warning! Non-Lightning .pth checkpoint detected. "
+            "Loading weights into model/avg_model directly."
         )
-        ckpt = convert_old_model(ckpt)
-    task.load_state_dict(ckpt["state_dict"])
+        load_model_weight(task.model, ckpt, logger)
+        if getattr(task, "avg_model", None) is not None:
+            load_model_weight(task.avg_model, ckpt, logger)
 
     if cfg.device.gpu_ids == -1:
         logger.info("Using CPU training")

@@ -27,14 +27,14 @@ class OneStageDetector(nn.Module):
 
     def inference(self, meta):
         with jt.no_grad():
-            jt.sync_all(True)	
+            jt.sync_all()
             time1 = time.time()
             preds = self(meta['img'])
-            jt.sync_all(True)	
+            jt.sync_all()
             time2 = time.time()
             print('forward time: {:.3f}s'.format((time2 - time1)), end=' | ')
             results = self.head.post_process(preds, meta)
-            jt.sync_all(True)	
+            jt.sync_all()
             print('decode time: {:.3f}s'.format((time.time() - time2)), end=' | ')
         return results
 

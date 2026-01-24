@@ -1,22 +1,19 @@
 import argparse
 import datetime
 import os
-import warnings
+import sys
 
-import pytorch_lightning as pl
-import torch
+import jittor as jt
+
+# 确保优先加载 nanodet-jittor 版本
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from nanodet.data.collate import naive_collate
 from nanodet.data.dataset import build_dataset
 from nanodet.evaluator import build_evaluator
 from nanodet.trainer.task import TrainingTask
-from nanodet.util import (
-    NanoDetLightningLogger,
-    cfg,
-    convert_old_model,
-    load_config,
-    mkdir,
-)
+from nanodet.util.logger import NanoDetLightningLogger
+from nanodet.util import cfg, load_config, load_model_weight
 
 
 def parse_args():
@@ -33,12 +30,12 @@ def parse_args():
 def main(args):
     load_config(cfg, args.config)
     local_rank = -1
-    jt.backends.cudnn.enabled = True
-    jt.backends.cudnn.benchmark = True
+    if jt.has_cuda:
+        jt.flags.use_cuda = 1
     cfg.defrost()
     timestr = datetime.datetime.now().__format__("%Y%m%d%H%M%S")
     cfg.save_dir = os.path.join(cfg.save_dir, timestr)
-    mkdir(local_rank, cfg.save_dir)
+    os.makedirs(cfg.save_dir, exist_ok=True)
     logger = NanoDetLightningLogger(cfg.save_dir)
 
     assert args.task in ["val", "test"]
@@ -46,13 +43,12 @@ def main(args):
 
     logger.info("Setting up data...")
     val_dataset = build_dataset(cfg.data.val, args.task)
-    val_dataloader = jt.utils.data.DataLoader(
-        val_dataset,
-        batch_size=cfg.device.batchsize_per_gpu,
+    val_bs = getattr(cfg.device, "val_batchsize_per_gpu", 1)
+    val_dataloader = val_dataset.set_attrs(
+        batch_size=val_bs,
         shuffle=False,
         num_workers=cfg.device.workers_per_gpu,
-        pin_memory=True,
-        collate_fn=naive_collate,
+        collate_batch=naive_collate,
         drop_last=False,
     )
     evaluator = build_evaluator(cfg.evaluator, val_dataset)
@@ -61,30 +57,19 @@ def main(args):
     task = TrainingTask(cfg, evaluator)
 
     ckpt = jt.load(args.model)
-    if "pytorch-lightning_version" not in ckpt:
-        warnings.warn(
-            "Warning! Old .pth checkpoint is deprecated. "
-            "Convert the checkpoint with tools/convert_old_checkpoint.py "
-        )
-        ckpt = convert_old_model(ckpt)
-    task.load_state_dict(ckpt["state_dict"])
+    load_model_weight(task.model, ckpt, logger)
+    task.model.eval()
 
-    if cfg.device.gpu_ids == -1:
-        logger.info("Using CPU training")
-        accelerator, devices = "cpu", None
-    else:
-        accelerator, devices = "gpu", cfg.device.gpu_ids
-
-    trainer = pl.Trainer(
-        default_root_dir=cfg.save_dir,
-        accelerator=accelerator,
-        devices=devices,
-        log_every_n_steps=cfg.log.interval,
-        num_sanity_val_steps=0,
-        logger=logger,
-    )
     logger.info("Starting testing...")
-    trainer.test(task, val_dataloader)
+    results = {}
+    for i, batch in enumerate(val_dataloader):
+        batch = task._preprocess_batch_input(batch)
+        with jt.no_grad():
+            dets = task.model.inference(batch)
+        if isinstance(dets, dict):
+            results.update(dets)
+    eval_results = evaluator.evaluate(results, cfg.save_dir)
+    logger.info(f"Eval Results: {eval_results}")
 
 
 if __name__ == "__main__":

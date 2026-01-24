@@ -8,11 +8,18 @@ from jittor import nn
 
 class ExpMovingAverager(object):
     """Exponential Moving Averager (Jittor Version)."""
-    def __init__(self, decay: float = 0.9998):
+    def __init__(self, decay: float = 0.9998, sync_interval: int = 1, sync_all: bool = True):
         if decay < 0 or decay > 1.0:
             raise ValueError(f"Decay should be in [0, 1], {decay} was given.")
         self.decay: float = decay
         self.state: Dict[str, Any] = {}
+        # Jittor uses lazy execution; EMA updates can accumulate graphs.
+        # Force sync periodically to avoid memory growth.
+        try:
+            self.sync_interval = max(1, int(sync_interval))
+        except Exception:
+            self.sync_interval = 1
+        self.sync_all = bool(sync_all)
 
     def load_from(self, model: nn.Module) -> None:
         """从模型加载状态。"""
@@ -66,3 +73,14 @@ class ExpMovingAverager(object):
                 ema_val = self.state[name]
                 # [迁移] ema_val.copy_() -> ema_val.assign()
                 ema_val.assign(ema_val * (1 - decay) + val * decay)
+        # Force execution to avoid lazy graph accumulation (memory leak).
+        if self.sync_interval > 0 and ((iteration + 1) % self.sync_interval == 0):
+            if self.sync_all:
+                jt.sync_all()
+            else:
+                # Fallback: sync each EMA param to flush pending ops.
+                for name, val in self.state.items():
+                    try:
+                        val.sync()
+                    except Exception:
+                        pass

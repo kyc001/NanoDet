@@ -4,8 +4,8 @@ import jittor as jt
 import jittor.nn as F
 
 from ..module.conv import ConvModule, DepthwiseConvModule
-from jittordet.models.utils.initialize import normal_init
-from jittordet.models.dense_heads.gfl_head import GFLHead
+from ..module.init_weights import normal_init
+from .gfl_head import GFLHead
 
 
 class NanoDetHead(GFLHead):

@@ -19,6 +19,23 @@ def channel_shuffle(x, groups):
     x = x.reshape(batchsize, -1, height, width)
     return x
 
+class MaxPool2d(nn.Module):
+    """Match PyTorch MaxPool2d padding behavior (pad with -inf for max)."""
+    def __init__(self, kernel_size=3, stride=2, padding=1):
+        super().__init__()
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+        # use padding=0 here; we will pad manually with -inf
+        self.pool = nn.Pool(kernel_size=kernel_size, stride=stride, padding=0, op='max')
+
+    def execute(self, x):
+        if self.padding and self.padding > 0:
+            pad = self.padding
+            # pad order: [left, right, top, bottom]
+            x = nn.pad(x, [pad, pad, pad, pad], mode='constant', value=-float('inf'))
+        return self.pool(x)
+
 class ShuffleV2Block(nn.Module):
     def __init__(self, inp, oup, stride, activation="ReLU"):
         super(ShuffleV2Block, self).__init__()
@@ -114,7 +131,8 @@ class ShuffleNetV2(nn.Module):
             act_layers(activation),
         )
         input_channels = output_channels
-        self.maxpool = nn.Pool(kernel_size=3, stride=2, padding=1, op='max')
+        # PyTorch MaxPool2d uses -inf padding for max; match it here
+        self.maxpool = MaxPool2d(kernel_size=3, stride=2, padding=1)
 
         stage_names = ["stage{}".format(i) for i in [2, 3, 4]]
         for name, repeats, output_channels in zip(

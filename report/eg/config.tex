@@ -1,0 +1,310 @@
+% config.tex
+% 指定 XeLaTeX 编译
+%!TeX program = xelatex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 文档类与全局设置
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass{beamer}
+
+%tikz包
+\usepackage{amsmath, amssymb, xcolor, tikz}
+\usetikzlibrary{calc}  % 计算坐标
+\usetikzlibrary{backgrounds}  % 背景支持（如果想使用 on background layer）
+\usepackage[most]{tcolorbox}
+\usepackage{xparse}
+
+%字体设置
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{unicode-math}
+\usepackage{etoolbox} % 用于开关切换
+
+\newtoggle{fontBlackTheme}
+\togglefalse{fontBlackTheme}
+
+\newcommand{\UseBlackFont}{\toggletrue{fontBlackTheme}}
+\newcommand{\UseSongFont} { \togglefalse{fontBlackTheme}}
+
+\UseSongFont   % ← 这里启用“宋体+Times New Roman”主题
+% 或者 \UseBlackFont ← 启用“黑体+Liberation Sans”主题
+\UseBlackFont
+%—— 根据开关选择字体 —— 
+\iftoggle{fontBlackTheme}{
+  % —— 黑体 + Liberation Sans —— 
+  % 英文字体
+  \setmainfont{Liberation Sans}
+  \setsansfont{Liberation Sans}
+  \setmonofont{Liberation Mono}
+  % 数学字体
+  \setmathfont{TeX Gyre Termes Math}
+  % 中文黑体
+  \setCJKmainfont{Noto Sans CJK SC}
+  \setCJKsansfont{Noto Sans CJK SC}
+  \setCJKmonofont{Noto Sans CJK SC}
+}{
+  % —— 宋体 + New Roman 风格 —— 
+  % 英文字体
+  \setmainfont{Times New Roman}        % 或 TeX Gyre Termes 
+  \setsansfont{Times New Roman}         % 可选
+  \setmonofont{Times New Roman}         % 可选
+  % 数学字体（New Roman 样式）
+  \setmathfont{TeX Gyre Termes Math}
+  % 中文宋体
+  \setCJKmainfont{Noto Serif CJK SC}
+  \setCJKsansfont{Noto Serif CJK SC}
+  \setCJKmonofont{Noto Serif CJK SC}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 图形、色彩与数学设置
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikz}
+\usepackage[table]{xcolor}    % 表格色块
+\usepackage{booktabs}         % 三线表格式
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usepackage{tcolorbox}
+\usepackage{amsmath}
+\usepackage{xcolor}
+
+\usepackage{unicode-math}
+\setmathfont{TeX Gyre Termes Math}
+\setbeamercolor{block title}{fg=black,bg=gray!10}
+\setbeamerfont{block title}{size=\normalsize,family=\rmfamily}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Beamer 主题与风格设置
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 清除默认页眉与 frametitle 模板（后续自定义）
+\setbeamertemplate{headline}{}
+\setbeamertemplate{frametitle}{}
+\setbeamertemplate{itemize item}[circle]
+
+% 内外主题（可根据需求替换）
+\useoutertheme[subsection=true]{miniframes} 
+\useinnertheme{default}
+\usecolortheme{default}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 颜色定义（可自定义调色板）
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\definecolor{lightblue}{RGB}{70,130,180}
+\definecolor{midblue}{RGB}{28,70,130}
+\definecolor{darkblue}{RGB}{10,40,80}
+\definecolor{myred}{RGB}{150,50,30}
+\definecolor{mygreen}{RGB}{45,125,77}
+\definecolor{mypurple}{RGB}{120,61,137}
+\definecolor{myorange}{RGB}{190,88,32}
+\definecolor{myitem}{RGB}{35,35,35}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 导航栏与页眉设置
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+% 设置顶部导航栏（用于章节、子章节导航）
+\setbeamertemplate{headline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2ex,dp=1ex]{section in head/foot}
+    \insertsectionnavigationhorizontal{\paperwidth}{}{}%
+  \end{beamercolorbox}%
+}
+\setbeamercolor{section in head/foot}{bg=darkblue, fg=white}
+\setbeamercolor{subsection in head/foot}{bg=midblue, fg=white}
+
+% 自定义页眉（仅在非封面页显示 frametitle 和横线，且 frametitle 不为空时才显示）
+\setbeamertemplate{headline}{%
+  \ifnum\value{framenumber}>1
+    \ifx\insertframetitle\@empty
+      % 不显示任何内容
+    \else
+      \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=west, font=\normalsize, text=black, xshift=0.2cm, yshift=-0.4cm]
+              at (current page.north west){\insertframetitle};
+        \draw[line width=1pt, color=midblue]
+              ([yshift=-0.7cm]current page.north west) -- ([yshift=-0.7cm]current page.north east);
+      \end{tikzpicture}
+    \fi
+  \fi
+}
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 图注样式设置
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setbeamerfont{caption}{size=\footnotesize}
+\setbeamercolor{caption}{fg=black}
+% 此处使用默认字体，确保中文统一为 Noto Sans CJK SC
+\setbeamerfont{caption name}{size=\footnotesize}
+\setbeamercolor{caption name}{fg=black}
+\setbeamertemplate{caption}[numbered]
+\renewcommand{\figurename}{图}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 列表样式设置
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 自定义无序列表图标，采用 \raisebox 微调图标位置
+\newcommand{\useBigCircleItem}{%
+  \setbeamertemplate{itemize item}{\raisebox{0.3ex}{\tikz{\draw[myitem, fill=myitem] (0,0) circle (2pt);}}}%
+  \setbeamertemplate{itemize subitem}{\raisebox{0.3ex}{\tikz{\draw[myitem, fill=myitem] (0,0) circle (2pt);}}}%
+  \setbeamertemplate{itemize subsubitem}{\raisebox{0.3ex}{\tikz{\draw[myitem, fill=myitem] (0,0) circle (2pt);}}}%
+}
+\newcommand{\useSmallCircleItem}{%
+  \setbeamertemplate{itemize item}{\raisebox{0.35ex}{\tikz{\draw[myitem, fill=myitem, opacity=0.8] (0,0) circle (1pt);}}}%
+  \setbeamertemplate{itemize subitem}{\raisebox{0.35ex}{\tikz{\draw[myitem, fill=myitem, opacity=0.8] (0,0) circle (1pt);}}}%
+  \setbeamertemplate{itemize subsubitem}{\raisebox{0.35ex}{\tikz{\draw[myitem, fill=myitem, opacity=0.8] (0,0) circle (1pt);}}}%
+}
+% 默认使用大圆圈
+\useBigCircleItem
+
+% 有序列表样式
+\setbeamercolor{enumerate item}{fg=darkblue}
+\setbeamertemplate{enumerate item}{%
+  \usebeamerfont*{enumerate item}%
+  \color{enumerate item.fg}\insertenumlabel.%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 页脚设置
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setbeamertemplate{footline}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[fill=lightblue, minimum width=0.3\paperwidth, minimum height={0.4cm+1pt}, anchor=south west]
+         at ([xshift=-1pt,yshift=-1pt]current page.south west) (leftblock) {};
+    \node[fill=midblue, minimum width=0.6\paperwidth, minimum height={0.4cm+1pt}, anchor=south west]
+         at ([xshift=0.3\paperwidth-1pt,yshift=-1pt]current page.south west) (midblock) {};
+    \node[fill=darkblue, minimum width={0.1\paperwidth+1pt}, minimum height={0.4cm+1pt}, anchor=south west]
+         at ([xshift=0.9\paperwidth-1pt,yshift=-1pt]current page.south west) (rightblock) {};
+    \node[anchor=center, yshift=0.5pt, font=\tiny, text=white] at (leftblock.center)
+         {柯云超，https://kyc001.github.io/};
+    \node[anchor=center, yshift=0.5pt, font=\tiny, text=white] at (midblock.center)
+         {新芽计划结业汇报};
+    \node[anchor=center, yshift=0.5pt, font=\tiny, text=white] at (rightblock.center)
+         {\insertframenumber};
+  \end{tikzpicture}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 注释宏定义
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcounter{cornernotecounter}
+\newcommand{\cornernote}[1]{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=south west, xshift=0.6cm, yshift=0.45cm] at (current page.south west) {%
+      {\scriptsize\color{gray}\textsuperscript{\thecornernotecounter} #1}%
+    };
+  \end{tikzpicture}%
+}
+
+\newcommand{\cornerfootnote}[1]{%
+  \stepcounter{cornernotecounter}%
+  \textsuperscript{\thecornernotecounter}%
+  \cornernote{#1}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 表格样式宏定义
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\PlainTable}[1]{%
+  {\footnotesize
+   \setlength{\tabcolsep}{6pt}%
+   #1%
+  }%
+}
+\newcommand{\ThreeLineTable}[1]{%
+  {\footnotesize
+   \setlength{\tabcolsep}{6pt}%
+   #1%
+  }%
+}
+\newcommand{\AltColorTable}[1]{%
+  {\footnotesize
+   \setlength{\tabcolsep}{6pt}%
+   \rowcolors{2}{gray!20}{white}%
+   #1%
+   \rowcolors{2}{}{}%
+  }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%强调块（适用于公式等）
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 定义参数 key 和默认值
+\pgfkeys{
+  /BehindEqBox/.is family, /BehindEqBox,
+  color/.initial = midblue,
+  border/.initial = 1pt,
+  style/.initial = solid,
+  padding/.initial = 2.8mm
+}
+
+% 定义命令：支持键值对参数 + 内容
+\NewDocumentCommand{\BehindEqBox}{O{} m}{%
+  % 加载参数
+  \pgfkeys{/BehindEqBox, #1}
+
+  \vspace{1em}
+  \begin{center}
+    \begin{tikzpicture}[remember picture, overlay]
+      \node[inner sep=\pgfkeysvalueof{/BehindEqBox/padding}] (E) {#2};
+
+      \coordinate (A) at ([xshift=-25pt]E.south west);
+      \coordinate (B) at ([xshift=25pt]E.north east);
+
+      \begin{pgfonlayer}{background}
+        \filldraw[fill=\pgfkeysvalueof{/BehindEqBox/color}, opacity=0.1, rounded corners=0.35cm]
+          (A) rectangle (B);
+
+        \draw[
+          line width=\pgfkeysvalueof{/BehindEqBox/border},
+          draw=\pgfkeysvalueof{/BehindEqBox/color},
+          opacity=0.2,
+          rounded corners=0.35cm,
+          \pgfkeysvalueof{/BehindEqBox/style}
+        ] 
+        (A) rectangle (B);
+      \end{pgfonlayer}
+    \end{tikzpicture}
+  \end{center}
+  \vspace{1em}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%字体高亮块
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 替换原 block 环境
+\newtcolorbox{beamerblockbox}[3][]{%
+  enhanced,
+  breakable,
+  colback=#2!10,             % 内容背景（透明度 80%）
+  colframe=#2,               % 框颜色 = 标题栏颜色
+  coltitle=white,            % 标题文字颜色
+  fonttitle=\large,
+  title=#3,
+  boxed title style={
+    colback=#2,
+    top=2pt, bottom=2pt,
+    left=2pt, right=2pt,
+    sharp corners=northwest,
+    sharp corners=northeast,
+  },
+  boxrule=0pt,
+  arc=1.5mm,
+  shadow={0pt}{-1pt}{1.5mm}{black!30},
+  left=2pt, right=2pt,
+  top=2pt, bottom=2pt,
+  before skip=6pt,  % block与上文之间的空隙
+  #1,
+}
+
+% 替换默认 beamer block 环境
+\let\oldblock\block
+\renewenvironment{block}[1]{\begin{beamerblockbox}{midblue}{#1}}{\end{beamerblockbox}}
+
+\let\oldalertblock\alertblock
+\renewenvironment{alertblock}[1]{\begin{beamerblockbox}{myred}{#1}}{\end{beamerblockbox}}
+
+\let\oldexampleblock\exampleblock
+\renewenvironment{exampleblock}[1]{\begin{beamerblockbox}{myorange}{#1}}{\end{beamerblockbox}}

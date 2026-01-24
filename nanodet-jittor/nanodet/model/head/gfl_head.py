@@ -19,20 +19,15 @@ from nanodet.util import (
 from ...data.transform.warp import warp_boxes
 from ..module.conv import ConvModule
 
-from jittordet.models.losses.gfocal_loss import DistributionFocalLoss, QualityFocalLoss
-from jittordet.utils.bbox_overlaps import bbox_overlaps
-from jittordet.models.losses.iou_loss import GIoULoss
-from jittordet.models.utils.initialize import normal_init
-from jittordet.models.utils import multiclass_nms
-from jittordet.models.task_utils.assigners import ATSSAssigner
+from ..loss.gfocal_loss import DistributionFocalLoss, QualityFocalLoss
+from ..loss.iou_loss import bbox_overlaps, GIoULoss
+from ..module.init_weights import normal_init
+from ..module.nms import multiclass_nms
+from .assigner.atss_assigner import ATSSAssigner
 from ..module.scale import Scale
 
 
 def reduce_mean(tensor):
-    if not (dist.is_available() and dist.is_initialized()):
-        return tensor
-    tensor = tensor.clone()
-    dist.all_reduce(tensor.true_divide(dist.get_world_size()), op=dist.ReduceOp.SUM)
     return tensor
 
 
@@ -277,7 +272,7 @@ class GFLHead(nn.Module):
         # FG cat_id: [0, num_classes -1], BG cat_id: num_classes
         bg_class_ind = self.num_classes
         pos_inds = jt.nonzero(
-            (labels >= 0) & (labels < bg_class_ind), as_tuple=False
+            (labels >= 0) & (labels < bg_class_ind)
         ).squeeze(1)
 
         score = label_weights.new_zeros(labels.shape)
@@ -289,7 +284,8 @@ class GFLHead(nn.Module):
             pos_grid_cell_centers = self.grid_cells_to_center(pos_grid_cells) / stride
 
             weight_targets = cls_score.detach().sigmoid()
-            weight_targets = weight_targets.max(dim=1)[0][pos_inds]
+            # Jittor: max(dim=1) 直接返回最大值，不是 (values, indices) 元组
+            weight_targets = weight_targets.max(dim=1)[pos_inds]
             pos_bbox_pred_corners = self.distribution_project(pos_bbox_pred)
             pos_decode_bbox_pred = distance2bbox(
                 pos_grid_cell_centers, pos_bbox_pred_corners
@@ -483,16 +479,8 @@ class GFLHead(nn.Module):
         )
 
     def sample(self, assign_result, gt_bboxes):
-        pos_inds = (
-            jt.nonzero(assign_result.gt_inds > 0, as_tuple=False)
-            .squeeze(-1)
-            .unique()
-        )
-        neg_inds = (
-            jt.nonzero(assign_result.gt_inds == 0, as_tuple=False)
-            .squeeze(-1)
-            .unique()
-        )
+        pos_inds = jt.nonzero(assign_result.gt_inds > 0).squeeze(-1).unique()
+        neg_inds = jt.nonzero(assign_result.gt_inds == 0).squeeze(-1).unique()
         pos_assigned_gt_inds = assign_result.gt_inds[pos_inds] - 1
 
         if gt_bboxes.numel() == 0:

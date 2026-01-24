@@ -159,8 +159,11 @@ class DepthwiseConvModule(nn.Module):
                 # 🔧 对于norm层，需要检查norm参数
                 if ("norm" in layer_name and not norm):
                     continue
-                layer = getattr(self, layer_name)
-                x = layer(x)
+                if layer_name == "depthwise":
+                    x = self.depthwise(x)
+                else:
+                    layer = getattr(self, layer_name)
+                    x = layer(x)
             elif layer_name == "act" and self.activation:
                 x = self.act(x)
         return x

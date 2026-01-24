@@ -85,6 +85,11 @@ def main(args):
             f"但得到了 {cfg.model.arch.head.num_classes} 和 {len(cfg.class_names)}"
         )
 
+    try:
+        precision = getattr(cfg.device, "precision", 32)
+    except Exception:
+        precision = 32
+
     # JITTOR MIGRATION: 使用 jt.rank 获取排名，并设置 GPU
     local_rank = jt.rank if jt.world_size > 1 else 0
     if jt.has_cuda:
@@ -95,6 +100,7 @@ def main(args):
     # JITTOR MIGRATION FIX: 使用正确的类名实例化 Logger
     logger = NanoDetLightningLogger(cfg.save_dir)
     logger.dump_cfg(cfg)
+    logger.info(f"precision={precision}")
 
     # 设置随机种子
     if args.seed is not None:
@@ -189,8 +195,11 @@ def main(args):
         load_model_weight(task.model, ckpt, logger)
         # 若存在 avg_model（EMA），将其与当前 model 同步，避免验证时用到未初始化的 avg_model
         try:
-            if getattr(task, 'avg_model', None) is not None:
-                task.avg_model.load_state_dict(task.model.state_dict())
+            if getattr(task, 'weight_averager', None) is not None:
+                if getattr(task, 'avg_model', None) is None and hasattr(task, '_ensure_avg_model'):
+                    task._ensure_avg_model()
+                if getattr(task, 'avg_model', None) is not None:
+                    task.avg_model.load_state_dict(task.model.state_dict())
         except Exception as e:
             logger.warning(f"avg_model 同步失败: {e}")
         # 加载后快速打印若干关键层的范数，确认非随机初始化
@@ -258,6 +267,8 @@ def main(args):
 
     # 导入时间模块
     import time
+    timing_enabled = os.getenv("NANODET_TIMING", "") != ""
+    timing_sync = os.getenv("NANODET_TIMING_SYNC", "1").lower() in ("1", "true", "yes")
 
     total_epochs = cfg.schedule.total_epochs if args.max_epochs is None else min(cfg.schedule.total_epochs, args.max_epochs)
     for epoch in range(start_epoch, total_epochs):
@@ -295,10 +306,20 @@ def main(args):
         batch_count = len(train_dataloader)
         print_interval = max(1, batch_count // 20)  # 每5%显示一次进度
 
-        for i, batch in enumerate(train_dataloader):
+        data_iter = iter(train_dataloader)
+        for i in range(batch_count):
             trainer_mock.global_step = global_step
 
             try:
+                # 数据加载计时（iter next 的阻塞时间）
+                t_fetch = time.time()
+                batch = next(data_iter)
+                if timing_enabled and timing_sync:
+                    jt.sync_all()
+                if timing_enabled:
+                    task.last_data_time = time.time() - t_fetch
+                    t_iter_start = t_fetch
+
                 # 调试：检查并打印 batch 的关键字段形状，避免动态形状导致的缓存爆炸
                 if i < 3:  # 仅前几个batch打印
                     try:
@@ -335,7 +356,14 @@ def main(args):
                 epoch_losses.append(loss_value)
 
                 # 反向传播
+                if timing_enabled:
+                    t_opt = time.time()
                 optimizer.step(training_loss)
+                if timing_enabled:
+                    if timing_sync:
+                        jt.sync_all()
+                    task.last_opt_time = time.time() - t_opt
+                    task.last_iter_time = time.time() - t_iter_start
                 task.on_train_batch_end(global_step)
                 global_step += 1
 
@@ -365,6 +393,8 @@ def main(args):
                         base += f"loss:{loss_value:.4f}| avg:{avg_loss:.4f}| "
                     logger.info(base)
 
+            except StopIteration:
+                break
             except Exception as e:
                 # 输出更详细的批次关键信息，帮助定位问题
                 try:
@@ -428,7 +458,7 @@ def main(args):
 
         # 记录到 CSV 便于画曲线
         try:
-            import csv, os
+            import csv
             metrics_path = os.path.join(cfg.save_dir, 'logs', 'metrics.csv')
             os.makedirs(os.path.dirname(metrics_path), exist_ok=True)
             header = ['epoch','avg_train_loss','mAP','AP50','AP75']
@@ -487,7 +517,7 @@ def main(args):
 
                     # 将 mAP 写回 CSV（更新该 epoch 行）
                     try:
-                        import csv, os
+                        import csv
                         metrics_path = os.path.join(cfg.save_dir, 'logs', 'metrics.csv')
                         # 读出所有行，更新最后一行的 mAP/AP50/AP75
                         rows = []
@@ -526,7 +556,7 @@ def main(args):
             task.model.save(os.path.join(cfg.save_dir, "model_last.ckpt"))
             # 绘制/更新 loss & mAP 曲线
             try:
-                import csv, os
+                import csv
                 import matplotlib
                 matplotlib.use('Agg')
                 import matplotlib.pyplot as plt

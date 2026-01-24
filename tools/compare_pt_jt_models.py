@@ -6,8 +6,17 @@
 
 import sys
 import os
-sys.path.append('nanodet-jittor')
-sys.path.append('nanodet-pytorch')
+import argparse
+import time
+
+ROOT = os.path.dirname(os.path.abspath(__file__))
+PROJ = os.path.abspath(os.path.join(ROOT, ".."))
+JT_ROOT = os.path.join(PROJ, "nanodet-jittor")
+PT_ROOT = os.path.join(PROJ, "nanodet-pytorch")
+if JT_ROOT not in sys.path:
+    sys.path.insert(0, JT_ROOT)
+if PT_ROOT not in sys.path:
+    sys.path.append(PT_ROOT)
 
 import jittor as jt
 import torch
@@ -18,36 +27,28 @@ from nanodet.util.check_point import pt_to_jt_checkpoint
 from nanodet.data.dataset import build_dataset
 from nanodet.data.collate import naive_collate
 from nanodet.evaluator import build_evaluator
-import time
 
-def load_pytorch_model():
+def load_pytorch_model(pt_model_path):
     """加载PyTorch原始模型"""
     print("🔧 加载PyTorch原始模型...")
-    
-    # 这里需要PyTorch版本的代码，暂时用占位符
-    # 实际使用时需要导入PyTorch版本的NanoDet
-    pt_model_path = "nanodet-pytorch/workspace/nanodet-plus-m_320_voc_bs64_50epochs/model_best/nanodet_model_best.pth"
-    
+
     if not os.path.exists(pt_model_path):
         raise FileNotFoundError(f"PyTorch模型文件不存在: {pt_model_path}")
     
     print(f"✅ PyTorch模型路径: {pt_model_path}")
     return pt_model_path
 
-def load_jittor_model_with_pt_weights():
+def load_jittor_model_with_pt_weights(config_path, pt_model_path):
     """加载Jittor模型并使用转换后的PyTorch权重"""
     print("🔧 构建Jittor模型并加载转换后的PyTorch权重...")
     
     # 加载配置
-    config_path = "nanodet-jittor/config/nanodet-plus-m_320_voc_bs64_50epochs.yml"
     load_config(cfg, config_path)
     
     # 构建Jittor模型
     model = build_model(cfg.model)
     
     # 加载PyTorch权重
-    pt_model_path = "nanodet-pytorch/workspace/nanodet-plus-m_320_voc_bs64_50epochs/model_best/nanodet_model_best.pth"
-    
     if not os.path.exists(pt_model_path):
         raise FileNotFoundError(f"PyTorch权重文件不存在: {pt_model_path}")
     
@@ -68,43 +69,55 @@ def load_jittor_model_with_pt_weights():
     print("✅ Jittor模型加载PyTorch权重成功")
     return model
 
-def evaluate_model(model, dataset_name="val"):
+def evaluate_model(model, dataset_name="val", max_images=None):
     """评估模型性能"""
     print(f"📊 开始评估模型性能 (数据集: {dataset_name})...")
     
     # 构建数据集
     dataset = build_dataset(cfg.data[dataset_name], "val")
-    print(f"📋 数据集大小: {len(dataset)}")
+    total = len(dataset)
+    if max_images is not None:
+        total = min(total, max_images)
+    print(f"📋 数据集大小: {len(dataset)} (评估 {total})")
     
+    # 确保保存目录存在
+    os.makedirs(cfg.save_dir, exist_ok=True)
+
     # 构建评估器
     evaluator = build_evaluator(cfg.evaluator, dataset)
     
     # 评估
     model.eval()
-    results = []
+    results = {}
     
     print("🔍 开始推理...")
     start_time = time.time()
     
-    for i, data in enumerate(dataset):
+    for i in range(total):
+        data = dataset[i]
         if i % 100 == 0:
-            print(f"进度: {i}/{len(dataset)}")
+            print(f"进度: {i}/{total}")
         
-        # 数据预处理
-        data = naive_collate([data])
-        img = data["img"]
-        img_info = data["img_info"]
+        # 数据预处理：构造 Jittor inference 需要的 meta
+        meta = data
+        if isinstance(meta["img"], jt.Var) and len(meta["img"].shape) == 3:
+            meta["img"] = meta["img"].unsqueeze(0)
+        # 规范 img_info 为列表格式
+        h = meta["img_info"]["height"]
+        w = meta["img_info"]["width"]
+        img_id = meta["img_info"]["id"]
+        meta["img_info"] = {
+            "height": [h],
+            "width": [w],
+            "id": [img_id],
+        }
         
         # 推理
         with jt.no_grad():
-            results_batch = model.inference(img)
-        
-        # 处理结果
-        for result, info in zip(results_batch, img_info):
-            results.append({
-                'img_id': info['id'],
-                'bboxes': result
-            })
+            preds = model(meta["img"])
+            results_batch = model.head.post_process(preds, meta)
+        if isinstance(results_batch, dict):
+            results.update(results_batch)
     
     end_time = time.time()
     print(f"⏱️ 推理完成，耗时: {end_time - start_time:.2f}秒")
@@ -115,7 +128,7 @@ def evaluate_model(model, dataset_name="val"):
     
     return eval_results
 
-def compare_models():
+def compare_models(args):
     """对比PyTorch和Jittor模型的性能"""
     print("="*80)
     print("🎯 PyTorch vs Jittor 模型性能对比测试")
@@ -123,45 +136,53 @@ def compare_models():
     
     try:
         # 1. 验证PyTorch模型存在
-        pt_model_path = load_pytorch_model()
+        pt_model_path = load_pytorch_model(args.pt_ckpt)
         
         # 2. 加载Jittor模型（使用转换后的PyTorch权重）
-        jt_model = load_jittor_model_with_pt_weights()
+        jt_model = load_jittor_model_with_pt_weights(args.jt_config, pt_model_path)
         
         # 3. 评估Jittor模型性能
         print("\n" + "="*50)
         print("📊 评估Jittor模型（加载PyTorch权重）")
         print("="*50)
         
-        jt_results = evaluate_model(jt_model)
+        jt_results = evaluate_model(jt_model, max_images=args.max_images)
         
         # 4. 输出对比结果
         print("\n" + "="*80)
         print("📋 模型性能对比结果")
         print("="*80)
         
-        # PyTorch基准结果（已知）
-        pt_map = 0.3476
-        pt_ap50 = 0.563
+        # PyTorch基准结果（可选）
+        pt_map = args.pt_map
+        pt_ap50 = args.pt_ap50
         
         # Jittor结果
         jt_map = jt_results.get('mAP', 0.0)
-        jt_ap50 = jt_results.get('AP50', 0.0)
+        jt_ap50 = jt_results.get('AP_50', jt_results.get('AP50', 0.0))
         
-        print(f"{'指标':<15} {'PyTorch':<12} {'Jittor':<12} {'差异':<12} {'状态'}")
-        print("-" * 65)
-        print(f"{'mAP':<15} {pt_map:<12.4f} {jt_map:<12.4f} {abs(pt_map-jt_map):<12.6f} {'✅' if abs(pt_map-jt_map) < 0.001 else '❌'}")
-        print(f"{'AP50':<15} {pt_ap50:<12.4f} {jt_ap50:<12.4f} {abs(pt_ap50-jt_ap50):<12.6f} {'✅' if abs(pt_ap50-jt_ap50) < 0.001 else '❌'}")
+        if pt_map is not None and pt_ap50 is not None:
+            print(f"{'指标':<15} {'PyTorch':<12} {'Jittor':<12} {'差异':<12} {'状态'}")
+            print("-" * 65)
+            print(f"{'mAP':<15} {pt_map:<12.4f} {jt_map:<12.4f} {abs(pt_map-jt_map):<12.6f} {'✅' if abs(pt_map-jt_map) < 0.001 else '❌'}")
+            print(f"{'AP50':<15} {pt_ap50:<12.4f} {jt_ap50:<12.4f} {abs(pt_ap50-jt_ap50):<12.6f} {'✅' if abs(pt_ap50-jt_ap50) < 0.001 else '❌'}")
+        else:
+            print(f"{'指标':<15} {'Jittor':<12}")
+            print("-" * 30)
+            print(f"{'mAP':<15} {jt_map:<12.4f}")
+            print(f"{'AP50':<15} {jt_ap50:<12.4f}")
         
         # 5. 生成对比报告
-        generate_comparison_report(pt_map, pt_ap50, jt_map, jt_ap50)
+        if pt_map is not None and pt_ap50 is not None:
+            generate_comparison_report(pt_map, pt_ap50, jt_map, jt_ap50)
         
         print("\n🎉 权重转换验证完成！")
         
         return {
             'pytorch': {'mAP': pt_map, 'AP50': pt_ap50},
             'jittor': {'mAP': jt_map, 'AP50': jt_ap50},
-            'success': abs(pt_map-jt_map) < 0.001 and abs(pt_ap50-jt_ap50) < 0.001
+            'success': (pt_map is not None and pt_ap50 is not None
+                        and abs(pt_map-jt_map) < 0.001 and abs(pt_ap50-jt_ap50) < 0.001)
         }
         
     except Exception as e:
@@ -210,14 +231,33 @@ def generate_comparison_report(pt_map, pt_ap50, jt_map, jt_ap50):
     
     print(f"📄 对比报告已保存: {report_path}")
 
+def parse_args():
+    ap = argparse.ArgumentParser()
+    ap.add_argument(
+        "--jt_config",
+        default="nanodet-jittor/config/nanodet-plus-m_320_voc.yml",
+        help="Jittor config path",
+    )
+    ap.add_argument(
+        "--pt_ckpt",
+        default="nanodet-pytorch/workspace/nanodet-plus-m_320_voc/model_best/nanodet_model_best.pth",
+        help="PyTorch checkpoint path",
+    )
+    ap.add_argument("--pt_map", type=float, default=None, help="PyTorch mAP baseline")
+    ap.add_argument("--pt_ap50", type=float, default=None, help="PyTorch AP50 baseline")
+    ap.add_argument("--max_images", type=int, default=None, help="限制评估图片数量(用于快速验证)")
+    return ap.parse_args()
+
+
 if __name__ == "__main__":
     print("🚀 开始PyTorch vs Jittor模型性能对比测试...")
-    
+
     # 设置Jittor为评估模式
     jt.flags.use_cuda = 1 if jt.has_cuda else 0
-    
-    results = compare_models()
-    
+
+    args = parse_args()
+    results = compare_models(args)
+
     if results and results['success']:
         print("\n🎉 测试成功！权重转换工具验证通过！")
     else:

@@ -4,6 +4,7 @@ import os
 import warnings
 from typing import Any, Dict, List
 import logging
+import time
 
 # JITTOR HIGH-FIDELITY MOD: 导入 Jittor 核心库
 import jittor as jt
@@ -55,15 +56,45 @@ class TrainingTask(jt.Module):
         self.weight_averager = None
         if "weight_averager" in cfg.model:
             self.weight_averager = build_weight_averager(cfg.model.weight_averager)
-            # JITTOR HIGH-FIDELITY MOD: 使用 copy.deepcopy 来创建 avg_model，确保完全独立，这比 .clone() 更可靠
-            self.avg_model = copy.deepcopy(self.model)
+            # 延迟创建 avg_model，避免 deepcopy 带来的长时间卡顿
+            self.avg_model = None
+        self._timing_enabled = os.getenv("NANODET_TIMING", "") != ""
+        self._timing_sync = os.getenv("NANODET_TIMING_SYNC", "1").lower() in ("1", "true", "yes")
+        self.last_preprocess_time = None
+        self.last_data_time = None
+        self.last_opt_time = None
+        self.last_iter_time = None
+
+    def _ensure_avg_model(self):
+        """延迟构建 EMA 评估模型，避免 deepcopy 的巨大开销。"""
+        if self.avg_model is None:
+            self.avg_model = build_model(self.cfg.model)
+            try:
+                self.avg_model.load_state_dict(self.model.state_dict())
+            except Exception:
+                pass
 
     def _preprocess_batch_input(self, batch):
         """预处理批次输入。在 Jittor 中，数据已在正确的设备上，无需手动 .to(device)。"""
+        if not self._timing_enabled:
+            batch_imgs = batch["img"]
+            if isinstance(batch_imgs, list):
+                batch_img_tensor = stack_batch_img(batch_imgs, divisible=32)
+                batch["img"] = batch_img_tensor
+            else:
+                batch["img"] = batch_imgs
+            return batch
+
+        t0 = time.time()
         batch_imgs = batch["img"]
         if isinstance(batch_imgs, list):
             batch_img_tensor = stack_batch_img(batch_imgs, divisible=32)
             batch["img"] = batch_img_tensor
+        else:
+            batch["img"] = batch_imgs
+        if self._timing_sync:
+            jt.sync_all()
+        self.last_preprocess_time = time.time() - t0
         return batch
 
     # JITTOR HIGH-FIDELITY MOD: Jittor 的 forward 函数标准名称是 execute
@@ -128,6 +159,24 @@ class TrainingTask(jt.Module):
                     "Train_loss/" + loss_name, "Train", loss_value, trainer.global_step
                 )
             self.info(log_msg)
+            if getattr(self.model, "_timing_enabled", False):
+                timing = getattr(self.model, "last_timing", None)
+                timing_parts = []
+                if self.last_data_time is not None:
+                    timing_parts.append(f"data:{self.last_data_time:.4f}s")
+                if self.last_preprocess_time is not None:
+                    timing_parts.append(f"pre:{self.last_preprocess_time:.4f}s")
+                if self.last_opt_time is not None:
+                    timing_parts.append(f"opt:{self.last_opt_time:.4f}s")
+                if self.last_iter_time is not None:
+                    timing_parts.append(f"iter:{self.last_iter_time:.4f}s")
+                if timing:
+                    timing_keys = ["backbone", "fpn", "aux_fpn", "aux_head", "head", "loss", "total"]
+                    for k in timing_keys:
+                        if k in timing:
+                            timing_parts.append(f"{k}:{timing[k]:.4f}s")
+                if timing_parts:
+                    self.info("Time| " + " ".join(timing_parts))
 
             # 🔧 增强日志：添加详细的训练进度信息
             if trainer.global_step % (self.cfg.log.interval * 5) == 0:  # 每5个日志间隔显示一次详细信息
@@ -355,6 +404,7 @@ class TrainingTask(jt.Module):
     def on_validation_epoch_start(self):
         """验证 epoch 开始前调用。"""
         if self.weight_averager:
+            self._ensure_avg_model()
             self.weight_averager.apply_to(self.avg_model)
 
     def on_test_epoch_start(self):
