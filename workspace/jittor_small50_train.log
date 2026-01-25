@@ -1,0 +1,1353 @@
+[38;5;2m[i 0124 23:12:07.879719 56 compiler.py:956] Jittor(1.3.10.0) src: /root/.local/share/mamba/envs/nanojittor/lib/python3.8/site-packages/jittor[m
+[38;5;2m[i 0124 23:12:07.888570 56 compiler.py:957] g++ at /usr/bin/g++(9.3.0)[m
+[38;5;2m[i 0124 23:12:07.888619 56 compiler.py:958] cache_path: /root/.cache/jittor/jt1.3.10/g++9.3.0/py3.8.20/Linux-5.15.0-6x8b/IntelRXeonRPlax9b/90b2/default[m
+[38;5;2m[i 0124 23:12:07.895984 56 __init__.py:412] Found /usr/local/cuda/bin/nvcc(11.4.120) at /usr/local/cuda/bin/nvcc.[m
+[38;5;2m[i 0124 23:12:07.902976 56 __init__.py:412] Found addr2line(2.34) at /usr/bin/addr2line.[m
+[38;5;2m[i 0124 23:12:08.076939 56 compiler.py:1013] cuda key:cu11.4.120_sm_86[m
+[38;5;2m[i 0124 23:12:08.499689 56 __init__.py:227] Total mem: 503.53GB, using 16 procs for compiling.[m
+[38;5;2m[i 0124 23:12:08.600384 56 jit_compiler.cc:28] Load cc_path: /usr/bin/g++[m
+[38;5;2m[i 0124 23:12:08.793431 56 init.cc:63] Found cuda archs: [86,][m
+[38;5;2m[i 0124 23:12:11.595861 56 cuda_flags.cc:55] CUDA enabled.[m
+Cannot open configuration file /build-result/hpcx-v2.9.0-gcc-inbox-ubuntu20.04-x86_64/ompi/share/openmpi/mpicc-wrapper-data.txt
+Error parsing data file mpicc: Not found
+[NanoDet][01-24 23:12:11] INFO: 配置文件已保存到: workspace/nanodet-plus-m_320_voc/logs-2026-01-24-23-12-11/train_config.yml
+[NanoDet][01-24 23:12:11] INFO: precision=32
+[NanoDet][01-24 23:12:11] INFO: 正在设置数据...
+[NanoDet][01-24 23:12:11] INFO: 数据集已构建完成 | 训练样本数: 50 | 验证样本数: 50
+INFO:NanoDet:数据集已构建完成 | 训练样本数: 50 | 验证样本数: 50
+creating index...
+index created!
+creating index...
+index created!
+[Heartbeat] Datasets ready. train=50 val=50
+[NanoDet][01-24 23:12:11] INFO: DataLoader 已就绪 | train_batches_per_epoch: 50 | val_batches: 50 (val_bs=16)
+INFO:NanoDet:DataLoader 已就绪 | train_batches_per_epoch: 50 | val_batches: 50 (val_bs=16)
+[Heartbeat] Dataloaders ready. train_batches=50 val_batches=50 val_bs=16
+[NanoDet][01-24 23:12:11] INFO: 正在创建模型...
+INFO:NanoDet:正在创建模型...
+[NanoDet][01-24 23:12:12] INFO: 开始训练...
+INFO:NanoDet:开始训练...
+[NanoDet][01-24 23:12:12] INFO: 总共 20 个 epoch，每个 epoch 50 个批次
+INFO:NanoDet:总共 20 个 epoch，每个 epoch 50 个批次
+[NanoDet][01-24 23:12:12] INFO: ================================================================================
+INFO:NanoDet:================================================================================
+[NanoDet][01-24 23:12:12] INFO: 开始 Epoch 1/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 1/20 | LR: 0.001000
+model size is  1.0x
+init weights...
+=> loading pretrained model shufflenetv2_1.0x from jittor models...
+[ShuffleNetV2] loaded 275/282 pretrained params; skipped 7 (e.g. ['conv5.0.weight', 'conv5.1.weight', 'conv5.1.bias', 'conv5.1.running_mean', 'conv5.1.running_var'])
+Finish initialize NanoDet-Plus Head.
+[NanoDet][01-24 23:12:16] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:16] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:16] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:16] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:18] INFO: Train|Epoch1/20|Iter0(1/50)| mem:0.00G| lr:1.00e-03| loss_qfl:0.7231| loss_bbox:1.1231| loss_dfl:0.5221| aux_loss_qfl:0.7202| aux_loss_bbox:1.0446| aux_loss_dfl:0.5216| 
+INFO:NanoDet:Train|Epoch1/20|Iter0(1/50)| mem:0.00G| lr:1.00e-03| loss_qfl:0.7231| loss_bbox:1.1231| loss_dfl:0.5221| aux_loss_qfl:0.7202| aux_loss_bbox:1.0446| aux_loss_dfl:0.5216| 
+[38;5;3m[w 0124 23:12:18.264197 56 grad.cc:81] grads[168] 'aux_fpn.reduce_layers.0.bn.running_mean' doesn't have gradient. It will be set to zero: Var(24245:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.reduce_layers.0.bn.running_mean,7f9b01ff2600)[96,][m
+[38;5;3m[w 0124 23:12:18.264268 56 grad.cc:81] grads[169] 'aux_fpn.reduce_layers.0.bn.running_var' doesn't have gradient. It will be set to zero: Var(24259:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.reduce_layers.0.bn.running_var,7f9b01ff2a00)[96,][m
+[38;5;3m[w 0124 23:12:18.264284 56 grad.cc:81] grads[173] 'aux_fpn.reduce_layers.1.bn.running_mean' doesn't have gradient. It will be set to zero: Var(24341:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.reduce_layers.1.bn.running_mean,7f9b01ff3800)[96,][m
+[38;5;3m[w 0124 23:12:18.264298 56 grad.cc:81] grads[174] 'aux_fpn.reduce_layers.1.bn.running_var' doesn't have gradient. It will be set to zero: Var(24355:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.reduce_layers.1.bn.running_var,7f9b01ff3c00)[96,][m
+[38;5;3m[w 0124 23:12:18.264314 56 grad.cc:81] grads[178] 'aux_fpn.reduce_layers.2.bn.running_mean' doesn't have gradient. It will be set to zero: Var(24437:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.reduce_layers.2.bn.running_mean,7f9b01ff4a00)[96,][m
+[38;5;3m[w 0124 23:12:18.264328 56 grad.cc:81] grads[179] 'aux_fpn.reduce_layers.2.bn.running_var' doesn't have gradient. It will be set to zero: Var(24451:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.reduce_layers.2.bn.running_var,7f9b01ff4e00)[96,][m
+[38;5;3m[w 0124 23:12:18.264342 56 grad.cc:81] grads[220] 'aux_fpn.downsamples.0.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(25865:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.downsamples.0.dwnorm.running_mean,7f9b01eee000)[96,][m
+[38;5;3m[w 0124 23:12:18.264362 56 grad.cc:81] grads[221] 'aux_fpn.downsamples.0.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(25879:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.downsamples.0.dwnorm.running_var,7f9b01eee400)[96,][m
+[38;5;3m[w 0124 23:12:18.264376 56 grad.cc:81] grads[224] 'aux_fpn.downsamples.0.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(25961:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.downsamples.0.pwnorm.running_mean,7f9b01eef200)[96,][m
+[38;5;3m[w 0124 23:12:18.264389 56 grad.cc:81] grads[225] 'aux_fpn.downsamples.0.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(25975:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.downsamples.0.pwnorm.running_var,7f9b01eef600)[96,][m
+[38;5;3m[w 0124 23:12:18.264406 56 grad.cc:81] grads[230] 'aux_fpn.downsamples.1.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(26589:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.downsamples.1.dwnorm.running_mean,7f9b01ef5c00)[96,][m
+[38;5;3m[w 0124 23:12:18.264419 56 grad.cc:81] grads[231] 'aux_fpn.downsamples.1.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(26603:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.downsamples.1.dwnorm.running_var,7f9b01ef6000)[96,][m
+[38;5;3m[w 0124 23:12:18.264432 56 grad.cc:81] grads[234] 'aux_fpn.downsamples.1.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(26685:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.downsamples.1.pwnorm.running_mean,7f9b01ef6e00)[96,][m
+[38;5;3m[w 0124 23:12:18.264449 56 grad.cc:81] grads[235] 'aux_fpn.downsamples.1.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(26699:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.downsamples.1.pwnorm.running_var,7f9b01ef7200)[96,][m
+[38;5;3m[w 0124 23:12:18.264462 56 grad.cc:81] grads[276] 'aux_fpn.extra_lvl_in_conv.0.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(27313:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.extra_lvl_in_conv.0.dwnorm.running_mean,7f9b01efd800)[96,][m
+[38;5;3m[w 0124 23:12:18.264475 56 grad.cc:81] grads[277] 'aux_fpn.extra_lvl_in_conv.0.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(27327:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.extra_lvl_in_conv.0.dwnorm.running_var,7f9b01efdc00)[96,][m
+[38;5;3m[w 0124 23:12:18.264492 56 grad.cc:81] grads[280] 'aux_fpn.extra_lvl_in_conv.0.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(27409:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.extra_lvl_in_conv.0.pwnorm.running_mean,7f9b01efea00)[96,][m
+[38;5;3m[w 0124 23:12:18.264506 56 grad.cc:81] grads[281] 'aux_fpn.extra_lvl_in_conv.0.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(27423:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.extra_lvl_in_conv.0.pwnorm.running_var,7f9b01efee00)[96,][m
+[38;5;3m[w 0124 23:12:18.264521 56 grad.cc:81] grads[286] 'aux_fpn.extra_lvl_out_conv.0.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(27507:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.extra_lvl_out_conv.0.dwnorm.running_mean,7f9b01effc00)[96,][m
+[38;5;3m[w 0124 23:12:18.264534 56 grad.cc:81] grads[287] 'aux_fpn.extra_lvl_out_conv.0.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(27521:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.extra_lvl_out_conv.0.dwnorm.running_var,7f9b01bed400)[96,][m
+[38;5;3m[w 0124 23:12:18.264551 56 grad.cc:81] grads[290] 'aux_fpn.extra_lvl_out_conv.0.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(27603:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.extra_lvl_out_conv.0.pwnorm.running_mean,7f9b01bee200)[96,][m
+[38;5;3m[w 0124 23:12:18.264564 56 grad.cc:81] grads[291] 'aux_fpn.extra_lvl_out_conv.0.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(27617:2:1:1:i1:o0:s1:n0:g1,float32,aux_fpn.extra_lvl_out_conv.0.pwnorm.running_var,7f9b01bee600)[96,][m
+[38;5;3m[w 0124 23:12:18.264578 56 grad.cc:81] grads[297] 'head.cls_convs.0.0.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(34328:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.0.0.dwnorm.running_mean,7f9b009ffc00)[96,][m
+[38;5;3m[w 0124 23:12:18.264594 56 grad.cc:81] grads[298] 'head.cls_convs.0.0.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(34342:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.0.0.dwnorm.running_var,7f9b009ffe00)[96,][m
+[38;5;3m[w 0124 23:12:18.264608 56 grad.cc:81] grads[301] 'head.cls_convs.0.0.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(34424:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.0.0.pwnorm.running_mean,7f98cdcfee00)[96,][m
+[38;5;3m[w 0124 23:12:18.264621 56 grad.cc:81] grads[302] 'head.cls_convs.0.0.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(34438:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.0.0.pwnorm.running_var,7f98cdcff000)[96,][m
+[38;5;3m[w 0124 23:12:18.264638 56 grad.cc:81] grads[307] 'head.cls_convs.0.1.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(34522:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.0.1.dwnorm.running_mean,7f98cdcffc00)[96,][m
+[38;5;3m[w 0124 23:12:18.264651 56 grad.cc:81] grads[308] 'head.cls_convs.0.1.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(34536:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.0.1.dwnorm.running_var,7f98cdcffe00)[96,][m
+[38;5;3m[w 0124 23:12:18.264664 56 grad.cc:81] grads[311] 'head.cls_convs.0.1.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(34618:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.0.1.pwnorm.running_mean,7f9b006ee200)[96,][m
+[38;5;3m[w 0124 23:12:18.264680 56 grad.cc:81] grads[312] 'head.cls_convs.0.1.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(34632:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.0.1.pwnorm.running_var,7f9b006ee400)[96,][m
+[38;5;3m[w 0124 23:12:18.264693 56 grad.cc:81] grads[317] 'head.cls_convs.1.0.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(34730:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.1.0.dwnorm.running_mean,7f9b006ef000)[96,][m
+[38;5;3m[w 0124 23:12:18.264707 56 grad.cc:81] grads[318] 'head.cls_convs.1.0.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(34744:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.1.0.dwnorm.running_var,7f9b006ef200)[96,][m
+[38;5;3m[w 0124 23:12:18.264723 56 grad.cc:81] grads[321] 'head.cls_convs.1.0.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(34826:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.1.0.pwnorm.running_mean,7f9b006efe00)[96,][m
+[38;5;3m[w 0124 23:12:18.264736 56 grad.cc:81] grads[322] 'head.cls_convs.1.0.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(34840:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.1.0.pwnorm.running_var,7f9b006f0000)[96,][m
+[38;5;3m[w 0124 23:12:18.264750 56 grad.cc:81] grads[327] 'head.cls_convs.1.1.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(34924:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.1.1.dwnorm.running_mean,7f9b006f0c00)[96,][m
+[38;5;3m[w 0124 23:12:18.264767 56 grad.cc:81] grads[328] 'head.cls_convs.1.1.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(34938:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.1.1.dwnorm.running_var,7f9b006f0e00)[96,][m
+[38;5;3m[w 0124 23:12:18.264780 56 grad.cc:81] grads[331] 'head.cls_convs.1.1.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(35020:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.1.1.pwnorm.running_mean,7f9b006f1a00)[96,][m
+[38;5;3m[w 0124 23:12:18.264793 56 grad.cc:81] grads[332] 'head.cls_convs.1.1.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(35034:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.1.1.pwnorm.running_var,7f9b006f1c00)[96,][m
+[38;5;3m[w 0124 23:12:18.264805 56 grad.cc:81] grads[337] 'head.cls_convs.2.0.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(35132:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.2.0.dwnorm.running_mean,7f9b006f2800)[96,][m
+[38;5;3m[w 0124 23:12:18.264821 56 grad.cc:81] grads[338] 'head.cls_convs.2.0.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(35146:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.2.0.dwnorm.running_var,7f9b006f2a00)[96,][m
+[38;5;3m[w 0124 23:12:18.264834 56 grad.cc:81] grads[341] 'head.cls_convs.2.0.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(35228:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.2.0.pwnorm.running_mean,7f9b006f3600)[96,][m
+[38;5;3m[w 0124 23:12:18.264847 56 grad.cc:81] grads[342] 'head.cls_convs.2.0.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(35242:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.2.0.pwnorm.running_var,7f9b006f3800)[96,][m
+[38;5;3m[w 0124 23:12:18.264863 56 grad.cc:81] grads[347] 'head.cls_convs.2.1.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(35326:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.2.1.dwnorm.running_mean,7f9b006f4400)[96,][m
+[38;5;3m[w 0124 23:12:18.264876 56 grad.cc:81] grads[348] 'head.cls_convs.2.1.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(35340:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.2.1.dwnorm.running_var,7f9b006f4600)[96,][m
+[38;5;3m[w 0124 23:12:18.264889 56 grad.cc:81] grads[351] 'head.cls_convs.2.1.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(35422:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.2.1.pwnorm.running_mean,7f9b006f5200)[96,][m
+[38;5;3m[w 0124 23:12:18.264905 56 grad.cc:81] grads[352] 'head.cls_convs.2.1.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(35436:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.2.1.pwnorm.running_var,7f9b006f5400)[96,][m
+[38;5;3m[w 0124 23:12:18.264918 56 grad.cc:81] grads[357] 'head.cls_convs.3.0.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(35534:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.3.0.dwnorm.running_mean,7f98cdc4b000)[96,][m
+[38;5;3m[w 0124 23:12:18.264930 56 grad.cc:81] grads[358] 'head.cls_convs.3.0.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(35548:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.3.0.dwnorm.running_var,7f98cdc4b200)[96,][m
+[38;5;3m[w 0124 23:12:18.264950 56 grad.cc:81] grads[361] 'head.cls_convs.3.0.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(35630:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.3.0.pwnorm.running_mean,7f98cdc4be00)[96,][m
+[38;5;3m[w 0124 23:12:18.264963 56 grad.cc:81] grads[362] 'head.cls_convs.3.0.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(35644:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.3.0.pwnorm.running_var,7f98cdc4c000)[96,][m
+[38;5;3m[w 0124 23:12:18.264977 56 grad.cc:81] grads[367] 'head.cls_convs.3.1.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(35728:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.3.1.dwnorm.running_mean,7f98cdc4cc00)[96,][m
+[38;5;3m[w 0124 23:12:18.264994 56 grad.cc:81] grads[368] 'head.cls_convs.3.1.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(35742:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.3.1.dwnorm.running_var,7f98cdc4ce00)[96,][m
+[38;5;3m[w 0124 23:12:18.265007 56 grad.cc:81] grads[371] 'head.cls_convs.3.1.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(35824:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.3.1.pwnorm.running_mean,7f98cdc4da00)[96,][m
+[38;5;3m[w 0124 23:12:18.265020 56 grad.cc:81] grads[372] 'head.cls_convs.3.1.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(35838:2:1:1:i1:o0:s1:n0:g1,float32,head.cls_convs.3.1.pwnorm.running_var,7f98cdc4dc00)[96,][m
+[38;5;3m[w 0124 23:12:18.265036 56 grad.cc:81] grads[381] 'aux_fpn.reduce_layers.0.conv.weight' doesn't have gradient. It will be set to zero: Var(5555:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.reduce_layers.0.conv.weight,7f9b001e6600)[96,116,1,1,][m
+[38;5;3m[w 0124 23:12:18.265051 56 grad.cc:81] grads[382] 'aux_fpn.reduce_layers.0.bn.weight' doesn't have gradient. It will be set to zero: Var(5561:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.reduce_layers.0.bn.weight,7f9b000ffe00)[96,][m
+[38;5;3m[w 0124 23:12:18.265066 56 grad.cc:81] grads[383] 'aux_fpn.reduce_layers.0.bn.bias' doesn't have gradient. It will be set to zero: Var(5567:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.reduce_layers.0.bn.bias,7f9b001db800)[96,][m
+[38;5;3m[w 0124 23:12:18.265079 56 grad.cc:81] grads[384] '' doesn't have gradient. It will be set to zero: Var(27701:2:1:1:i1:o0:s1:n0:g1,float32,,7f9b01ff2400)[96,][m
+[38;5;3m[w 0124 23:12:18.265100 56 grad.cc:81] grads[386] 'aux_fpn.reduce_layers.1.conv.weight' doesn't have gradient. It will be set to zero: Var(5633:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.reduce_layers.1.conv.weight,7f9b0024a600)[96,232,1,1,][m
+[38;5;3m[w 0124 23:12:18.265114 56 grad.cc:81] grads[387] 'aux_fpn.reduce_layers.1.bn.weight' doesn't have gradient. It will be set to zero: Var(5639:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.reduce_layers.1.bn.weight,7f9b001dbe00)[96,][m
+[38;5;3m[w 0124 23:12:18.265132 56 grad.cc:81] grads[388] 'aux_fpn.reduce_layers.1.bn.bias' doesn't have gradient. It will be set to zero: Var(5645:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.reduce_layers.1.bn.bias,7f9b001dc000)[96,][m
+[38;5;3m[w 0124 23:12:18.265156 56 grad.cc:81] grads[391] 'aux_fpn.reduce_layers.2.conv.weight' doesn't have gradient. It will be set to zero: Var(5711:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.reduce_layers.2.conv.weight,7f9b0028ba00)[96,464,1,1,][m
+[38;5;3m[w 0124 23:12:18.265170 56 grad.cc:81] grads[392] 'aux_fpn.reduce_layers.2.bn.weight' doesn't have gradient. It will be set to zero: Var(5717:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.reduce_layers.2.bn.weight,7f9b001dc600)[96,][m
+[38;5;3m[w 0124 23:12:18.265183 56 grad.cc:81] grads[393] 'aux_fpn.reduce_layers.2.bn.bias' doesn't have gradient. It will be set to zero: Var(5723:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.reduce_layers.2.bn.bias,7f9b001dc800)[96,][m
+[38;5;3m[w 0124 23:12:18.265207 56 grad.cc:81] grads[396] 'aux_fpn.top_down_blocks.0.blocks.0.ghost1.primary_conv.0.weight' doesn't have gradient. It will be set to zero: Var(5742:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.ghost1.primary_conv.0.weight,7f9b001f1400)[48,192,1,1,][m
+[38;5;3m[w 0124 23:12:18.265221 56 grad.cc:81] grads[397] 'aux_fpn.top_down_blocks.0.blocks.0.ghost1.primary_conv.1.weight' doesn't have gradient. It will be set to zero: Var(5747:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.ghost1.primary_conv.1.weight,7f9b001fa400)[48,][m
+[38;5;3m[w 0124 23:12:18.265240 56 grad.cc:81] grads[398] 'aux_fpn.top_down_blocks.0.blocks.0.ghost1.primary_conv.1.bias' doesn't have gradient. It will be set to zero: Var(5752:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.ghost1.primary_conv.1.bias,7f9b001fa600)[48,][m
+[38;5;3m[w 0124 23:12:18.265254 56 grad.cc:81] grads[399] 'aux_fpn.top_down_blocks.0.blocks.0.ghost1.cheap_operation.0.weight' doesn't have gradient. It will be set to zero: Var(5781:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.ghost1.cheap_operation.0.weight,7f9b001fb400)[48,1,3,3,][m
+[38;5;3m[w 0124 23:12:18.265269 56 grad.cc:81] grads[400] 'aux_fpn.top_down_blocks.0.blocks.0.ghost1.cheap_operation.1.weight' doesn't have gradient. It will be set to zero: Var(5786:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.ghost1.cheap_operation.1.weight,7f9b001fac00)[48,][m
+[38;5;3m[w 0124 23:12:18.265286 56 grad.cc:81] grads[401] 'aux_fpn.top_down_blocks.0.blocks.0.ghost1.cheap_operation.1.bias' doesn't have gradient. It will be set to zero: Var(5791:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.ghost1.cheap_operation.1.bias,7f9b001fae00)[48,][m
+[38;5;3m[w 0124 23:12:18.265299 56 grad.cc:81] grads[402] 'aux_fpn.top_down_blocks.0.blocks.0.ghost2.primary_conv.0.weight' doesn't have gradient. It will be set to zero: Var(5820:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.ghost2.primary_conv.0.weight,7f9b001e1600)[48,96,1,1,][m
+[38;5;3m[w 0124 23:12:18.265314 56 grad.cc:81] grads[403] 'aux_fpn.top_down_blocks.0.blocks.0.ghost2.primary_conv.1.weight' doesn't have gradient. It will be set to zero: Var(5825:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.ghost2.primary_conv.1.weight,7f9b001e5e00)[48,][m
+[38;5;3m[w 0124 23:12:18.265331 56 grad.cc:81] grads[404] 'aux_fpn.top_down_blocks.0.blocks.0.ghost2.primary_conv.1.bias' doesn't have gradient. It will be set to zero: Var(5830:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.ghost2.primary_conv.1.bias,7f9b001e6000)[48,][m
+[38;5;3m[w 0124 23:12:18.265345 56 grad.cc:81] grads[405] 'aux_fpn.top_down_blocks.0.blocks.0.ghost2.cheap_operation.0.weight' doesn't have gradient. It will be set to zero: Var(5859:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.ghost2.cheap_operation.0.weight,7f9b001fc400)[48,1,3,3,][m
+[38;5;3m[w 0124 23:12:18.265359 56 grad.cc:81] grads[406] 'aux_fpn.top_down_blocks.0.blocks.0.ghost2.cheap_operation.1.weight' doesn't have gradient. It will be set to zero: Var(5864:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.ghost2.cheap_operation.1.weight,7f9b001fbc00)[48,][m
+[38;5;3m[w 0124 23:12:18.265375 56 grad.cc:81] grads[407] 'aux_fpn.top_down_blocks.0.blocks.0.ghost2.cheap_operation.1.bias' doesn't have gradient. It will be set to zero: Var(5869:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.ghost2.cheap_operation.1.bias,7f9b001fbe00)[48,][m
+[38;5;3m[w 0124 23:12:18.265389 56 grad.cc:81] grads[408] 'aux_fpn.top_down_blocks.0.blocks.0.shortcut.0.weight' doesn't have gradient. It will be set to zero: Var(5898:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.shortcut.0.weight,7f9b00239600)[192,1,5,5,][m
+[38;5;3m[w 0124 23:12:18.265403 56 grad.cc:81] grads[409] 'aux_fpn.top_down_blocks.0.blocks.0.shortcut.1.weight' doesn't have gradient. It will be set to zero: Var(5903:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.shortcut.1.weight,7f9b001fcc00)[192,][m
+[38;5;3m[w 0124 23:12:18.265420 56 grad.cc:81] grads[410] 'aux_fpn.top_down_blocks.0.blocks.0.shortcut.1.bias' doesn't have gradient. It will be set to zero: Var(5908:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.shortcut.1.bias,7f9b001fd000)[192,][m
+[38;5;3m[w 0124 23:12:18.265435 56 grad.cc:81] grads[411] 'aux_fpn.top_down_blocks.0.blocks.0.shortcut.2.weight' doesn't have gradient. It will be set to zero: Var(5937:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.shortcut.2.weight,7f9b00272200)[96,192,1,1,][m
+[38;5;3m[w 0124 23:12:18.265449 56 grad.cc:81] grads[412] 'aux_fpn.top_down_blocks.0.blocks.0.shortcut.3.weight' doesn't have gradient. It will be set to zero: Var(5942:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.shortcut.3.weight,7f9b001fdc00)[96,][m
+[38;5;3m[w 0124 23:12:18.265466 56 grad.cc:81] grads[413] 'aux_fpn.top_down_blocks.0.blocks.0.shortcut.3.bias' doesn't have gradient. It will be set to zero: Var(5947:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.top_down_blocks.0.blocks.0.shortcut.3.bias,7f9b001fde00)[96,][m
+[38;5;3m[w 0124 23:12:18.265480 56 grad.cc:81] grads[414] 'aux_fpn.top_down_blocks.1.blocks.0.ghost1.primary_conv.0.weight' doesn't have gradient. It will be set to zero: Var(5976:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.ghost1.primary_conv.0.weight,7f9b00260200)[48,192,1,1,][m
+[38;5;3m[w 0124 23:12:18.265494 56 grad.cc:81] grads[415] 'aux_fpn.top_down_blocks.1.blocks.0.ghost1.primary_conv.1.weight' doesn't have gradient. It will be set to zero: Var(5981:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.ghost1.primary_conv.1.weight,7f9b001fe400)[48,][m
+[38;5;3m[w 0124 23:12:18.265510 56 grad.cc:81] grads[416] 'aux_fpn.top_down_blocks.1.blocks.0.ghost1.primary_conv.1.bias' doesn't have gradient. It will be set to zero: Var(5986:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.ghost1.primary_conv.1.bias,7f9b001fe600)[48,][m
+[38;5;3m[w 0124 23:12:18.265524 56 grad.cc:81] grads[417] 'aux_fpn.top_down_blocks.1.blocks.0.ghost1.cheap_operation.0.weight' doesn't have gradient. It will be set to zero: Var(6015:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.ghost1.cheap_operation.0.weight,7f9b001ff400)[48,1,3,3,][m
+[38;5;3m[w 0124 23:12:18.265538 56 grad.cc:81] grads[418] 'aux_fpn.top_down_blocks.1.blocks.0.ghost1.cheap_operation.1.weight' doesn't have gradient. It will be set to zero: Var(6020:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.ghost1.cheap_operation.1.weight,7f9b001ffc00)[48,][m
+[38;5;3m[w 0124 23:12:18.265554 56 grad.cc:81] grads[419] 'aux_fpn.top_down_blocks.1.blocks.0.ghost1.cheap_operation.1.bias' doesn't have gradient. It will be set to zero: Var(6025:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.ghost1.cheap_operation.1.bias,7f9b001ffe00)[48,][m
+[38;5;3m[w 0124 23:12:18.265568 56 grad.cc:81] grads[420] 'aux_fpn.top_down_blocks.1.blocks.0.ghost2.primary_conv.0.weight' doesn't have gradient. It will be set to zero: Var(6054:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.ghost2.primary_conv.0.weight,7f9b00234a00)[48,96,1,1,][m
+[38;5;3m[w 0124 23:12:18.265582 56 grad.cc:81] grads[421] 'aux_fpn.top_down_blocks.1.blocks.0.ghost2.primary_conv.1.weight' doesn't have gradient. It will be set to zero: Var(6059:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.ghost2.primary_conv.1.weight,7f9b001ff000)[48,][m
+[38;5;3m[w 0124 23:12:18.265601 56 grad.cc:81] grads[422] 'aux_fpn.top_down_blocks.1.blocks.0.ghost2.primary_conv.1.bias' doesn't have gradient. It will be set to zero: Var(6064:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.ghost2.primary_conv.1.bias,7f9b001ff200)[48,][m
+[38;5;3m[w 0124 23:12:18.265616 56 grad.cc:81] grads[423] 'aux_fpn.top_down_blocks.1.blocks.0.ghost2.cheap_operation.0.weight' doesn't have gradient. It will be set to zero: Var(6093:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.ghost2.cheap_operation.0.weight,7f9b001dd600)[48,1,3,3,][m
+[38;5;3m[w 0124 23:12:18.265630 56 grad.cc:81] grads[424] 'aux_fpn.top_down_blocks.1.blocks.0.ghost2.cheap_operation.1.weight' doesn't have gradient. It will be set to zero: Var(6098:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.ghost2.cheap_operation.1.weight,7f9b001dce00)[48,][m
+[38;5;3m[w 0124 23:12:18.265648 56 grad.cc:81] grads[425] 'aux_fpn.top_down_blocks.1.blocks.0.ghost2.cheap_operation.1.bias' doesn't have gradient. It will be set to zero: Var(6103:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.ghost2.cheap_operation.1.bias,7f9b001dd000)[48,][m
+[38;5;3m[w 0124 23:12:18.265662 56 grad.cc:81] grads[426] 'aux_fpn.top_down_blocks.1.blocks.0.shortcut.0.weight' doesn't have gradient. It will be set to zero: Var(6132:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.shortcut.0.weight,7f9b00269200)[192,1,5,5,][m
+[38;5;3m[w 0124 23:12:18.265675 56 grad.cc:81] grads[427] 'aux_fpn.top_down_blocks.1.blocks.0.shortcut.1.weight' doesn't have gradient. It will be set to zero: Var(6137:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.shortcut.1.weight,7f9b001dde00)[192,][m
+[38;5;3m[w 0124 23:12:18.265689 56 grad.cc:81] grads[428] 'aux_fpn.top_down_blocks.1.blocks.0.shortcut.1.bias' doesn't have gradient. It will be set to zero: Var(6142:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.shortcut.1.bias,7f9b001de200)[192,][m
+[38;5;3m[w 0124 23:12:18.265705 56 grad.cc:81] grads[429] 'aux_fpn.top_down_blocks.1.blocks.0.shortcut.2.weight' doesn't have gradient. It will be set to zero: Var(6171:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.shortcut.2.weight,7f9b002c9200)[96,192,1,1,][m
+[38;5;3m[w 0124 23:12:18.265720 56 grad.cc:81] grads[430] 'aux_fpn.top_down_blocks.1.blocks.0.shortcut.3.weight' doesn't have gradient. It will be set to zero: Var(6176:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.shortcut.3.weight,7f9b001dee00)[96,][m
+[38;5;3m[w 0124 23:12:18.265733 56 grad.cc:81] grads[431] 'aux_fpn.top_down_blocks.1.blocks.0.shortcut.3.bias' doesn't have gradient. It will be set to zero: Var(6181:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.top_down_blocks.1.blocks.0.shortcut.3.bias,7f9b001df000)[96,][m
+[38;5;3m[w 0124 23:12:18.265750 56 grad.cc:81] grads[432] 'aux_fpn.downsamples.0.depthwise.weight' doesn't have gradient. It will be set to zero: Var(6300:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.downsamples.0.depthwise.weight,7f9b00284200)[96,1,5,5,][m
+[38;5;3m[w 0124 23:12:18.265765 56 grad.cc:81] grads[433] 'aux_fpn.downsamples.0.pointwise.weight' doesn't have gradient. It will be set to zero: Var(6323:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.downsamples.0.pointwise.weight,7f9b002b7200)[96,96,1,1,][m
+[38;5;3m[w 0124 23:12:18.265779 56 grad.cc:81] grads[434] 'aux_fpn.downsamples.0.dwnorm.weight' doesn't have gradient. It will be set to zero: Var(6329:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.downsamples.0.dwnorm.weight,7f9b001df600)[96,][m
+[38;5;3m[w 0124 23:12:18.265795 56 grad.cc:81] grads[435] 'aux_fpn.downsamples.0.dwnorm.bias' doesn't have gradient. It will be set to zero: Var(6335:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.downsamples.0.dwnorm.bias,7f9b001df800)[96,][m
+[38;5;3m[w 0124 23:12:18.265821 56 grad.cc:81] grads[438] 'aux_fpn.downsamples.0.pwnorm.weight' doesn't have gradient. It will be set to zero: Var(6341:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.downsamples.0.pwnorm.weight,7f9b001dfe00)[96,][m
+[38;5;3m[w 0124 23:12:18.265834 56 grad.cc:81] grads[439] 'aux_fpn.downsamples.0.pwnorm.bias' doesn't have gradient. It will be set to zero: Var(6347:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.downsamples.0.pwnorm.bias,7f9b001e0000)[96,][m
+[38;5;3m[w 0124 23:12:18.265858 56 grad.cc:81] grads[442] 'aux_fpn.downsamples.1.depthwise.weight' doesn't have gradient. It will be set to zero: Var(6690:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.downsamples.1.depthwise.weight,7f9b00286800)[96,1,5,5,][m
+[38;5;3m[w 0124 23:12:18.265872 56 grad.cc:81] grads[443] 'aux_fpn.downsamples.1.pointwise.weight' doesn't have gradient. It will be set to zero: Var(6713:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.downsamples.1.pointwise.weight,7f9b0023e200)[96,96,1,1,][m
+[38;5;3m[w 0124 23:12:18.265887 56 grad.cc:81] grads[444] 'aux_fpn.downsamples.1.dwnorm.weight' doesn't have gradient. It will be set to zero: Var(6719:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.downsamples.1.dwnorm.weight,7f9b001e0600)[96,][m
+[38;5;3m[w 0124 23:12:18.265904 56 grad.cc:81] grads[445] 'aux_fpn.downsamples.1.dwnorm.bias' doesn't have gradient. It will be set to zero: Var(6725:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.downsamples.1.dwnorm.bias,7f9b001e0800)[96,][m
+[38;5;3m[w 0124 23:12:18.265933 56 grad.cc:81] grads[448] 'aux_fpn.downsamples.1.pwnorm.weight' doesn't have gradient. It will be set to zero: Var(6731:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.downsamples.1.pwnorm.weight,7f9b001e0e00)[96,][m
+[38;5;3m[w 0124 23:12:18.265946 56 grad.cc:81] grads[449] 'aux_fpn.downsamples.1.pwnorm.bias' doesn't have gradient. It will be set to zero: Var(6737:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.downsamples.1.pwnorm.bias,7f9b001e1400)[96,][m
+[38;5;3m[w 0124 23:12:18.265969 56 grad.cc:81] grads[452] 'aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.primary_conv.0.weight' doesn't have gradient. It will be set to zero: Var(6366:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.primary_conv.0.weight,7f9b002db200)[48,192,1,1,][m
+[38;5;3m[w 0124 23:12:18.265984 56 grad.cc:81] grads[453] 'aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.primary_conv.1.weight' doesn't have gradient. It will be set to zero: Var(6371:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.primary_conv.1.weight,7f9b00288e00)[48,][m
+[38;5;3m[w 0124 23:12:18.265998 56 grad.cc:81] grads[454] 'aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.primary_conv.1.bias' doesn't have gradient. It will be set to zero: Var(6376:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.primary_conv.1.bias,7f9b00289000)[48,][m
+[38;5;3m[w 0124 23:12:18.266014 56 grad.cc:81] grads[455] 'aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.cheap_operation.0.weight' doesn't have gradient. It will be set to zero: Var(6405:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.cheap_operation.0.weight,7f9b00289e00)[48,1,3,3,][m
+[38;5;3m[w 0124 23:12:18.266029 56 grad.cc:81] grads[456] 'aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.cheap_operation.1.weight' doesn't have gradient. It will be set to zero: Var(6410:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.cheap_operation.1.weight,7f9b00289600)[48,][m
+[38;5;3m[w 0124 23:12:18.266043 56 grad.cc:81] grads[457] 'aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.cheap_operation.1.bias' doesn't have gradient. It will be set to zero: Var(6415:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.cheap_operation.1.bias,7f9b00289800)[48,][m
+[38;5;3m[w 0124 23:12:18.266060 56 grad.cc:81] grads[458] 'aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.primary_conv.0.weight' doesn't have gradient. It will be set to zero: Var(6444:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.primary_conv.0.weight,7f9b002c4a00)[48,96,1,1,][m
+[38;5;3m[w 0124 23:12:18.266075 56 grad.cc:81] grads[459] 'aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.primary_conv.1.weight' doesn't have gradient. It will be set to zero: Var(6449:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.primary_conv.1.weight,7f9b0028a600)[48,][m
+[38;5;3m[w 0124 23:12:18.266088 56 grad.cc:81] grads[460] 'aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.primary_conv.1.bias' doesn't have gradient. It will be set to zero: Var(6454:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.primary_conv.1.bias,7f9b0028a800)[48,][m
+[38;5;3m[w 0124 23:12:18.266106 56 grad.cc:81] grads[461] 'aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.cheap_operation.0.weight' doesn't have gradient. It will be set to zero: Var(6483:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.cheap_operation.0.weight,7f9b00247200)[48,1,3,3,][m
+[38;5;3m[w 0124 23:12:18.266121 56 grad.cc:81] grads[462] 'aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.cheap_operation.1.weight' doesn't have gradient. It will be set to zero: Var(6488:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.cheap_operation.1.weight,7f9b0028ae00)[48,][m
+[38;5;3m[w 0124 23:12:18.266135 56 grad.cc:81] grads[463] 'aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.cheap_operation.1.bias' doesn't have gradient. It will be set to zero: Var(6493:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.cheap_operation.1.bias,7f9b0028b000)[48,][m
+[38;5;3m[w 0124 23:12:18.266152 56 grad.cc:81] grads[464] 'aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.0.weight' doesn't have gradient. It will be set to zero: Var(6522:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.0.weight,7f9b002e8e00)[192,1,5,5,][m
+[38;5;3m[w 0124 23:12:18.266167 56 grad.cc:81] grads[465] 'aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.1.weight' doesn't have gradient. It will be set to zero: Var(6527:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.1.weight,7f9b0028b600)[192,][m
+[38;5;3m[w 0124 23:12:18.266181 56 grad.cc:81] grads[466] 'aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.1.bias' doesn't have gradient. It will be set to zero: Var(6532:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.1.bias,7f9b00247a00)[192,][m
+[38;5;3m[w 0124 23:12:18.266198 56 grad.cc:81] grads[467] 'aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.2.weight' doesn't have gradient. It will be set to zero: Var(6561:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.2.weight,7f9b00300000)[96,192,1,1,][m
+[38;5;3m[w 0124 23:12:18.266213 56 grad.cc:81] grads[468] 'aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.3.weight' doesn't have gradient. It will be set to zero: Var(6566:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.3.weight,7f9b00248600)[96,][m
+[38;5;3m[w 0124 23:12:18.266227 56 grad.cc:81] grads[469] 'aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.3.bias' doesn't have gradient. It will be set to zero: Var(6571:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.3.bias,7f9b00248800)[96,][m
+[38;5;3m[w 0124 23:12:18.266250 56 grad.cc:81] grads[470] 'aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.primary_conv.0.weight' doesn't have gradient. It will be set to zero: Var(6756:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.primary_conv.0.weight,7f9b002f6a00)[48,192,1,1,][m
+[38;5;3m[w 0124 23:12:18.266265 56 grad.cc:81] grads[471] 'aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.primary_conv.1.weight' doesn't have gradient. It will be set to zero: Var(6761:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.primary_conv.1.weight,7f9b002ffa00)[48,][m
+[38;5;3m[w 0124 23:12:18.266279 56 grad.cc:81] grads[472] 'aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.primary_conv.1.bias' doesn't have gradient. It will be set to zero: Var(6766:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.primary_conv.1.bias,7f9b002ffc00)[48,][m
+[38;5;3m[w 0124 23:12:18.266297 56 grad.cc:81] grads[473] 'aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.cheap_operation.0.weight' doesn't have gradient. It will be set to zero: Var(6795:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.cheap_operation.0.weight,7f9b00249800)[48,1,3,3,][m
+[38;5;3m[w 0124 23:12:18.266333 56 grad.cc:81] grads[474] 'aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.cheap_operation.1.weight' doesn't have gradient. It will be set to zero: Var(6800:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.cheap_operation.1.weight,7f9b0024a000)[48,][m
+[38;5;3m[w 0124 23:12:18.266347 56 grad.cc:81] grads[475] 'aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.cheap_operation.1.bias' doesn't have gradient. It will be set to zero: Var(6805:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.cheap_operation.1.bias,7f9b0024a200)[48,][m
+[38;5;3m[w 0124 23:12:18.266365 56 grad.cc:81] grads[476] 'aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.primary_conv.0.weight' doesn't have gradient. It will be set to zero: Var(6834:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.primary_conv.0.weight,7f9b002e4200)[48,96,1,1,][m
+[38;5;3m[w 0124 23:12:18.266380 56 grad.cc:81] grads[477] 'aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.primary_conv.1.weight' doesn't have gradient. It will be set to zero: Var(6839:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.primary_conv.1.weight,7f9b002e8a00)[48,][m
+[38;5;3m[w 0124 23:12:18.266394 56 grad.cc:81] grads[478] 'aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.primary_conv.1.bias' doesn't have gradient. It will be set to zero: Var(6844:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.primary_conv.1.bias,7f9b002e8c00)[48,][m
+[38;5;3m[w 0124 23:12:18.266411 56 grad.cc:81] grads[479] 'aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.cheap_operation.0.weight' doesn't have gradient. It will be set to zero: Var(6873:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.cheap_operation.0.weight,7f9b0026e600)[48,1,3,3,][m
+[38;5;3m[w 0124 23:12:18.266426 56 grad.cc:81] grads[480] 'aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.cheap_operation.1.weight' doesn't have gradient. It will be set to zero: Var(6878:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.cheap_operation.1.weight,7f9b00249600)[48,][m
+[38;5;3m[w 0124 23:12:18.266439 56 grad.cc:81] grads[481] 'aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.cheap_operation.1.bias' doesn't have gradient. It will be set to zero: Var(6883:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.cheap_operation.1.bias,7f9b0026de00)[48,][m
+[38;5;3m[w 0124 23:12:18.266456 56 grad.cc:81] grads[482] 'aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.0.weight' doesn't have gradient. It will be set to zero: Var(6912:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.0.weight,7f9b00312000)[192,1,5,5,][m
+[38;5;3m[w 0124 23:12:18.266471 56 grad.cc:81] grads[483] 'aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.1.weight' doesn't have gradient. It will be set to zero: Var(6917:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.1.weight,7f9b0026ee00)[192,][m
+[38;5;3m[w 0124 23:12:18.266484 56 grad.cc:81] grads[484] 'aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.1.bias' doesn't have gradient. It will be set to zero: Var(6922:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.1.bias,7f9b0026f200)[192,][m
+[38;5;3m[w 0124 23:12:18.266501 56 grad.cc:81] grads[485] 'aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.2.weight' doesn't have gradient. It will be set to zero: Var(6951:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.2.weight,7f9b00328c00)[96,192,1,1,][m
+[38;5;3m[w 0124 23:12:18.266516 56 grad.cc:81] grads[486] 'aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.3.weight' doesn't have gradient. It will be set to zero: Var(6956:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.3.weight,7f9b0026e400)[96,][m
+[38;5;3m[w 0124 23:12:18.266530 56 grad.cc:81] grads[487] 'aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.3.bias' doesn't have gradient. It will be set to zero: Var(6961:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.3.bias,7f9b0026fe00)[96,][m
+[38;5;3m[w 0124 23:12:18.266543 56 grad.cc:81] grads[488] 'aux_fpn.extra_lvl_in_conv.0.depthwise.weight' doesn't have gradient. It will be set to zero: Var(7080:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.extra_lvl_in_conv.0.depthwise.weight,7f9b002eda00)[96,1,5,5,][m
+[38;5;3m[w 0124 23:12:18.266562 56 grad.cc:81] grads[489] 'aux_fpn.extra_lvl_in_conv.0.pointwise.weight' doesn't have gradient. It will be set to zero: Var(7103:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.extra_lvl_in_conv.0.pointwise.weight,7f9b0031fc00)[96,96,1,1,][m
+[38;5;3m[w 0124 23:12:18.266577 56 grad.cc:81] grads[490] 'aux_fpn.extra_lvl_in_conv.0.dwnorm.weight' doesn't have gradient. It will be set to zero: Var(7109:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.extra_lvl_in_conv.0.dwnorm.weight,7f9b00270400)[96,][m
+[38;5;3m[w 0124 23:12:18.266590 56 grad.cc:81] grads[491] 'aux_fpn.extra_lvl_in_conv.0.dwnorm.bias' doesn't have gradient. It will be set to zero: Var(7115:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.extra_lvl_in_conv.0.dwnorm.bias,7f9b00270600)[96,][m
+[38;5;3m[w 0124 23:12:18.266614 56 grad.cc:81] grads[494] 'aux_fpn.extra_lvl_in_conv.0.pwnorm.weight' doesn't have gradient. It will be set to zero: Var(7121:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.extra_lvl_in_conv.0.pwnorm.weight,7f9b00270c00)[96,][m
+[38;5;3m[w 0124 23:12:18.266633 56 grad.cc:81] grads[495] 'aux_fpn.extra_lvl_in_conv.0.pwnorm.bias' doesn't have gradient. It will be set to zero: Var(7127:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.extra_lvl_in_conv.0.pwnorm.bias,7f9b00270e00)[96,][m
+[38;5;3m[w 0124 23:12:18.266657 56 grad.cc:81] grads[498] 'aux_fpn.extra_lvl_out_conv.0.depthwise.weight' doesn't have gradient. It will be set to zero: Var(7236:2:4:2:i0:o2:s1:n0:g1,float32,aux_fpn.extra_lvl_out_conv.0.depthwise.weight,7f9b002f0000)[96,1,5,5,][m
+[38;5;3m[w 0124 23:12:18.266676 56 grad.cc:81] grads[499] 'aux_fpn.extra_lvl_out_conv.0.pointwise.weight' doesn't have gradient. It will be set to zero: Var(7259:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.extra_lvl_out_conv.0.pointwise.weight,7f9b0033ac00)[96,96,1,1,][m
+[38;5;3m[w 0124 23:12:18.266691 56 grad.cc:81] grads[500] 'aux_fpn.extra_lvl_out_conv.0.dwnorm.weight' doesn't have gradient. It will be set to zero: Var(7265:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.extra_lvl_out_conv.0.dwnorm.weight,7f9b00271400)[96,][m
+[38;5;3m[w 0124 23:12:18.266705 56 grad.cc:81] grads[501] 'aux_fpn.extra_lvl_out_conv.0.dwnorm.bias' doesn't have gradient. It will be set to zero: Var(7271:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.extra_lvl_out_conv.0.dwnorm.bias,7f9b00271600)[96,][m
+[38;5;3m[w 0124 23:12:18.266729 56 grad.cc:81] grads[504] 'aux_fpn.extra_lvl_out_conv.0.pwnorm.weight' doesn't have gradient. It will be set to zero: Var(7277:2:6:4:i0:o4:s1:n1:g1,float32,aux_fpn.extra_lvl_out_conv.0.pwnorm.weight,7f9b00272000)[96,][m
+[38;5;3m[w 0124 23:12:18.266746 56 grad.cc:81] grads[505] 'aux_fpn.extra_lvl_out_conv.0.pwnorm.bias' doesn't have gradient. It will be set to zero: Var(7283:2:4:2:i0:o2:s1:n1:g1,float32,aux_fpn.extra_lvl_out_conv.0.pwnorm.bias,7f9b00271c00)[96,][m
+[NanoDet][01-24 23:12:18] INFO: Train|Epoch1/20|Iter0(1/50)| mem:0.00G| lr:1.00e-03| loss:4.6547| avg:4.6547| 
+INFO:NanoDet:Train|Epoch1/20|Iter0(1/50)| mem:0.00G| lr:1.00e-03| loss:4.6547| avg:4.6547| 
+[NanoDet][01-24 23:12:18] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:18] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:18] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:18] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:19] INFO: Train|Epoch1/20|Iter1(2/50)| mem:0.00G| lr:1.00e-03| loss:10.0636| avg:7.3592| 
+INFO:NanoDet:Train|Epoch1/20|Iter1(2/50)| mem:0.00G| lr:1.00e-03| loss:10.0636| avg:7.3592| 
+[NanoDet][01-24 23:12:19] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:19] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:19] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:19] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:19] INFO: Epoch   1/20 | Loss: 6.3935 | Time: 6.8s | LR: 0.001000
+INFO:NanoDet:Epoch   1/20 | Loss: 6.3935 | Time: 6.8s | LR: 0.001000
+[NanoDet][01-24 23:12:19] INFO: 🔍 开始验证 Epoch 1...
+INFO:NanoDet:🔍 开始验证 Epoch 1...
+📊 详细进度 - Epoch 1/20
+  步骤: 1/50 (2.0%)
+  剩余步骤: 49
+  损失详情:
+    loss_qfl: 0.723071
+    loss_bbox: 1.123071
+    loss_dfl: 0.522130
+    aux_loss_qfl: 0.720215
+    aux_loss_bbox: 1.044626
+    aux_loss_dfl: 0.521617
+  学习率: 1.00e-03
+──────────────────────────────────────────────────
+model size is  1.0x
+init weights...
+=> loading pretrained model shufflenetv2_1.0x from jittor models...
+[ShuffleNetV2] loaded 275/282 pretrained params; skipped 7 (e.g. ['conv5.0.weight', 'conv5.1.weight', 'conv5.1.bias', 'conv5.1.running_mean', 'conv5.1.running_var'])
+Finish initialize NanoDet-Plus Head.
+[NanoDet][01-24 23:12:23] INFO: Val|Epoch1/20|Iter3(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch1/20|Iter3(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.023s | decode time: 0.037s |   验证进度: [   1/50] (  2.0%)
+/wanyuhao/keyunchao/project/NanoDet/nanodet-jittor/nanodet/evaluator/coco_detection.py:43: UserWarning: Detection result is empty! Please check whether training set is too small (need to increase val_interval in config and train more epochs). Or check annotation correctness.
+  warnings.warn('Detection result is empty! Please check whether training set is too small (need to increase val_interval in config and train more epochs). Or check annotation correctness.')
+[NanoDet][01-24 23:12:23] INFO: Saving model to workspace/nanodet-plus-m_320_voc/model_best/nanodet_model_best.pth
+INFO:NanoDet:Saving model to workspace/nanodet-plus-m_320_voc/model_best/nanodet_model_best.pth
+[NanoDet][01-24 23:12:24] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:24] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:24] INFO: 开始 Epoch 2/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 2/20 | LR: 0.001000
+[NanoDet][01-24 23:12:24] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:24] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:24] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:24] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[38;5;3m[w 0124 23:12:24.478803 56 grad.cc:81] grads[168] 'fpn.reduce_layers.0.bn.running_mean' doesn't have gradient. It will be set to zero: Var(410186:2:1:1:i1:o0:s1:n0:g1,float32,fpn.reduce_layers.0.bn.running_mean,7f98c7cfc800)[96,][m
+[38;5;3m[w 0124 23:12:24.478833 56 grad.cc:81] grads[169] 'fpn.reduce_layers.0.bn.running_var' doesn't have gradient. It will be set to zero: Var(410200:2:1:1:i1:o0:s1:n0:g1,float32,fpn.reduce_layers.0.bn.running_var,7f98c7cfca00)[96,][m
+[38;5;3m[w 0124 23:12:24.478839 56 grad.cc:81] grads[173] 'fpn.reduce_layers.1.bn.running_mean' doesn't have gradient. It will be set to zero: Var(410282:2:1:1:i1:o0:s1:n0:g1,float32,fpn.reduce_layers.1.bn.running_mean,7f98efeffc00)[96,][m
+[38;5;3m[w 0124 23:12:24.478843 56 grad.cc:81] grads[174] 'fpn.reduce_layers.1.bn.running_var' doesn't have gradient. It will be set to zero: Var(410296:2:1:1:i1:o0:s1:n0:g1,float32,fpn.reduce_layers.1.bn.running_var,7f98bbffc200)[96,][m
+[38;5;3m[w 0124 23:12:24.478848 56 grad.cc:81] grads[178] 'fpn.reduce_layers.2.bn.running_mean' doesn't have gradient. It will be set to zero: Var(410378:2:1:1:i1:o0:s1:n0:g1,float32,fpn.reduce_layers.2.bn.running_mean,7f9c5e455e00)[96,][m
+[38;5;3m[w 0124 23:12:24.478852 56 grad.cc:81] grads[179] 'fpn.reduce_layers.2.bn.running_var' doesn't have gradient. It will be set to zero: Var(410392:2:1:1:i1:o0:s1:n0:g1,float32,fpn.reduce_layers.2.bn.running_var,7f9c5e456000)[96,][m
+[38;5;3m[w 0124 23:12:24.478856 56 grad.cc:81] grads[220] 'fpn.downsamples.0.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(411806:2:1:1:i1:o0:s1:n0:g1,float32,fpn.downsamples.0.dwnorm.running_mean,7f9b017f4200)[96,][m
+[38;5;3m[w 0124 23:12:24.478860 56 grad.cc:81] grads[221] 'fpn.downsamples.0.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(411820:2:1:1:i1:o0:s1:n0:g1,float32,fpn.downsamples.0.dwnorm.running_var,7f9b017f4400)[96,][m
+[38;5;3m[w 0124 23:12:24.478864 56 grad.cc:81] grads[224] 'fpn.downsamples.0.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(411902:2:1:1:i1:o0:s1:n0:g1,float32,fpn.downsamples.0.pwnorm.running_mean,7f98dfaffe00)[96,][m
+[38;5;3m[w 0124 23:12:24.478869 56 grad.cc:81] grads[225] 'fpn.downsamples.0.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(411916:2:1:1:i1:o0:s1:n0:g1,float32,fpn.downsamples.0.pwnorm.running_var,7f9b016cce00)[96,][m
+[38;5;3m[w 0124 23:12:24.478873 56 grad.cc:81] grads[230] 'fpn.downsamples.1.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(412530:2:1:1:i1:o0:s1:n0:g1,float32,fpn.downsamples.1.dwnorm.running_mean,7f9ace9fe600)[96,][m
+[38;5;3m[w 0124 23:12:24.478877 56 grad.cc:81] grads[231] 'fpn.downsamples.1.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(412544:2:1:1:i1:o0:s1:n0:g1,float32,fpn.downsamples.1.dwnorm.running_var,7f9ace9fe800)[96,][m
+[38;5;3m[w 0124 23:12:24.478881 56 grad.cc:81] grads[234] 'fpn.downsamples.1.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(412626:2:1:1:i1:o0:s1:n0:g1,float32,fpn.downsamples.1.pwnorm.running_mean,7f9acede2e00)[96,][m
+[38;5;3m[w 0124 23:12:24.478884 56 grad.cc:81] grads[235] 'fpn.downsamples.1.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(412640:2:1:1:i1:o0:s1:n0:g1,float32,fpn.downsamples.1.pwnorm.running_var,7f9acede3000)[96,][m
+[38;5;3m[w 0124 23:12:24.478888 56 grad.cc:81] grads[276] 'fpn.extra_lvl_in_conv.0.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(413254:2:1:1:i1:o0:s1:n0:g1,float32,fpn.extra_lvl_in_conv.0.dwnorm.running_mean,7f9c5e4e8e00)[96,][m
+[38;5;3m[w 0124 23:12:24.478897 56 grad.cc:81] grads[277] 'fpn.extra_lvl_in_conv.0.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(413268:2:1:1:i1:o0:s1:n0:g1,float32,fpn.extra_lvl_in_conv.0.dwnorm.running_var,7f9c5e4e9000)[96,][m
+[38;5;3m[w 0124 23:12:24.478901 56 grad.cc:81] grads[280] 'fpn.extra_lvl_in_conv.0.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(413350:2:1:1:i1:o0:s1:n0:g1,float32,fpn.extra_lvl_in_conv.0.pwnorm.running_mean,7f9c5e523400)[96,][m
+[38;5;3m[w 0124 23:12:24.478905 56 grad.cc:81] grads[281] 'fpn.extra_lvl_in_conv.0.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(413364:2:1:1:i1:o0:s1:n0:g1,float32,fpn.extra_lvl_in_conv.0.pwnorm.running_var,7f9c5e523600)[96,][m
+[38;5;3m[w 0124 23:12:24.478909 56 grad.cc:81] grads[286] 'fpn.extra_lvl_out_conv.0.dwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(413448:2:1:1:i1:o0:s1:n0:g1,float32,fpn.extra_lvl_out_conv.0.dwnorm.running_mean,7f9ace7fba00)[96,][m
+[38;5;3m[w 0124 23:12:24.478915 56 grad.cc:81] grads[287] 'fpn.extra_lvl_out_conv.0.dwnorm.running_var' doesn't have gradient. It will be set to zero: Var(413462:2:1:1:i1:o0:s1:n0:g1,float32,fpn.extra_lvl_out_conv.0.dwnorm.running_var,7f9ace7fbc00)[96,][m
+[38;5;3m[w 0124 23:12:24.478920 56 grad.cc:81] grads[290] 'fpn.extra_lvl_out_conv.0.pwnorm.running_mean' doesn't have gradient. It will be set to zero: Var(413544:2:1:1:i1:o0:s1:n0:g1,float32,fpn.extra_lvl_out_conv.0.pwnorm.running_mean,7f9c5e549400)[96,][m
+[38;5;3m[w 0124 23:12:24.478928 56 grad.cc:81] grads[291] 'fpn.extra_lvl_out_conv.0.pwnorm.running_var' doesn't have gradient. It will be set to zero: Var(413558:2:1:1:i1:o0:s1:n0:g1,float32,fpn.extra_lvl_out_conv.0.pwnorm.running_var,7f9c5e549600)[96,][m
+[NanoDet][01-24 23:12:24] INFO: Train|Epoch2/20|Iter3(1/50)| mem:0.00G| lr:1.00e-03| loss:4.3700| avg:4.3700| 
+INFO:NanoDet:Train|Epoch2/20|Iter3(1/50)| mem:0.00G| lr:1.00e-03| loss:4.3700| avg:4.3700| 
+[NanoDet][01-24 23:12:24] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:24] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:24] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:24] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:24] INFO: Train|Epoch2/20|Iter4(2/50)| mem:0.00G| lr:1.00e-03| loss:4.4105| avg:4.3903| 
+INFO:NanoDet:Train|Epoch2/20|Iter4(2/50)| mem:0.00G| lr:1.00e-03| loss:4.4105| avg:4.3903| 
+[NanoDet][01-24 23:12:24] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:24] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:24] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:24] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:25] INFO: Epoch   2/20 | Loss: 4.3436 | Time: 0.7s | LR: 0.001000
+INFO:NanoDet:Epoch   2/20 | Loss: 4.3436 | Time: 0.7s | LR: 0.001000
+[NanoDet][01-24 23:12:25] INFO: 🔍 开始验证 Epoch 2...
+INFO:NanoDet:🔍 开始验证 Epoch 2...
+[NanoDet][01-24 23:12:25] INFO: Val|Epoch2/20|Iter6(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch2/20|Iter6(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.012s | decode time: 0.015s | forward time: 0.012s | decode time: 0.015s | forward time: 0.052s | decode time: 0.007s | forward time: 0.012s | decode time: 0.014s |   验证进度: [   1/50] (  2.0%)
+/wanyuhao/keyunchao/project/NanoDet/nanodet-jittor/nanodet/evaluator/coco_detection.py:43: UserWarning: Detection result is empty! Please check whether training set is too small (need to increase val_interval in config and train more epochs). Or check annotation correctness.
+  warnings.warn('Detection result is empty! Please check whether training set is too small (need to increase val_interval in config and train more epochs). Or check annotation correctness.')
+[NanoDet][01-24 23:12:25] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:25] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:25] INFO: 开始 Epoch 3/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 3/20 | LR: 0.001000
+[NanoDet][01-24 23:12:25] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:25] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:25] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:25] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:25] INFO: Train|Epoch3/20|Iter6(1/50)| mem:0.00G| lr:1.00e-03| loss:4.2059| avg:4.2059| 
+INFO:NanoDet:Train|Epoch3/20|Iter6(1/50)| mem:0.00G| lr:1.00e-03| loss:4.2059| avg:4.2059| 
+[NanoDet][01-24 23:12:25] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:25] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:25] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:25] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:26] INFO: Train|Epoch3/20|Iter7(2/50)| mem:0.00G| lr:1.00e-03| loss:4.1453| avg:4.1756| 
+INFO:NanoDet:Train|Epoch3/20|Iter7(2/50)| mem:0.00G| lr:1.00e-03| loss:4.1453| avg:4.1756| 
+[NanoDet][01-24 23:12:26] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:26] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:26] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:26] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:26] INFO: Epoch   3/20 | Loss: 4.1078 | Time: 0.6s | LR: 0.001000
+INFO:NanoDet:Epoch   3/20 | Loss: 4.1078 | Time: 0.6s | LR: 0.001000
+[NanoDet][01-24 23:12:26] INFO: 🔍 开始验证 Epoch 3...
+INFO:NanoDet:🔍 开始验证 Epoch 3...
+[NanoDet][01-24 23:12:26] INFO: Val|Epoch3/20|Iter9(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch3/20|Iter9(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.018s | decode time: 0.022s | forward time: 0.019s | decode time: 0.018s | forward time: 0.012s | decode time: 0.004s | forward time: 0.012s | decode time: 0.014s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:26] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:26] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:26] INFO: 开始 Epoch 4/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 4/20 | LR: 0.001000
+[NanoDet][01-24 23:12:26] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:26] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:26] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:26] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:26] INFO: Train|Epoch4/20|Iter9(1/50)| mem:0.00G| lr:1.00e-03| loss:3.8260| avg:3.8260| 
+INFO:NanoDet:Train|Epoch4/20|Iter9(1/50)| mem:0.00G| lr:1.00e-03| loss:3.8260| avg:3.8260| 
+[NanoDet][01-24 23:12:26] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:26] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:26] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:26] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:27] INFO: Train|Epoch4/20|Iter10(2/50)| mem:0.00G| lr:1.00e-03| loss:3.7618| avg:3.7939| 
+INFO:NanoDet:Train|Epoch4/20|Iter10(2/50)| mem:0.00G| lr:1.00e-03| loss:3.7618| avg:3.7939| 
+[NanoDet][01-24 23:12:27] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:27] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:27] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:27] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:27] INFO: Epoch   4/20 | Loss: 3.8283 | Time: 0.6s | LR: 0.001000
+INFO:NanoDet:Epoch   4/20 | Loss: 3.8283 | Time: 0.6s | LR: 0.001000
+[NanoDet][01-24 23:12:27] INFO: 🔍 开始验证 Epoch 4...
+INFO:NanoDet:🔍 开始验证 Epoch 4...
+[NanoDet][01-24 23:12:27] INFO: Val|Epoch4/20|Iter12(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch4/20|Iter12(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.018s | decode time: 0.021s | forward time: 0.018s | decode time: 0.018s | forward time: 0.011s | decode time: 0.003s | forward time: 0.012s | decode time: 0.014s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:27] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:27] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:27] INFO: 开始 Epoch 5/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 5/20 | LR: 0.001000
+[NanoDet][01-24 23:12:27] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:27] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:27] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:27] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:27] INFO: Train|Epoch5/20|Iter12(1/50)| mem:0.00G| lr:1.00e-03| loss:3.5451| avg:3.5451| 
+INFO:NanoDet:Train|Epoch5/20|Iter12(1/50)| mem:0.00G| lr:1.00e-03| loss:3.5451| avg:3.5451| 
+[NanoDet][01-24 23:12:27] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:27] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:27] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:27] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:28] INFO: Train|Epoch5/20|Iter13(2/50)| mem:0.00G| lr:1.00e-03| loss:3.6685| avg:3.6068| 
+INFO:NanoDet:Train|Epoch5/20|Iter13(2/50)| mem:0.00G| lr:1.00e-03| loss:3.6685| avg:3.6068| 
+[NanoDet][01-24 23:12:28] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:28] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:28] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:28] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:28] INFO: Epoch   5/20 | Loss: 3.6725 | Time: 0.6s | LR: 0.001000
+INFO:NanoDet:Epoch   5/20 | Loss: 3.6725 | Time: 0.6s | LR: 0.001000
+[NanoDet][01-24 23:12:28] INFO: 🔍 开始验证 Epoch 5...
+INFO:NanoDet:🔍 开始验证 Epoch 5...
+[NanoDet][01-24 23:12:28] INFO: Val|Epoch5/20|Iter15(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch5/20|Iter15(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.011s | decode time: 0.014s | forward time: 0.010s | decode time: 0.003s | forward time: 0.011s | decode time: 0.015s | forward time: 0.012s | decode time: 0.014s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:28] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:28] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:28] INFO: 开始 Epoch 6/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 6/20 | LR: 0.001000
+[NanoDet][01-24 23:12:28] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:28] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:28] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:28] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:28] INFO: Train|Epoch6/20|Iter15(1/50)| mem:0.00G| lr:1.00e-03| loss:3.6068| avg:3.6068| 
+INFO:NanoDet:Train|Epoch6/20|Iter15(1/50)| mem:0.00G| lr:1.00e-03| loss:3.6068| avg:3.6068| 
+[NanoDet][01-24 23:12:28] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:28] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:28] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:28] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:29] INFO: Train|Epoch6/20|Iter16(2/50)| mem:0.00G| lr:1.00e-03| loss:3.5758| avg:3.5913| 
+INFO:NanoDet:Train|Epoch6/20|Iter16(2/50)| mem:0.00G| lr:1.00e-03| loss:3.5758| avg:3.5913| 
+[NanoDet][01-24 23:12:29] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:29] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:29] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:29] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:29] INFO: Epoch   6/20 | Loss: 3.5398 | Time: 0.6s | LR: 0.001000
+INFO:NanoDet:Epoch   6/20 | Loss: 3.5398 | Time: 0.6s | LR: 0.001000
+[NanoDet][01-24 23:12:29] INFO: 🔍 开始验证 Epoch 6...
+INFO:NanoDet:🔍 开始验证 Epoch 6...
+[NanoDet][01-24 23:12:29] INFO: Val|Epoch6/20|Iter18(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch6/20|Iter18(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.011s | decode time: 0.014s | forward time: 0.018s | decode time: 0.021s | forward time: 0.019s | decode time: 0.005s | forward time: 0.012s | decode time: 0.014s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:29] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:29] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:29] INFO: 开始 Epoch 7/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 7/20 | LR: 0.001000
+[NanoDet][01-24 23:12:29] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:29] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:29] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:29] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:30] INFO: Train|Epoch7/20|Iter18(1/50)| mem:0.00G| lr:1.00e-03| loss:3.4817| avg:3.4817| 
+INFO:NanoDet:Train|Epoch7/20|Iter18(1/50)| mem:0.00G| lr:1.00e-03| loss:3.4817| avg:3.4817| 
+[NanoDet][01-24 23:12:30] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:30] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:30] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:30] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:30] INFO: Train|Epoch7/20|Iter19(2/50)| mem:0.00G| lr:1.00e-03| loss:3.3207| avg:3.4012| 
+INFO:NanoDet:Train|Epoch7/20|Iter19(2/50)| mem:0.00G| lr:1.00e-03| loss:3.3207| avg:3.4012| 
+[NanoDet][01-24 23:12:30] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:30] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:30] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:30] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:30] INFO: Epoch   7/20 | Loss: 3.3673 | Time: 0.6s | LR: 0.001000
+INFO:NanoDet:Epoch   7/20 | Loss: 3.3673 | Time: 0.6s | LR: 0.001000
+[NanoDet][01-24 23:12:30] INFO: 🔍 开始验证 Epoch 7...
+INFO:NanoDet:🔍 开始验证 Epoch 7...
+[NanoDet][01-24 23:12:30] INFO: Val|Epoch7/20|Iter21(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch7/20|Iter21(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.018s | decode time: 0.021s | forward time: 0.018s | decode time: 0.018s | forward time: 0.011s | decode time: 0.003s | forward time: 0.014s | decode time: 0.014s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:30] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:30] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:30] INFO: 开始 Epoch 8/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 8/20 | LR: 0.001000
+[NanoDet][01-24 23:12:30] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:30] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:30] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:30] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:31] INFO: Train|Epoch8/20|Iter21(1/50)| mem:0.00G| lr:1.00e-03| loss:3.3742| avg:3.3742| 
+INFO:NanoDet:Train|Epoch8/20|Iter21(1/50)| mem:0.00G| lr:1.00e-03| loss:3.3742| avg:3.3742| 
+[NanoDet][01-24 23:12:31] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:31] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:31] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:31] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:31] INFO: Train|Epoch8/20|Iter22(2/50)| mem:0.00G| lr:1.00e-03| loss:3.3783| avg:3.3763| 
+INFO:NanoDet:Train|Epoch8/20|Iter22(2/50)| mem:0.00G| lr:1.00e-03| loss:3.3783| avg:3.3763| 
+[NanoDet][01-24 23:12:31] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:31] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:31] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:31] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:31] INFO: Epoch   8/20 | Loss: 3.2823 | Time: 0.6s | LR: 0.001000
+INFO:NanoDet:Epoch   8/20 | Loss: 3.2823 | Time: 0.6s | LR: 0.001000
+[NanoDet][01-24 23:12:31] INFO: 🔍 开始验证 Epoch 8...
+INFO:NanoDet:🔍 开始验证 Epoch 8...
+[NanoDet][01-24 23:12:31] INFO: Val|Epoch8/20|Iter24(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch8/20|Iter24(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.012s | decode time: 0.014s | forward time: 0.012s | decode time: 0.015s | forward time: 0.012s | decode time: 0.004s | forward time: 0.012s | decode time: 0.014s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:31] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:31] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:31] INFO: 开始 Epoch 9/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 9/20 | LR: 0.001000
+[NanoDet][01-24 23:12:31] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:31] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:31] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:31] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:32] INFO: Train|Epoch9/20|Iter24(1/50)| mem:0.00G| lr:1.00e-03| loss:3.1263| avg:3.1263| 
+INFO:NanoDet:Train|Epoch9/20|Iter24(1/50)| mem:0.00G| lr:1.00e-03| loss:3.1263| avg:3.1263| 
+[NanoDet][01-24 23:12:32] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:32] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:32] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:32] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:32] INFO: Train|Epoch9/20|Iter25(2/50)| mem:0.00G| lr:1.00e-03| loss:3.2072| avg:3.1668| 
+INFO:NanoDet:Train|Epoch9/20|Iter25(2/50)| mem:0.00G| lr:1.00e-03| loss:3.2072| avg:3.1668| 
+[NanoDet][01-24 23:12:32] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:32] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:32] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:32] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:32] INFO: Epoch   9/20 | Loss: 3.1602 | Time: 0.6s | LR: 0.001000
+INFO:NanoDet:Epoch   9/20 | Loss: 3.1602 | Time: 0.6s | LR: 0.001000
+[NanoDet][01-24 23:12:32] INFO: 🔍 开始验证 Epoch 9...
+INFO:NanoDet:🔍 开始验证 Epoch 9...
+[NanoDet][01-24 23:12:32] INFO: Val|Epoch9/20|Iter27(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch9/20|Iter27(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.011s | decode time: 0.014s | forward time: 0.011s | decode time: 0.014s | forward time: 0.011s | decode time: 0.003s | forward time: 0.011s | decode time: 0.014s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:32] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:32] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:33] INFO: 开始 Epoch 10/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 10/20 | LR: 0.001000
+[NanoDet][01-24 23:12:33] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:33] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:33] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:33] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:33] INFO: Train|Epoch10/20|Iter27(1/50)| mem:0.00G| lr:1.00e-03| loss:2.9366| avg:2.9366| 
+INFO:NanoDet:Train|Epoch10/20|Iter27(1/50)| mem:0.00G| lr:1.00e-03| loss:2.9366| avg:2.9366| 
+[NanoDet][01-24 23:12:33] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:33] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:33] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:33] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:33] INFO: Train|Epoch10/20|Iter28(2/50)| mem:0.00G| lr:1.00e-03| loss:3.0619| avg:2.9993| 
+INFO:NanoDet:Train|Epoch10/20|Iter28(2/50)| mem:0.00G| lr:1.00e-03| loss:3.0619| avg:2.9993| 
+[NanoDet][01-24 23:12:33] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:33] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:33] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:33] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:33] INFO: Epoch  10/20 | Loss: 3.0598 | Time: 0.7s | LR: 0.001000
+INFO:NanoDet:Epoch  10/20 | Loss: 3.0598 | Time: 0.7s | LR: 0.001000
+[NanoDet][01-24 23:12:33] INFO: 🔍 开始验证 Epoch 10...
+INFO:NanoDet:🔍 开始验证 Epoch 10...
+[NanoDet][01-24 23:12:33] INFO: Val|Epoch10/20|Iter30(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch10/20|Iter30(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.011s | decode time: 0.014s | forward time: 0.011s | decode time: 0.014s | forward time: 0.011s | decode time: 0.004s | forward time: 0.011s | decode time: 0.014s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:33] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:33] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:34] INFO: 开始 Epoch 11/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 11/20 | LR: 0.001000
+[NanoDet][01-24 23:12:34] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:34] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:34] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:34] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:34] INFO: Train|Epoch11/20|Iter30(1/50)| mem:0.00G| lr:1.00e-03| loss:2.9315| avg:2.9315| 
+INFO:NanoDet:Train|Epoch11/20|Iter30(1/50)| mem:0.00G| lr:1.00e-03| loss:2.9315| avg:2.9315| 
+[NanoDet][01-24 23:12:34] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:34] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:34] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:34] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:34] INFO: Train|Epoch11/20|Iter31(2/50)| mem:0.00G| lr:1.00e-03| loss:3.0280| avg:2.9797| 
+INFO:NanoDet:Train|Epoch11/20|Iter31(2/50)| mem:0.00G| lr:1.00e-03| loss:3.0280| avg:2.9797| 
+[NanoDet][01-24 23:12:34] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:34] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:34] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:34] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:34] INFO: Epoch  11/20 | Loss: 2.9881 | Time: 0.7s | LR: 0.001000
+INFO:NanoDet:Epoch  11/20 | Loss: 2.9881 | Time: 0.7s | LR: 0.001000
+[NanoDet][01-24 23:12:34] INFO: 🔍 开始验证 Epoch 11...
+INFO:NanoDet:🔍 开始验证 Epoch 11...
+[NanoDet][01-24 23:12:34] INFO: Val|Epoch11/20|Iter33(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch11/20|Iter33(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.011s | decode time: 0.014s | forward time: 0.011s | decode time: 0.014s | forward time: 0.018s | decode time: 0.005s | forward time: 0.012s | decode time: 0.014s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:34] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:34] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:35] INFO: 开始 Epoch 12/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 12/20 | LR: 0.001000
+[NanoDet][01-24 23:12:35] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:35] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:35] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:35] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:35] INFO: Train|Epoch12/20|Iter33(1/50)| mem:0.00G| lr:1.00e-03| loss:2.8796| avg:2.8796| 
+INFO:NanoDet:Train|Epoch12/20|Iter33(1/50)| mem:0.00G| lr:1.00e-03| loss:2.8796| avg:2.8796| 
+[NanoDet][01-24 23:12:35] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:35] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:35] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:35] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:35] INFO: Train|Epoch12/20|Iter34(2/50)| mem:0.00G| lr:1.00e-03| loss:2.8687| avg:2.8742| 
+INFO:NanoDet:Train|Epoch12/20|Iter34(2/50)| mem:0.00G| lr:1.00e-03| loss:2.8687| avg:2.8742| 
+[NanoDet][01-24 23:12:35] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:35] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:35] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:35] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:35] INFO: Epoch  12/20 | Loss: 2.8555 | Time: 0.6s | LR: 0.001000
+INFO:NanoDet:Epoch  12/20 | Loss: 2.8555 | Time: 0.6s | LR: 0.001000
+[NanoDet][01-24 23:12:35] INFO: 🔍 开始验证 Epoch 12...
+INFO:NanoDet:🔍 开始验证 Epoch 12...
+[NanoDet][01-24 23:12:35] INFO: Val|Epoch12/20|Iter36(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch12/20|Iter36(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.011s | decode time: 0.014s | forward time: 0.017s | decode time: 0.022s | forward time: 0.011s | decode time: 0.003s | forward time: 0.011s | decode time: 0.014s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:35] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:35] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:36] INFO: 开始 Epoch 13/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 13/20 | LR: 0.001000
+[NanoDet][01-24 23:12:36] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:36] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:36] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:36] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:36] INFO: Train|Epoch13/20|Iter36(1/50)| mem:0.00G| lr:1.00e-03| loss:2.7984| avg:2.7984| 
+INFO:NanoDet:Train|Epoch13/20|Iter36(1/50)| mem:0.00G| lr:1.00e-03| loss:2.7984| avg:2.7984| 
+[NanoDet][01-24 23:12:36] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:36] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:36] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:36] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:36] INFO: Train|Epoch13/20|Iter37(2/50)| mem:0.00G| lr:1.00e-03| loss:2.8597| avg:2.8291| 
+INFO:NanoDet:Train|Epoch13/20|Iter37(2/50)| mem:0.00G| lr:1.00e-03| loss:2.8597| avg:2.8291| 
+[NanoDet][01-24 23:12:36] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:36] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:36] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:36] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:36] INFO: Epoch  13/20 | Loss: 2.8518 | Time: 0.6s | LR: 0.001000
+INFO:NanoDet:Epoch  13/20 | Loss: 2.8518 | Time: 0.6s | LR: 0.001000
+[NanoDet][01-24 23:12:36] INFO: 🔍 开始验证 Epoch 13...
+INFO:NanoDet:🔍 开始验证 Epoch 13...
+[NanoDet][01-24 23:12:36] INFO: Val|Epoch13/20|Iter39(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch13/20|Iter39(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.011s | decode time: 0.014s | forward time: 0.011s | decode time: 0.014s | forward time: 0.011s | decode time: 0.003s | forward time: 0.011s | decode time: 0.014s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:36] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:37] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:37] INFO: 开始 Epoch 14/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 14/20 | LR: 0.001000
+[NanoDet][01-24 23:12:37] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:37] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:37] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:37] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:37] INFO: Train|Epoch14/20|Iter39(1/50)| mem:0.00G| lr:1.00e-03| loss:2.7084| avg:2.7084| 
+INFO:NanoDet:Train|Epoch14/20|Iter39(1/50)| mem:0.00G| lr:1.00e-03| loss:2.7084| avg:2.7084| 
+[NanoDet][01-24 23:12:37] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:37] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:37] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:37] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:37] INFO: Train|Epoch14/20|Iter40(2/50)| mem:0.00G| lr:1.00e-03| loss:2.6829| avg:2.6956| 
+INFO:NanoDet:Train|Epoch14/20|Iter40(2/50)| mem:0.00G| lr:1.00e-03| loss:2.6829| avg:2.6956| 
+[NanoDet][01-24 23:12:37] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:37] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:37] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:37] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:37] INFO: Epoch  14/20 | Loss: 2.6916 | Time: 0.6s | LR: 0.001000
+INFO:NanoDet:Epoch  14/20 | Loss: 2.6916 | Time: 0.6s | LR: 0.001000
+[NanoDet][01-24 23:12:37] INFO: 🔍 开始验证 Epoch 14...
+INFO:NanoDet:🔍 开始验证 Epoch 14...
+[NanoDet][01-24 23:12:37] INFO: Val|Epoch14/20|Iter42(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch14/20|Iter42(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.011s | decode time: 0.014s | forward time: 0.011s | decode time: 0.014s | forward time: 0.011s | decode time: 0.003s | forward time: 0.011s | decode time: 0.014s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:37] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:37] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:38] INFO: 开始 Epoch 15/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 15/20 | LR: 0.001000
+[NanoDet][01-24 23:12:38] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:38] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:38] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:38] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:38] INFO: Train|Epoch15/20|Iter42(1/50)| mem:0.00G| lr:1.00e-03| loss:2.4709| avg:2.4709| 
+INFO:NanoDet:Train|Epoch15/20|Iter42(1/50)| mem:0.00G| lr:1.00e-03| loss:2.4709| avg:2.4709| 
+[NanoDet][01-24 23:12:38] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:38] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:38] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:38] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:38] INFO: Train|Epoch15/20|Iter43(2/50)| mem:0.00G| lr:1.00e-03| loss:2.5480| avg:2.5095| 
+INFO:NanoDet:Train|Epoch15/20|Iter43(2/50)| mem:0.00G| lr:1.00e-03| loss:2.5480| avg:2.5095| 
+[NanoDet][01-24 23:12:38] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:38] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:38] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:38] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:38] INFO: Epoch  15/20 | Loss: 2.5753 | Time: 0.6s | LR: 0.001000
+INFO:NanoDet:Epoch  15/20 | Loss: 2.5753 | Time: 0.6s | LR: 0.001000
+[NanoDet][01-24 23:12:38] INFO: 🔍 开始验证 Epoch 15...
+INFO:NanoDet:🔍 开始验证 Epoch 15...
+[NanoDet][01-24 23:12:38] INFO: Val|Epoch15/20|Iter45(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch15/20|Iter45(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.010s | decode time: 0.014s | forward time: 0.011s | decode time: 0.014s | forward time: 0.011s | decode time: 0.003s | forward time: 0.012s | decode time: 0.014s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:39] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:39] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:39] INFO: 开始 Epoch 16/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 16/20 | LR: 0.001000
+[NanoDet][01-24 23:12:39] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:39] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:39] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:39] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:39] INFO: Train|Epoch16/20|Iter45(1/50)| mem:0.00G| lr:1.00e-03| loss:2.4417| avg:2.4417| 
+INFO:NanoDet:Train|Epoch16/20|Iter45(1/50)| mem:0.00G| lr:1.00e-03| loss:2.4417| avg:2.4417| 
+[NanoDet][01-24 23:12:39] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:39] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:39] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:39] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:39] INFO: Train|Epoch16/20|Iter46(2/50)| mem:0.00G| lr:1.00e-03| loss:2.6236| avg:2.5327| 
+INFO:NanoDet:Train|Epoch16/20|Iter46(2/50)| mem:0.00G| lr:1.00e-03| loss:2.6236| avg:2.5327| 
+[NanoDet][01-24 23:12:39] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:39] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:39] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:39] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:39] INFO: Epoch  16/20 | Loss: 2.5247 | Time: 0.6s | LR: 0.001000
+INFO:NanoDet:Epoch  16/20 | Loss: 2.5247 | Time: 0.6s | LR: 0.001000
+[NanoDet][01-24 23:12:39] INFO: 🔍 开始验证 Epoch 16...
+INFO:NanoDet:🔍 开始验证 Epoch 16...
+[NanoDet][01-24 23:12:39] INFO: Val|Epoch16/20|Iter48(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch16/20|Iter48(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.011s | decode time: 0.014s | forward time: 0.011s | decode time: 0.014s | forward time: 0.012s | decode time: 0.003s | forward time: 0.012s | decode time: 0.014s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:40] INFO: 📊 验证结果 | mAP: 0.0000
+INFO:NanoDet:📊 验证结果 | mAP: 0.0000
+[NanoDet][01-24 23:12:40] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:40] INFO: 开始 Epoch 17/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 17/20 | LR: 0.001000
+[NanoDet][01-24 23:12:40] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:40] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:40] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:40] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:40] INFO: Train|Epoch17/20|Iter48(1/50)| mem:0.00G| lr:1.00e-03| loss:2.3671| avg:2.3671| 
+INFO:NanoDet:Train|Epoch17/20|Iter48(1/50)| mem:0.00G| lr:1.00e-03| loss:2.3671| avg:2.3671| 
+[NanoDet][01-24 23:12:40] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:40] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:40] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:40] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:40] INFO: Train|Epoch17/20|Iter49(2/50)| mem:0.00G| lr:1.00e-03| loss:2.4906| avg:2.4288| 
+INFO:NanoDet:Train|Epoch17/20|Iter49(2/50)| mem:0.00G| lr:1.00e-03| loss:2.4906| avg:2.4288| 
+[NanoDet][01-24 23:12:40] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:40] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:40] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:40] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:40] INFO: Train|Epoch17/20|Iter50(3/50)| mem:0.00G| lr:1.00e-03| loss_qfl:0.1892| loss_bbox:0.4398| loss_dfl:0.2842| aux_loss_qfl:0.5390| aux_loss_bbox:0.6700| aux_loss_dfl:0.3481| 
+INFO:NanoDet:Train|Epoch17/20|Iter50(3/50)| mem:0.00G| lr:1.00e-03| loss_qfl:0.1892| loss_bbox:0.4398| loss_dfl:0.2842| aux_loss_qfl:0.5390| aux_loss_bbox:0.6700| aux_loss_dfl:0.3481| 
+[NanoDet][01-24 23:12:40] INFO: Epoch  17/20 | Loss: 2.4427 | Time: 0.6s | LR: 0.001000
+INFO:NanoDet:Epoch  17/20 | Loss: 2.4427 | Time: 0.6s | LR: 0.001000
+[NanoDet][01-24 23:12:40] INFO: 🔍 开始验证 Epoch 17...
+INFO:NanoDet:🔍 开始验证 Epoch 17...
+[NanoDet][01-24 23:12:41] INFO: Val|Epoch17/20|Iter51(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch17/20|Iter51(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.011s | decode time: 0.014s | forward time: 0.011s | decode time: 0.014s | forward time: 0.012s | decode time: 0.004s | forward time: 0.011s | decode time: 0.036s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:41] INFO: Evaluating on subset of 50 images (mini-eval mode)
+INFO:NanoDet:Evaluating on subset of 50 images (mini-eval mode)
+[NanoDet][01-24 23:12:41] INFO: 
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.003
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.007
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.004
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.007
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.003
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.003
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.003
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.008
+
+INFO:NanoDet:
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.003
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.007
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.004
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.007
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.003
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.003
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.003
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.008
+
+[NanoDet][01-24 23:12:41] INFO: 
+| class       | AP50   | mAP   | class       | AP50   | mAP   |
+|:------------|:-------|:------|:------------|:-------|:------|
+| aeroplane   | 0.0    | 0.0   | bicycle     | 0.0    | 0.0   |
+| bird        | 0.0    | 0.0   | boat        | 0.0    | 0.0   |
+| bottle      | nan    | nan   | bus         | 0.0    | 0.0   |
+| car         | 7.9    | 4.8   | cat         | 0.0    | 0.0   |
+| chair       | 0.0    | 0.0   | cow         | 0.0    | 0.0   |
+| diningtable | 0.0    | 0.0   | dog         | 0.0    | 0.0   |
+| horse       | 0.0    | 0.0   | motorbike   | 0.0    | 0.0   |
+| person      | 5.0    | 0.9   | pottedplant | 0.0    | 0.0   |
+| sheep       | 0.0    | 0.0   | sofa        | 0.0    | 0.0   |
+| train       | 0.0    | 0.0   | tvmonitor   | 0.0    | 0.0   |
+INFO:NanoDet:
+| class       | AP50   | mAP   | class       | AP50   | mAP   |
+|:------------|:-------|:------|:------------|:-------|:------|
+| aeroplane   | 0.0    | 0.0   | bicycle     | 0.0    | 0.0   |
+| bird        | 0.0    | 0.0   | boat        | 0.0    | 0.0   |
+| bottle      | nan    | nan   | bus         | 0.0    | 0.0   |
+| car         | 7.9    | 4.8   | cat         | 0.0    | 0.0   |
+| chair       | 0.0    | 0.0   | cow         | 0.0    | 0.0   |
+| diningtable | 0.0    | 0.0   | dog         | 0.0    | 0.0   |
+| horse       | 0.0    | 0.0   | motorbike   | 0.0    | 0.0   |
+| person      | 5.0    | 0.9   | pottedplant | 0.0    | 0.0   |
+| sheep       | 0.0    | 0.0   | sofa        | 0.0    | 0.0   |
+| train       | 0.0    | 0.0   | tvmonitor   | 0.0    | 0.0   |
+[NanoDet][01-24 23:12:41] INFO: Saving model to workspace/nanodet-plus-m_320_voc/model_best/nanodet_model_best.pth
+INFO:NanoDet:Saving model to workspace/nanodet-plus-m_320_voc/model_best/nanodet_model_best.pth
+[NanoDet][01-24 23:12:41] INFO: 📊 验证结果 | mAP: 0.0030
+INFO:NanoDet:📊 验证结果 | mAP: 0.0030
+[NanoDet][01-24 23:12:41] INFO: 🏆 新的最佳模型！mAP: 0.0030 -> workspace/nanodet-plus-m_320_voc/model_best.ckpt
+INFO:NanoDet:🏆 新的最佳模型！mAP: 0.0030 -> workspace/nanodet-plus-m_320_voc/model_best.ckpt
+[NanoDet][01-24 23:12:41] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:41] INFO: 开始 Epoch 18/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 18/20 | LR: 0.001000
+[NanoDet][01-24 23:12:41] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:41] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:41] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:41] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:41] INFO: Train|Epoch18/20|Iter51(1/50)| mem:0.00G| lr:1.00e-03| loss:2.3338| avg:2.3338| 
+INFO:NanoDet:Train|Epoch18/20|Iter51(1/50)| mem:0.00G| lr:1.00e-03| loss:2.3338| avg:2.3338| 
+[NanoDet][01-24 23:12:41] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:41] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:41] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:41] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:41] INFO: Train|Epoch18/20|Iter52(2/50)| mem:0.00G| lr:1.00e-03| loss:2.3387| avg:2.3362| 
+INFO:NanoDet:Train|Epoch18/20|Iter52(2/50)| mem:0.00G| lr:1.00e-03| loss:2.3387| avg:2.3362| 
+[NanoDet][01-24 23:12:41] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:41] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:41] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:41] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:42] INFO: Epoch  18/20 | Loss: 2.4200 | Time: 0.7s | LR: 0.001000
+INFO:NanoDet:Epoch  18/20 | Loss: 2.4200 | Time: 0.7s | LR: 0.001000
+[NanoDet][01-24 23:12:42] INFO: 🔍 开始验证 Epoch 18...
+INFO:NanoDet:🔍 开始验证 Epoch 18...
+[NanoDet][01-24 23:12:42] INFO: Val|Epoch18/20|Iter54(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch18/20|Iter54(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.011s | decode time: 0.015s | forward time: 0.011s | decode time: 0.014s | forward time: 0.011s | decode time: 0.003s | Loading and preparing results...
+DONE (t=0.00s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=0.01s).
+Accumulating evaluation results...
+DONE (t=0.03s).
+forward time: 0.012s | decode time: 0.031s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:42] INFO: Evaluating on subset of 50 images (mini-eval mode)
+INFO:NanoDet:Evaluating on subset of 50 images (mini-eval mode)
+[NanoDet][01-24 23:12:42] INFO: 
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.007
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.013
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.010
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.014
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.010
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.010
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.010
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.019
+
+INFO:NanoDet:
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.007
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.013
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.010
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.014
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.010
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.010
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.010
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.019
+
+[NanoDet][01-24 23:12:42] INFO: 
+| class       | AP50   | mAP   | class       | AP50   | mAP   |
+|:------------|:-------|:------|:------------|:-------|:------|
+| aeroplane   | 0.0    | 0.0   | bicycle     | 0.0    | 0.0   |
+| bird        | 0.0    | 0.0   | boat        | 0.0    | 0.0   |
+| bottle      | nan    | nan   | bus         | 0.0    | 0.0   |
+| car         | 7.9    | 5.5   | cat         | 0.0    | 0.0   |
+| chair       | 0.0    | 0.0   | cow         | 0.0    | 0.0   |
+| diningtable | 0.0    | 0.0   | dog         | 11.4   | 6.8   |
+| horse       | 0.0    | 0.0   | motorbike   | 0.0    | 0.0   |
+| person      | 5.0    | 0.9   | pottedplant | 0.0    | 0.0   |
+| sheep       | 0.0    | 0.0   | sofa        | 0.0    | 0.0   |
+| train       | 0.0    | 0.0   | tvmonitor   | 0.0    | 0.0   |
+INFO:NanoDet:
+| class       | AP50   | mAP   | class       | AP50   | mAP   |
+|:------------|:-------|:------|:------------|:-------|:------|
+| aeroplane   | 0.0    | 0.0   | bicycle     | 0.0    | 0.0   |
+| bird        | 0.0    | 0.0   | boat        | 0.0    | 0.0   |
+| bottle      | nan    | nan   | bus         | 0.0    | 0.0   |
+| car         | 7.9    | 5.5   | cat         | 0.0    | 0.0   |
+| chair       | 0.0    | 0.0   | cow         | 0.0    | 0.0   |
+| diningtable | 0.0    | 0.0   | dog         | 11.4   | 6.8   |
+| horse       | 0.0    | 0.0   | motorbike   | 0.0    | 0.0   |
+| person      | 5.0    | 0.9   | pottedplant | 0.0    | 0.0   |
+| sheep       | 0.0    | 0.0   | sofa        | 0.0    | 0.0   |
+| train       | 0.0    | 0.0   | tvmonitor   | 0.0    | 0.0   |
+[NanoDet][01-24 23:12:42] INFO: Saving model to workspace/nanodet-plus-m_320_voc/model_best/nanodet_model_best.pth
+INFO:NanoDet:Saving model to workspace/nanodet-plus-m_320_voc/model_best/nanodet_model_best.pth
+[NanoDet][01-24 23:12:42] INFO: 📊 验证结果 | mAP: 0.0070
+INFO:NanoDet:📊 验证结果 | mAP: 0.0070
+[NanoDet][01-24 23:12:42] INFO: 🏆 新的最佳模型！mAP: 0.0070 -> workspace/nanodet-plus-m_320_voc/model_best.ckpt
+INFO:NanoDet:🏆 新的最佳模型！mAP: 0.0070 -> workspace/nanodet-plus-m_320_voc/model_best.ckpt
+[NanoDet][01-24 23:12:42] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:42] INFO: 开始 Epoch 19/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 19/20 | LR: 0.001000
+[NanoDet][01-24 23:12:42] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:42] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:42] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:42] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:42] INFO: Train|Epoch19/20|Iter54(1/50)| mem:0.00G| lr:1.00e-03| loss:2.4052| avg:2.4052| 
+INFO:NanoDet:Train|Epoch19/20|Iter54(1/50)| mem:0.00G| lr:1.00e-03| loss:2.4052| avg:2.4052| 
+[NanoDet][01-24 23:12:42] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:42] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:42] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:42] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:43] INFO: Train|Epoch19/20|Iter55(2/50)| mem:0.00G| lr:1.00e-03| loss:2.4557| avg:2.4305| 
+INFO:NanoDet:Train|Epoch19/20|Iter55(2/50)| mem:0.00G| lr:1.00e-03| loss:2.4557| avg:2.4305| 
+[NanoDet][01-24 23:12:43] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:43] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:43] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:43] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:43] INFO: Epoch  19/20 | Loss: 2.4039 | Time: 0.7s | LR: 0.001000
+INFO:NanoDet:Epoch  19/20 | Loss: 2.4039 | Time: 0.7s | LR: 0.001000
+[NanoDet][01-24 23:12:43] INFO: 🔍 开始验证 Epoch 19...
+INFO:NanoDet:🔍 开始验证 Epoch 19...
+[NanoDet][01-24 23:12:43] INFO: Val|Epoch19/20|Iter57(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch19/20|Iter57(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.012s | decode time: 0.022s | forward time: 0.011s | decode time: 0.016s | forward time: 0.012s | decode time: 0.003s | Loading and preparing results...
+DONE (t=0.00s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=0.02s).
+Accumulating evaluation results...
+DONE (t=0.04s).
+forward time: 0.015s | decode time: 0.024s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:43] INFO: Evaluating on subset of 50 images (mini-eval mode)
+INFO:NanoDet:Evaluating on subset of 50 images (mini-eval mode)
+[NanoDet][01-24 23:12:43] INFO: 
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.019
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.050
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.012
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.029
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.027
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.029
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.029
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.042
+
+INFO:NanoDet:
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.019
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.050
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.012
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.029
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.027
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.029
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.029
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.042
+
+[NanoDet][01-24 23:12:43] INFO: 
+| class       | AP50   | mAP   | class       | AP50   | mAP   |
+|:------------|:-------|:------|:------------|:-------|:------|
+| aeroplane   | 0.0    | 0.0   | bicycle     | 0.0    | 0.0   |
+| bird        | 0.0    | 0.0   | boat        | 0.0    | 0.0   |
+| bottle      | nan    | nan   | bus         | 0.0    | 0.0   |
+| car         | 18.3   | 7.2   | cat         | 20.3   | 8.3   |
+| chair       | 0.0    | 0.0   | cow         | 0.0    | 0.0   |
+| diningtable | 0.0    | 0.0   | dog         | 19.8   | 10.3  |
+| horse       | 33.7   | 10.1  | motorbike   | 0.0    | 0.0   |
+| person      | 3.5    | 0.9   | pottedplant | 0.0    | 0.0   |
+| sheep       | 0.0    | 0.0   | sofa        | 0.0    | 0.0   |
+| train       | 0.0    | 0.0   | tvmonitor   | 0.0    | 0.0   |
+INFO:NanoDet:
+| class       | AP50   | mAP   | class       | AP50   | mAP   |
+|:------------|:-------|:------|:------------|:-------|:------|
+| aeroplane   | 0.0    | 0.0   | bicycle     | 0.0    | 0.0   |
+| bird        | 0.0    | 0.0   | boat        | 0.0    | 0.0   |
+| bottle      | nan    | nan   | bus         | 0.0    | 0.0   |
+| car         | 18.3   | 7.2   | cat         | 20.3   | 8.3   |
+| chair       | 0.0    | 0.0   | cow         | 0.0    | 0.0   |
+| diningtable | 0.0    | 0.0   | dog         | 19.8   | 10.3  |
+| horse       | 33.7   | 10.1  | motorbike   | 0.0    | 0.0   |
+| person      | 3.5    | 0.9   | pottedplant | 0.0    | 0.0   |
+| sheep       | 0.0    | 0.0   | sofa        | 0.0    | 0.0   |
+| train       | 0.0    | 0.0   | tvmonitor   | 0.0    | 0.0   |
+[NanoDet][01-24 23:12:43] INFO: Saving model to workspace/nanodet-plus-m_320_voc/model_best/nanodet_model_best.pth
+INFO:NanoDet:Saving model to workspace/nanodet-plus-m_320_voc/model_best/nanodet_model_best.pth
+[NanoDet][01-24 23:12:43] INFO: 📊 验证结果 | mAP: 0.0194
+INFO:NanoDet:📊 验证结果 | mAP: 0.0194
+[NanoDet][01-24 23:12:43] INFO: 🏆 新的最佳模型！mAP: 0.0194 -> workspace/nanodet-plus-m_320_voc/model_best.ckpt
+INFO:NanoDet:🏆 新的最佳模型！mAP: 0.0194 -> workspace/nanodet-plus-m_320_voc/model_best.ckpt
+[NanoDet][01-24 23:12:43] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:44] INFO: 开始 Epoch 20/20 | LR: 0.001000
+INFO:NanoDet:开始 Epoch 20/20 | LR: 0.001000
+[NanoDet][01-24 23:12:44] INFO: Batch 0 img type: <class 'list'>
+INFO:NanoDet:Batch 0 img type: <class 'list'>
+[NanoDet][01-24 23:12:44] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:44] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:44] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:44] INFO: Train|Epoch20/20|Iter57(1/50)| mem:0.00G| lr:1.00e-03| loss:2.3232| avg:2.3232| 
+INFO:NanoDet:Train|Epoch20/20|Iter57(1/50)| mem:0.00G| lr:1.00e-03| loss:2.3232| avg:2.3232| 
+[NanoDet][01-24 23:12:44] INFO: Batch 1 img type: <class 'list'>
+INFO:NanoDet:Batch 1 img type: <class 'list'>
+[NanoDet][01-24 23:12:44] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:44] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:44] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:44] INFO: Train|Epoch20/20|Iter58(2/50)| mem:0.00G| lr:1.00e-03| loss:2.3153| avg:2.3192| 
+INFO:NanoDet:Train|Epoch20/20|Iter58(2/50)| mem:0.00G| lr:1.00e-03| loss:2.3153| avg:2.3192| 
+[NanoDet][01-24 23:12:44] INFO: Batch 2 img type: <class 'list'>
+INFO:NanoDet:Batch 2 img type: <class 'list'>
+[NanoDet][01-24 23:12:44] INFO:   gt_bboxes type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes type:<class 'list'> len:16
+[NanoDet][01-24 23:12:44] INFO:   gt_labels type:<class 'list'> len:16
+INFO:NanoDet:  gt_labels type:<class 'list'> len:16
+[NanoDet][01-24 23:12:44] INFO:   gt_bboxes_ignore type:<class 'list'> len:16
+INFO:NanoDet:  gt_bboxes_ignore type:<class 'list'> len:16
+[NanoDet][01-24 23:12:44] INFO: Epoch  20/20 | Loss: 2.3628 | Time: 0.7s | LR: 0.001000
+INFO:NanoDet:Epoch  20/20 | Loss: 2.3628 | Time: 0.7s | LR: 0.001000
+[NanoDet][01-24 23:12:44] INFO: 🔍 开始验证 Epoch 20...
+INFO:NanoDet:🔍 开始验证 Epoch 20...
+[NanoDet][01-24 23:12:44] INFO: Val|Epoch20/20|Iter60(1/50)| mem:0G| lr:1.00e-03|
+INFO:NanoDet:Val|Epoch20/20|Iter60(1/50)| mem:0G| lr:1.00e-03|
+forward time: 0.011s | decode time: 0.025s | forward time: 0.012s | decode time: 0.027s | forward time: 0.011s | decode time: 0.006s | Loading and preparing results...
+DONE (t=0.00s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=0.02s).
+Accumulating evaluation results...
+DONE (t=0.04s).
+forward time: 0.011s | decode time: 0.031s |   验证进度: [   1/50] (  2.0%)
+[NanoDet][01-24 23:12:45] INFO: Evaluating on subset of 50 images (mini-eval mode)
+INFO:NanoDet:Evaluating on subset of 50 images (mini-eval mode)
+[NanoDet][01-24 23:12:45] INFO: 
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.021
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.050
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.019
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.001
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.034
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.029
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.033
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.033
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.001
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.051
+
+INFO:NanoDet:
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.021
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.050
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.019
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.001
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.034
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.029
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.033
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.033
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.001
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.051
+
+[NanoDet][01-24 23:12:45] INFO: 
+| class       | AP50   | mAP   | class       | AP50   | mAP   |
+|:------------|:-------|:------|:------------|:-------|:------|
+| aeroplane   | 0.0    | 0.0   | bicycle     | 0.0    | 0.0   |
+| bird        | 0.0    | 0.0   | boat        | 0.0    | 0.0   |
+| bottle      | nan    | nan   | bus         | 0.0    | 0.0   |
+| car         | 18.3   | 9.6   | cat         | 10.0   | 5.2   |
+| chair       | 0.0    | 0.0   | cow         | 0.0    | 0.0   |
+| diningtable | 0.0    | 0.0   | dog         | 21.4   | 12.8  |
+| horse       | 33.7   | 10.1  | motorbike   | 0.0    | 0.0   |
+| person      | 11.4   | 2.9   | pottedplant | 0.0    | 0.0   |
+| sheep       | 0.0    | 0.0   | sofa        | 0.0    | 0.0   |
+| train       | 0.0    | 0.0   | tvmonitor   | 0.0    | 0.0   |
+INFO:NanoDet:
+| class       | AP50   | mAP   | class       | AP50   | mAP   |
+|:------------|:-------|:------|:------------|:-------|:------|
+| aeroplane   | 0.0    | 0.0   | bicycle     | 0.0    | 0.0   |
+| bird        | 0.0    | 0.0   | boat        | 0.0    | 0.0   |
+| bottle      | nan    | nan   | bus         | 0.0    | 0.0   |
+| car         | 18.3   | 9.6   | cat         | 10.0   | 5.2   |
+| chair       | 0.0    | 0.0   | cow         | 0.0    | 0.0   |
+| diningtable | 0.0    | 0.0   | dog         | 21.4   | 12.8  |
+| horse       | 33.7   | 10.1  | motorbike   | 0.0    | 0.0   |
+| person      | 11.4   | 2.9   | pottedplant | 0.0    | 0.0   |
+| sheep       | 0.0    | 0.0   | sofa        | 0.0    | 0.0   |
+| train       | 0.0    | 0.0   | tvmonitor   | 0.0    | 0.0   |
+[NanoDet][01-24 23:12:45] INFO: Saving model to workspace/nanodet-plus-m_320_voc/model_best/nanodet_model_best.pth
+INFO:NanoDet:Saving model to workspace/nanodet-plus-m_320_voc/model_best/nanodet_model_best.pth
+[NanoDet][01-24 23:12:45] INFO: 📊 验证结果 | mAP: 0.0213
+INFO:NanoDet:📊 验证结果 | mAP: 0.0213
+[NanoDet][01-24 23:12:45] INFO: 🏆 新的最佳模型！mAP: 0.0213 -> workspace/nanodet-plus-m_320_voc/model_best.ckpt
+INFO:NanoDet:🏆 新的最佳模型！mAP: 0.0213 -> workspace/nanodet-plus-m_320_voc/model_best.ckpt
+[NanoDet][01-24 23:12:45] INFO: --------------------------------------------------------------------------------
+INFO:NanoDet:--------------------------------------------------------------------------------
+[NanoDet][01-24 23:12:45] INFO: ================================================================================
+INFO:NanoDet:================================================================================
+[NanoDet][01-24 23:12:45] INFO: 🎉 训练完成！
+INFO:NanoDet:🎉 训练完成！
+[NanoDet][01-24 23:12:45] INFO: 📊 最佳 mAP: 0.0213
+INFO:NanoDet:📊 最佳 mAP: 0.0213
+[NanoDet][01-24 23:12:45] INFO: 💾 模型保存在: workspace/nanodet-plus-m_320_voc
+INFO:NanoDet:💾 模型保存在: workspace/nanodet-plus-m_320_voc
+[NanoDet][01-24 23:12:45] INFO: ================================================================================
+INFO:NanoDet:================================================================================
+forward time: 0.010s | decode time: 0.035s | forward time: 0.010s | decode time: 0.027s | forward time: 0.010s | decode time: 0.005s | Loading and preparing results...
+DONE (t=0.00s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=0.07s).
+Accumulating evaluation results...
+DONE (t=0.04s).

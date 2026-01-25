@@ -15,54 +15,9 @@ Thumbs.db
 .vscode/
 *.swp
 
-# 数据集 - 千万不要上传数据集！
+# 数据集 - 不上传
 data/
-
-# 保存的模型权重
-*.pkl
-*.pth
-*.bin
-
-# 日志和输出文件
-*.log
-loss_curve.npy
 
 # 虚拟环境文件夹
 venv/
 env/
-
-checkpoints/
-
-*.pdparams
-
-pretrained/
-
-*.jt
-labels/voc2012_subset
-*.npz
-
-nk-yolo-main/
-
-*.jpg
-
-
-*.ckpt
-*.yml
-
-
-nanodet-pytorch/workspace/
-nanodet-jittor/workspace/
-
-
-*.npy
-
-
-新芽计划更改版/
-result/
-workspace/
-jtorch/
-jittordet/
-PPT_MATERIALS/
-DELIVERABLES/
-
-VOC/

@@ -1,0 +1,13 @@
+model size is  1.0x
+init weights...
+=> loading pretrained model https://download.pytorch.org/models/shufflenetv2_x1-5666bf0f80.pth
+Finish initialize NanoDet-Plus Head.
+PyTorch Warmup (20 iterations)...
+PyTorch Benchmark (200 iterations)...
+
+==================================================
+Framework: PyTorch
+Avg inference time: 9.18 ± 1.16 ms
+FPS: 109.0
+Test images: 200
+==================================================

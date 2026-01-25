@@ -1,0 +1,667 @@
+[NanoDet][01-25 00:49:56]INFO:Setting up data...
+[NanoDet][01-25 00:49:59]INFO:Creating model...
+INFO:NanoDet:Creating model...
+nanodet-pytorch/tools/test.py:82: UserWarning: Warning! Non-Lightning .pth checkpoint detected. Loading weights into model/avg_model directly.
+  warnings.warn(
+[NanoDet][01-25 00:49:59]INFO:Skip loading parameter aux_head.scales.0.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+INFO:NanoDet:Skip loading parameter aux_head.scales.0.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+[NanoDet][01-25 00:49:59]INFO:Skip loading parameter aux_head.scales.1.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+INFO:NanoDet:Skip loading parameter aux_head.scales.1.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+[NanoDet][01-25 00:49:59]INFO:Skip loading parameter aux_head.scales.2.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+INFO:NanoDet:Skip loading parameter aux_head.scales.2.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+[NanoDet][01-25 00:49:59]INFO:Skip loading parameter aux_head.scales.3.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+INFO:NanoDet:Skip loading parameter aux_head.scales.3.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+[NanoDet][01-25 00:49:59]INFO:No param backbone.conv1.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.conv1.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.0.branch1.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.0.branch1.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.0.branch1.3.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.0.branch1.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.0.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.0.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.0.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.0.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.0.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.0.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.1.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.1.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.1.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.1.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.1.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.1.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.2.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.2.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.2.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.2.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.2.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.2.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.3.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.3.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.3.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.3.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.3.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.3.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.0.branch1.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.0.branch1.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.0.branch1.3.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.0.branch1.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.0.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.0.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.0.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.0.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.0.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.0.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.1.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.1.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.1.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.1.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.1.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.1.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.2.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.2.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.2.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.2.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.2.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.2.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.3.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.3.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.3.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.3.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.3.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.3.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.4.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.4.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.4.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.4.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.4.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.4.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.5.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.5.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.5.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.5.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.5.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.5.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.6.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.6.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.6.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.6.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.6.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.6.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.7.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.7.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.7.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.7.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.7.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.7.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.0.branch1.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.0.branch1.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.0.branch1.3.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.0.branch1.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.0.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.0.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.0.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.0.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.0.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.0.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.1.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.1.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.1.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.1.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.1.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.1.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.2.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.2.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.2.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.2.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.2.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.2.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.3.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.3.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.3.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.3.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.3.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.3.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.reduce_layers.0.bn.num_batches_tracked.
+INFO:NanoDet:No param fpn.reduce_layers.0.bn.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.reduce_layers.1.bn.num_batches_tracked.
+INFO:NanoDet:No param fpn.reduce_layers.1.bn.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.reduce_layers.2.bn.num_batches_tracked.
+INFO:NanoDet:No param fpn.reduce_layers.2.bn.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.downsamples.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.downsamples.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.downsamples.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.downsamples.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.downsamples.1.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.downsamples.1.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.downsamples.1.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.downsamples.1.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.extra_lvl_in_conv.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.extra_lvl_in_conv.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.extra_lvl_in_conv.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.extra_lvl_in_conv.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.extra_lvl_out_conv.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.extra_lvl_out_conv.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.extra_lvl_out_conv.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.extra_lvl_out_conv.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.0.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.0.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.0.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.0.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.0.1.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.0.1.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.0.1.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.0.1.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.1.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.1.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.1.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.1.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.1.1.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.1.1.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.1.1.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.1.1.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.2.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.2.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.2.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.2.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.2.1.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.2.1.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.2.1.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.2.1.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.3.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.3.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.3.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.3.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.3.1.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.3.1.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.3.1.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.3.1.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.reduce_layers.0.bn.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.reduce_layers.0.bn.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.reduce_layers.1.bn.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.reduce_layers.1.bn.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.reduce_layers.2.bn.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.reduce_layers.2.bn.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.downsamples.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.downsamples.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.downsamples.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.downsamples.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.downsamples.1.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.downsamples.1.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.downsamples.1.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.downsamples.1.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.extra_lvl_in_conv.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.extra_lvl_in_conv.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.extra_lvl_in_conv.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.extra_lvl_in_conv.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.extra_lvl_out_conv.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.extra_lvl_out_conv.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.extra_lvl_out_conv.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.extra_lvl_out_conv.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:Skip loading parameter aux_head.scales.0.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+INFO:NanoDet:Skip loading parameter aux_head.scales.0.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+[NanoDet][01-25 00:49:59]INFO:Skip loading parameter aux_head.scales.1.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+INFO:NanoDet:Skip loading parameter aux_head.scales.1.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+[NanoDet][01-25 00:49:59]INFO:Skip loading parameter aux_head.scales.2.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+INFO:NanoDet:Skip loading parameter aux_head.scales.2.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+[NanoDet][01-25 00:49:59]INFO:Skip loading parameter aux_head.scales.3.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+INFO:NanoDet:Skip loading parameter aux_head.scales.3.scale, required shapetorch.Size([]), loaded shapetorch.Size([1]).
+[NanoDet][01-25 00:49:59]INFO:No param backbone.conv1.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.conv1.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.0.branch1.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.0.branch1.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.0.branch1.3.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.0.branch1.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.0.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.0.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.0.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.0.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.0.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.0.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.1.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.1.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.1.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.1.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.1.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.1.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.2.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.2.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.2.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.2.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.2.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.2.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.3.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.3.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.3.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.3.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage2.3.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage2.3.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.0.branch1.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.0.branch1.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.0.branch1.3.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.0.branch1.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.0.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.0.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.0.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.0.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.0.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.0.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.1.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.1.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.1.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.1.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.1.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.1.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.2.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.2.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.2.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.2.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.2.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.2.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.3.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.3.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.3.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.3.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.3.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.3.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.4.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.4.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.4.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.4.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.4.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.4.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.5.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.5.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.5.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.5.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.5.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.5.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.6.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.6.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.6.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.6.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.6.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.6.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.7.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.7.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.7.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.7.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage3.7.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage3.7.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.0.branch1.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.0.branch1.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.0.branch1.3.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.0.branch1.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.0.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.0.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.0.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.0.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.0.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.0.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.1.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.1.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.1.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.1.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.1.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.1.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.2.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.2.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.2.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.2.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.2.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.2.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.3.branch2.1.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.3.branch2.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.3.branch2.4.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.3.branch2.4.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param backbone.stage4.3.branch2.6.num_batches_tracked.
+INFO:NanoDet:No param backbone.stage4.3.branch2.6.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.reduce_layers.0.bn.num_batches_tracked.
+INFO:NanoDet:No param fpn.reduce_layers.0.bn.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.reduce_layers.1.bn.num_batches_tracked.
+INFO:NanoDet:No param fpn.reduce_layers.1.bn.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.reduce_layers.2.bn.num_batches_tracked.
+INFO:NanoDet:No param fpn.reduce_layers.2.bn.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.top_down_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param fpn.top_down_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.downsamples.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.downsamples.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.downsamples.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.downsamples.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.downsamples.1.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.downsamples.1.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.downsamples.1.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.downsamples.1.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.bottom_up_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param fpn.bottom_up_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.extra_lvl_in_conv.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.extra_lvl_in_conv.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.extra_lvl_in_conv.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.extra_lvl_in_conv.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.extra_lvl_out_conv.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.extra_lvl_out_conv.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param fpn.extra_lvl_out_conv.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param fpn.extra_lvl_out_conv.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.0.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.0.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.0.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.0.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.0.1.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.0.1.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.0.1.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.0.1.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.1.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.1.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.1.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.1.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.1.1.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.1.1.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.1.1.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.1.1.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.2.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.2.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.2.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.2.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.2.1.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.2.1.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.2.1.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.2.1.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.3.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.3.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.3.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.3.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.3.1.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.3.1.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param head.cls_convs.3.1.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param head.cls_convs.3.1.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.reduce_layers.0.bn.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.reduce_layers.0.bn.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.reduce_layers.1.bn.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.reduce_layers.1.bn.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.reduce_layers.2.bn.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.reduce_layers.2.bn.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.top_down_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.top_down_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.downsamples.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.downsamples.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.downsamples.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.downsamples.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.downsamples.1.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.downsamples.1.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.downsamples.1.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.downsamples.1.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.0.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.0.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost1.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.primary_conv.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.1.blocks.0.ghost2.cheap_operation.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.1.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.bottom_up_blocks.1.blocks.0.shortcut.3.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.extra_lvl_in_conv.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.extra_lvl_in_conv.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.extra_lvl_in_conv.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.extra_lvl_in_conv.0.pwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.extra_lvl_out_conv.0.dwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.extra_lvl_out_conv.0.dwnorm.num_batches_tracked.
+[NanoDet][01-25 00:49:59]INFO:No param aux_fpn.extra_lvl_out_conv.0.pwnorm.num_batches_tracked.
+INFO:NanoDet:No param aux_fpn.extra_lvl_out_conv.0.pwnorm.num_batches_tracked.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+IPU available: False, using: 0 IPUs
+HPU available: False, using: 0 HPUs
+[NanoDet][01-25 00:50:00]INFO:Starting testing...
+INFO:NanoDet:Starting testing...
+You are using a CUDA device ('NVIDIA GeForce RTX 3090') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+creating index...
+index created!
+model size is  1.0x
+init weights...
+=> loading pretrained model https://download.pytorch.org/models/shufflenetv2_x1-5666bf0f80.pth
+Finish initialize NanoDet-Plus Head.
+Testing: 0it [00:00, ?it/s][NanoDet][01-25 00:50:00]INFO:Loaded average state from checkpoint.
+INFO:NanoDet:Loaded average state from checkpoint.
+Testing:   0%|          | 0/78 [00:00<?, ?it/s]Testing DataLoader 0:   0%|          | 0/78 [00:00<?, ?it/s]Testing DataLoader 0:   1%|▏         | 1/78 [00:01<02:13,  1.73s/it]Testing DataLoader 0:   3%|▎         | 2/78 [00:01<01:11,  1.06it/s]Testing DataLoader 0:   4%|▍         | 3/78 [00:02<00:50,  1.49it/s]Testing DataLoader 0:   5%|▌         | 4/78 [00:02<00:39,  1.87it/s]Testing DataLoader 0:   6%|▋         | 5/78 [00:02<00:35,  2.06it/s]Testing DataLoader 0:   8%|▊         | 6/78 [00:02<00:30,  2.38it/s]Testing DataLoader 0:   9%|▉         | 7/78 [00:02<00:26,  2.69it/s]Testing DataLoader 0:  10%|█         | 8/78 [00:02<00:23,  2.98it/s]Testing DataLoader 0:  12%|█▏        | 9/78 [00:02<00:21,  3.25it/s]Testing DataLoader 0:  13%|█▎        | 10/78 [00:02<00:19,  3.50it/s]Testing DataLoader 0:  14%|█▍        | 11/78 [00:02<00:17,  3.75it/s]Testing DataLoader 0:  15%|█▌        | 12/78 [00:03<00:16,  3.96it/s]Testing DataLoader 0:  17%|█▋        | 13/78 [00:03<00:15,  4.14it/s]Testing DataLoader 0:  18%|█▊        | 14/78 [00:03<00:14,  4.34it/s]Testing DataLoader 0:  19%|█▉        | 15/78 [00:03<00:13,  4.54it/s]Testing DataLoader 0:  21%|██        | 16/78 [00:03<00:13,  4.73it/s]Testing DataLoader 0:  22%|██▏       | 17/78 [00:03<00:12,  4.88it/s]Testing DataLoader 0:  23%|██▎       | 18/78 [00:03<00:11,  5.01it/s]Testing DataLoader 0:  24%|██▍       | 19/78 [00:03<00:11,  5.04it/s]Testing DataLoader 0:  26%|██▌       | 20/78 [00:03<00:11,  5.18it/s]Testing DataLoader 0:  27%|██▋       | 21/78 [00:03<00:10,  5.30it/s]Testing DataLoader 0:  28%|██▊       | 22/78 [00:04<00:10,  5.44it/s]Testing DataLoader 0:  29%|██▉       | 23/78 [00:04<00:09,  5.57it/s]Testing DataLoader 0:  31%|███       | 24/78 [00:04<00:09,  5.70it/s]Testing DataLoader 0:  32%|███▏      | 25/78 [00:04<00:09,  5.79it/s]Testing DataLoader 0:  33%|███▎      | 26/78 [00:04<00:08,  5.88it/s]Testing DataLoader 0:  35%|███▍      | 27/78 [00:04<00:08,  5.99it/s]Testing DataLoader 0:  36%|███▌      | 28/78 [00:04<00:08,  6.08it/s]Testing DataLoader 0:  37%|███▋      | 29/78 [00:04<00:07,  6.17it/s]Testing DataLoader 0:  38%|███▊      | 30/78 [00:04<00:07,  6.26it/s]Testing DataLoader 0:  40%|███▉      | 31/78 [00:04<00:07,  6.33it/s]Testing DataLoader 0:  41%|████      | 32/78 [00:04<00:07,  6.44it/s]Testing DataLoader 0:  42%|████▏     | 33/78 [00:05<00:06,  6.52it/s]Testing DataLoader 0:  44%|████▎     | 34/78 [00:05<00:06,  6.35it/s]Testing DataLoader 0:  45%|████▍     | 35/78 [00:05<00:06,  6.30it/s]Testing DataLoader 0:  46%|████▌     | 36/78 [00:05<00:06,  6.38it/s]Testing DataLoader 0:  47%|████▋     | 37/78 [00:05<00:06,  6.47it/s]Testing DataLoader 0:  49%|████▊     | 38/78 [00:05<00:06,  6.56it/s]Testing DataLoader 0:  50%|█████     | 39/78 [00:05<00:05,  6.64it/s]Testing DataLoader 0:  51%|█████▏    | 40/78 [00:05<00:05,  6.73it/s]Testing DataLoader 0:  53%|█████▎    | 41/78 [00:06<00:05,  6.78it/s]Testing DataLoader 0:  54%|█████▍    | 42/78 [00:06<00:05,  6.83it/s]Testing DataLoader 0:  55%|█████▌    | 43/78 [00:06<00:05,  6.89it/s]Testing DataLoader 0:  56%|█████▋    | 44/78 [00:06<00:04,  6.94it/s]Testing DataLoader 0:  58%|█████▊    | 45/78 [00:06<00:04,  7.01it/s]Testing DataLoader 0:  59%|█████▉    | 46/78 [00:06<00:04,  7.08it/s]Testing DataLoader 0:  60%|██████    | 47/78 [00:06<00:04,  7.13it/s]Testing DataLoader 0:  62%|██████▏   | 48/78 [00:06<00:04,  7.18it/s]Testing DataLoader 0:  63%|██████▎   | 49/78 [00:06<00:04,  7.23it/s]Testing DataLoader 0:  64%|██████▍   | 50/78 [00:06<00:03,  7.27it/s]Testing DataLoader 0:  65%|██████▌   | 51/78 [00:06<00:03,  7.32it/s]Testing DataLoader 0:  67%|██████▋   | 52/78 [00:07<00:03,  7.23it/s]Testing DataLoader 0:  68%|██████▊   | 53/78 [00:07<00:03,  7.27it/s]Testing DataLoader 0:  69%|██████▉   | 54/78 [00:07<00:03,  7.32it/s]Testing DataLoader 0:  71%|███████   | 55/78 [00:07<00:03,  7.35it/s]Testing DataLoader 0:  72%|███████▏  | 56/78 [00:07<00:02,  7.39it/s]Testing DataLoader 0:  73%|███████▎  | 57/78 [00:07<00:02,  7.44it/s]Testing DataLoader 0:  74%|███████▍  | 58/78 [00:07<00:02,  7.50it/s]Testing DataLoader 0:  76%|███████▌  | 59/78 [00:07<00:02,  7.56it/s]Testing DataLoader 0:  77%|███████▋  | 60/78 [00:07<00:02,  7.61it/s]Testing DataLoader 0:  78%|███████▊  | 61/78 [00:07<00:02,  7.66it/s]Testing DataLoader 0:  79%|███████▉  | 62/78 [00:08<00:02,  7.71it/s]Testing DataLoader 0:  81%|████████  | 63/78 [00:08<00:01,  7.77it/s]Testing DataLoader 0:  82%|████████▏ | 64/78 [00:08<00:01,  7.82it/s]Testing DataLoader 0:  83%|████████▎ | 65/78 [00:08<00:01,  7.87it/s]Testing DataLoader 0:  85%|████████▍ | 66/78 [00:08<00:01,  7.92it/s]Testing DataLoader 0:  86%|████████▌ | 67/78 [00:08<00:01,  7.96it/s]Testing DataLoader 0:  87%|████████▋ | 68/78 [00:08<00:01,  8.01it/s]Testing DataLoader 0:  88%|████████▊ | 69/78 [00:08<00:01,  8.06it/s]Testing DataLoader 0:  90%|████████▉ | 70/78 [00:08<00:00,  8.10it/s]Testing DataLoader 0:  91%|█████████ | 71/78 [00:08<00:00,  8.14it/s]Testing DataLoader 0:  92%|█████████▏| 72/78 [00:08<00:00,  8.19it/s]Testing DataLoader 0:  94%|█████████▎| 73/78 [00:08<00:00,  8.23it/s]Testing DataLoader 0:  95%|█████████▍| 74/78 [00:08<00:00,  8.27it/s]Testing DataLoader 0:  96%|█████████▌| 75/78 [00:09<00:00,  8.31it/s]Testing DataLoader 0:  97%|█████████▋| 76/78 [00:09<00:00,  8.22it/s]Testing DataLoader 0:  99%|█████████▊| 77/78 [00:09<00:00,  8.26it/s]Testing DataLoader 0: 100%|██████████| 78/78 [00:09<00:00,  8.20it/s]/root/.local/share/mamba/envs/nanojittor/lib/python3.8/site-packages/torch/functional.py:504: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3190.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+[NanoDet][01-25 00:50:50]INFO:
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.321
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.532
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.326
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.018
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.131
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.430
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.333
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.478
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.505
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.064
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.340
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.630
+
+INFO:NanoDet:
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.321
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.532
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.326
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.018
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.131
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.430
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.333
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.478
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.505
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.064
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.340
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.630
+
+[NanoDet][01-25 00:50:50]INFO:
+| class       | AP50   | mAP   | class       | AP50   | mAP   |
+|:------------|:-------|:------|:------------|:-------|:------|
+| aeroplane   | 57.8   | 37.2  | bicycle     | 64.7   | 39.6  |
+| bird        | 48.6   | 24.7  | boat        | 33.3   | 16.2  |
+| bottle      | 15.6   | 7.1   | bus         | 60.4   | 45.7  |
+| car         | 62.6   | 42.1  | cat         | 71.9   | 46.2  |
+| chair       | 27.0   | 11.8  | cow         | 46.6   | 26.0  |
+| diningtable | 55.8   | 34.4  | dog         | 63.6   | 40.1  |
+| horse       | 71.7   | 43.3  | motorbike   | 65.3   | 39.2  |
+| person      | 63.7   | 34.4  | pottedplant | 28.2   | 12.1  |
+| sheep       | 44.3   | 26.8  | sofa        | 54.5   | 35.5  |
+| train       | 72.7   | 45.6  | tvmonitor   | 56.1   | 33.8  |
+INFO:NanoDet:
+| class       | AP50   | mAP   | class       | AP50   | mAP   |
+|:------------|:-------|:------|:------------|:-------|:------|
+| aeroplane   | 57.8   | 37.2  | bicycle     | 64.7   | 39.6  |
+| bird        | 48.6   | 24.7  | boat        | 33.3   | 16.2  |
+| bottle      | 15.6   | 7.1   | bus         | 60.4   | 45.7  |
+| car         | 62.6   | 42.1  | cat         | 71.9   | 46.2  |
+| chair       | 27.0   | 11.8  | cow         | 46.6   | 26.0  |
+| diningtable | 55.8   | 34.4  | dog         | 63.6   | 40.1  |
+| horse       | 71.7   | 43.3  | motorbike   | 65.3   | 39.2  |
+| person      | 63.7   | 34.4  | pottedplant | 28.2   | 12.1  |
+| sheep       | 44.3   | 26.8  | sofa        | 54.5   | 35.5  |
+| train       | 72.7   | 45.6  | tvmonitor   | 56.1   | 33.8  |
+Loading and preparing results...
+DONE (t=2.56s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=15.49s).
+Accumulating evaluation results...
+DONE (t=5.12s).
+Testing DataLoader 0: 100%|██████████| 78/78 [00:49<00:00,  1.58it/s]
